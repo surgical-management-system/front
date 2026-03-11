@@ -5,10 +5,16 @@ Interfaz Angular para la gestión de turnos hospitalarios: funcionalidades esenc
 ## 📝 Descripción
 Este proyecto es la capa de presentación del ecosistema. Su arquitectura está diseñada para comunicarse con el backend mediante un patrón **BFF (Backend For Frontend)**, lo que permite centralizar la lógica de seguridad y normalizar los datos provenientes del backend.
 
+## Objetivo
+
+![Texto alternativo](assets/infraestructura.png)
+
+
 ## 🏗️ Arquitectura del Sistema
 Este frontend es parte de una arquitectura distribuida. Puedes ver todos los componentes, microservicios y la infraestructura completa en nuestra organización de GitHub:
 
 👉 **[Explorar el ecosistema de Surgical Management System](https://github.com/orgs/surgical-management-system/repositories)**
+
 
 ## 🛠️ Stack Tecnológico
 - **Framework:** Angular (v18/19)
@@ -100,10 +106,7 @@ Este frontend es parte de una arquitectura distribuida. Puedes ver todos los com
 - Implementación de componentes reutilizables y diseño responsivo.
 - Manejo de estados, servicios y comunicación eficiente con APIs REST.
 - Mejora en la experiencia de usuario (UX/UI) utilizando Angular Material.
-
-
-## Objetivo
-![Texto alternativo](assets/infraestructura.png)
+- Implementacion de patron bff.
 
 
 ## Configuracion
