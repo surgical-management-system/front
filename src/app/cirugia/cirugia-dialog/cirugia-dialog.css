@@ -22,8 +22,8 @@
 /* Botón externo del selector de turnos */
 .turno-button {
   flex: 0 0 auto;
-  height: 56px; /* alineado con la altura del mat-form-field outline */
-  width: 56px;
+  height: 48px; /* match compact input height */
+  width: 48px;
   box-sizing: border-box;
   border: 1px solid rgba(0,0,0,0.38); /* similar al borde de outline */
   border-radius: 4px;
@@ -89,10 +89,11 @@ mat-dialog-content, h2[mat-dialog-title] {
 mat-dialog-content.dialog-content {
   background: #fff;
   padding: 0 16px 8px 16px;
+  /* restored previous fixed width limits */
   min-width: 440px;
   max-width: 620px;
-  max-height: 800px;
-  max-height: 1000px;
+  max-height: 80vh;
+  box-sizing: border-box;
 }
 
 /* ==================== TABS ==================== */
@@ -113,9 +114,10 @@ mat-dialog-content.dialog-content {
 }
 
 .tab-content {
-  padding: 16px 0 8px 0;
-  min-height: 480px;
-  max-height: 580px;
+  padding: 12px 0 8px 0;
+  /* allow content to size naturally and scroll if it exceeds the available dialog height */
+  min-height: 0;
+  max-height: calc(80vh - 140px);
   overflow-y: auto;
 }
 
@@ -380,10 +382,10 @@ h2[mat-dialog-title] {
   background: #6a60ff;
   color: #fff;
   margin: 0;
-  padding: 16px 0 26px 0;
+  padding: 12px 0 16px 0;
   text-align: center;
-  font-size: 2rem;
-  font-weight: 300;
+  font-size: 1.5rem;
+  font-weight: 400;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
 }
@@ -408,8 +410,9 @@ mat-label {
 
 /* Inputs y selects más compactos */
 ::ng-deep .mat-mdc-form-field-flex {
-  min-height: 50px !important;
-  height: 56px !important;
+  /* slightly more compact form fields so more fit vertically */
+  min-height: 42px !important;
+  height: 48px !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
@@ -425,7 +428,7 @@ mat-error {
 }
 
 mat-dialog-actions {
-  padding: 0px 16px 16px 16px;
+  padding: 8px 16px 16px 16px;
 }
 
 button[mat-button], button[mat-raised-button] {

@@ -7,6 +7,35 @@ body {
   background: linear-gradient(135deg, #4663e4 0%, #764ba2 100%);
 }
 
-.mat-mdc-form-field-subscript-wrapper {
+/* .mat-mdc-form-field-subscript-wrapper {
   display: none;
+} */
+
+/* Hide Material subscript (helper/underline) only for search form-fields */
+mat-form-field.search .mat-mdc-form-field-subscript-wrapper,
+mat-form-field.search .mat-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Remove rounded corners for mat-select panels (overlay) so the dropdown matches the trigger
+   Note: overlay panels are appended to the document body, so this rule is global and targets
+   the select panel rendered by Angular Material. */
+.cdk-overlay-pane .mat-mdc-select-panel {
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+/* Broader coverage for different Material versions and additional wrappers */
+.cdk-overlay-pane .mat-select-panel,
+.cdk-overlay-pane .mat-mdc-select-panel,
+.cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-paper,
+.cdk-overlay-pane .mat-select-panel .mat-mdc-paper,
+.cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-overlay-pane,
+.cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-surface {
+  border-radius: 0 !important;
+}
+
+/* Also ensure any surface inside the overlay has squared corners */
+.cdk-overlay-pane .mat-mdc-select-panel * {
+  border-radius: 0 !important;
 }

@@ -30,15 +30,40 @@ Este frontend es parte de una arquitectura distribuida. Puedes ver todos los com
 ## Funcionalidades
 
 - Autenticación y autorización de usuarios mediante Keycloak.
-- Gestión de pacientes: alta, edición, listado y búsqueda avanzada.
+  
+	![Login Keycloak](assets/login-keycloack.psd.png)
+- Gestión de pacientes: listado y búsqueda avanzada.
+  
+	![Listado de pacientes](assets/pacientes-list.psd.png)
+
+- Agregar paciente desde API externa:
+    ![Seleccionar paciente desde api](assets/seleccionar-paciente-api-externa.psd.png)
+    ![Alta de pacientes](assets/agregar-paciente.psd.png)
+
 - Visualización y gestión de cirugías y equipos médicos.
+  
+	![Nueva cirugía / gestión](assets/nueva-cirugia.psd.png)
 - Panel de métricas y reportes del sistema en tiempo real.
+  
+	![Infraestructura / panel](assets/infraestructura.png)
 - Navegación por tabs y diseño responsivo.
+  
+	![Listados y navegación](assets/usuarios-list.psd.png)
 - Integración con APIs REST para consumo de datos.
+  
+	![Selección de médicos / integración](assets/seleccion-medicos.psd.png)
 - Confirmaciones y diálogos interactivos para acciones críticas.
+  
+	![Finalizar cirugía / diálogo](assets/finalizar-cirugia.psd.png)
 - Filtros y paginación en tablas de datos.
+  
+	![Filtrado en cirugías](assets/filtrado-cirugia.psd.png)
 - Notificaciones y mensajes de error amigables.
+  
+	![Agregar paciente / notificaciones](assets/agregar-paciente.psd.png)
 - Soporte para roles y permisos diferenciados.
+  
+	![Configurar cuenta / permisos](assets/configurar-cuenta.psd.png)
 
 ## Aprendizajes y Experiencia
 

@@ -9,7 +9,7 @@
     'Segoe UI',
     Roboto,
     sans-serif;
-  border-radius: 8px;
+  border-radius: 2px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.171);
   background: white;
 }
@@ -119,6 +119,21 @@
   flex: 1;
   min-width: 250px;
   max-width: 400px;
+}
+
+/* Remove rounded corners for patient selector (search field) inside cirugías */
+mat-form-field.search,
+mat-form-field.search .mat-mdc-form-field-wrapper,
+mat-form-field.search .mat-mdc-form-field-outline,
+mat-form-field.search .mat-mdc-form-field-infix {
+  border-radius: 0 !important;
+  overflow: visible;
+}
+
+/* Ensure mat-select trigger inside the search has no rounded corners */
+mat-form-field.search .mat-mdc-select-trigger,
+mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
+  border-radius: 0 !important;
 }
 
 .btn-crear {
