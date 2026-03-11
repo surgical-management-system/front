@@ -13,19 +13,12 @@ Este frontend es parte de una arquitectura distribuida. Puedes ver todos los com
 ## 🛠️ Stack Tecnológico
 - **Framework:** Angular (v18/19)
 - **Lenguaje:** TypeScript
+- **Estilos:** CSS3, Angular Material
 - **Comunicación:** REST API con integración BFF
 - **Seguridad:** Autenticación y Autorización basada en roles (RBAC)
-
-## Stack Tecnológico
-
-- **Framework principal:** Angular
-- **Lenguaje:** TypeScript
-- **Estilos:** CSS3, Angular Material
-- **Gestión de dependencias:** npm
 - **Control de versiones:** Git
-- **Backend de autenticación:** Keycloak
 - **Consumo de APIs:** HTTP REST
-- **Testing:** Jasmine, Karma
+
 
 ## Funcionalidades
 
@@ -91,14 +84,15 @@ Este frontend es parte de una arquitectura distribuida. Puedes ver todos los com
 ## Aprendizajes y Experiencia
 
 - Profundización en el desarrollo de aplicaciones SPA con Angular y buenas prácticas de arquitectura.
-- Integración de sistemas de autenticación y autorización robustos (Keycloak).
+- Integración de sistemas de autenticación y autorización robustos + Roles (Keycloak).
 - Implementación de componentes reutilizables y diseño responsivo.
 - Manejo de estados, servicios y comunicación eficiente con APIs REST.
 - Mejora en la experiencia de usuario (UX/UI) utilizando Angular Material.
-- Automatización de pruebas y despliegue.
+
 
 ## Objetivo
 ![Texto alternativo](assets/infraestructura.png)
+
 
 ## Configuracion
 [Ver la configuración de infraestructura (PDF)](assets/DACS-configuracion-de-infraestructura.pdf)
