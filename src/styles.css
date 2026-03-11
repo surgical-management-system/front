@@ -7,3 +7,6 @@ body {
   background: linear-gradient(135deg, #4663e4 0%, #764ba2 100%);
 }
 
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}

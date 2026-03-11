@@ -15,7 +15,7 @@
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 .pl-toolbar .pl-search-field,
 .pl-toolbar button[mat-stroked-button] {
@@ -68,22 +68,26 @@
   text-align: right;
 }
 /* Ancho fijo para cada columna usando atributos de mat-column */
-th.mat-header-cell.mat-column-nombre, td.mat-cell.mat-column-nombre {
+th.mat-header-cell.mat-column-nombre,
+td.mat-cell.mat-column-nombre {
   min-width: 140px;
   max-width: 180px;
   width: 160px;
 }
-th.mat-header-cell.mat-column-legajo, td.mat-cell.mat-column-legajo {
+th.mat-header-cell.mat-column-legajo,
+td.mat-cell.mat-column-legajo {
   min-width: 140px;
   max-width: 200px;
   width: 170px;
 }
-th.mat-header-cell.mat-column-rol, td.mat-cell.mat-column-rol {
+th.mat-header-cell.mat-column-rol,
+td.mat-cell.mat-column-rol {
   min-width: 100px;
   max-width: 120px;
   width: 110px;
 }
-th.mat-header-cell.mat-column-accionAgregar, td.mat-cell.mat-column-accionAgregar {
+th.mat-header-cell.mat-column-accionAgregar,
+td.mat-cell.mat-column-accionAgregar {
   min-width: 80px;
   max-width: 100px;
   width: 90px;
@@ -96,7 +100,7 @@ th.mat-header-cell.mat-column-accionAgregar, td.mat-cell.mat-column-accionAgrega
   display: flex;
   gap: 12px;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 .pl-search-field {
   flex: 1;

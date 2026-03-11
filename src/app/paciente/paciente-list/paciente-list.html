@@ -1,14 +1,7 @@
 <div class="table-list-container">
-  <!-- Loading Overlay -->
-  @if (isLoading) {
-    <div class="loading-overlay">
-      <div class="loading-spinner"></div>
-    </div>
-  }
-
   <div class="toolbar">
     <mat-form-field class="search" appearance="outline">
-      <mat-label>Buscar</mat-label>
+      <mat-label>Buscar paciente</mat-label>
       <input
         matInput
         (keyup)="applyFilter($event)"
@@ -16,22 +9,28 @@
       />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
-    <button mat-raised-button class="button-add" (click)="openPersonalHospitalList()">
-      <mat-icon>person_add</mat-icon> Nuevo paciente
+
+    <button mat-raised-button color="primary" class="button-add" (click)="openPersonalHospitalList()">
+      <mat-icon>person_add</mat-icon>
+      Nuevo paciente
     </button>
   </div>
 
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0 tabla-pacientes">
-      <!-- Nombre Completo -->
+  <div class="table-wrapper" [class.loading]="isLoading">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-icon class="spinner">sync</mat-icon>
+      <span>Cargando pacientes...</span>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 tabla-pacientes">
+
+      <!-- Nombre Completo (estructura igual a personal) -->
       <ng-container matColumnDef="nombreCompleto">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Paciente</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
         <td mat-cell *matCellDef="let p">
-          <div class="paciente-info">
-            <span class="paciente-nombre">{{ p.nombre }} {{ p.apellido }}</span>
-            @if (p.direccion) {
-              <span class="paciente-direccion">{{ p.direccion }}</span>
-            }
+          <div class="personal-info">
+            <span class="personal-nombre">{{ p.nombre }} {{ p.apellido }}</span>
+            <span class="personal-email" *ngIf="p.direccion">{{ p.direccion }}</span>
           </div>
         </td>
       </ng-container>
@@ -40,7 +39,7 @@
       <ng-container matColumnDef="dni">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
         <td mat-cell *matCellDef="let p">
-          <span class="dni-badge">{{ p.dni }}</span>
+          <span class="legajo-badge dni-badge">{{ p.dni }}</span>
         </td>
       </ng-container>
 
@@ -50,9 +49,7 @@
         <td mat-cell *matCellDef="let p">
           <div class="fecha-info">
             <span class="fecha-text">{{ formatFecha(p.fecha_nacimiento) }}</span>
-            @if (p.fecha_nacimiento) {
-              <span class="edad-text">{{ calcularEdad(p.fecha_nacimiento) }} años</span>
-            }
+            <span class="edad-text" *ngIf="p.fecha_nacimiento">{{ calcularEdad(p.fecha_nacimiento) }} años</span>
           </div>
         </td>
       </ng-container>
@@ -62,32 +59,18 @@
         <th mat-header-cell *matHeaderCellDef>Datos Físicos</th>
         <td mat-cell *matCellDef="let p">
           <div class="datos-fisicos">
-            @if (p.altura) {
-              <mat-chip class="chip-altura">
-                <mat-icon>height</mat-icon> {{ p.altura }} cm
-              </mat-chip>
-            }
-            @if (p.peso) {
-              <mat-chip class="chip-peso">
-                <mat-icon>monitor_weight</mat-icon> {{ p.peso }} kg
-              </mat-chip>
-            }
+            <mat-chip class="chip-altura" *ngIf="p.altura"><mat-icon>height</mat-icon> {{ p.altura }} cm</mat-chip>
+            <mat-chip class="chip-peso" *ngIf="p.peso"><mat-icon>monitor_weight</mat-icon> {{ p.peso }} kg</mat-chip>
           </div>
         </td>
       </ng-container>
 
       <!-- Contacto -->
       <ng-container matColumnDef="contacto">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contacto</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
         <td mat-cell *matCellDef="let p">
-          @if (p.telefono) {
-            <span class="telefono-text">
-              <mat-icon class="contact-icon">phone</mat-icon>
-              {{ p.telefono }}
-            </span>
-          } @else {
-            <span>-</span>
-          }
+          <span *ngIf="p.telefono" class="telefono-text"><mat-icon class="contact-icon">phone</mat-icon>{{ p.telefono }}</span>
+          <span *ngIf="!p.telefono">-</span>
         </td>
       </ng-container>
 
@@ -95,26 +78,19 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let p">
-          <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Acciones">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="openPaciente(p)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
-            </button>
-            <button mat-menu-item (click)="deletePaciente(p.id)" class="menu-delete">
-              <mat-icon>delete</mat-icon>
-              <span>Eliminar</span>
-            </button>
-          </mat-menu>
+          <div class="acciones-cell">
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones"><mat-icon>more_vert</mat-icon></button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openPaciente(p)"><mat-icon>edit</mat-icon><span>Editar</span></button>
+              <button mat-menu-item (click)="deletePaciente(p.id)" class="menu-delete"><mat-icon>delete</mat-icon><span>Eliminar</span></button>
+            </mat-menu>
+          </div>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <!-- Empty State -->
       <tr class="mat-row empty-row" *matNoDataRow>
         <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
           <div class="empty-state">
@@ -123,16 +99,9 @@
           </div>
         </td>
       </tr>
+
     </table>
 
-    <mat-paginator
-      [length]="totalItems"
-      [pageSize]="pageSize"
-      [pageIndex]="page"
-      [pageSizeOptions]="[16, 24, 40]"
-      showFirstLastButtons
-      (page)="onPage($event)"
-    >
-    </mat-paginator>
+    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="page" [pageSizeOptions]="[16,24,40]" showFirstLastButtons (page)="onPage($event)"></mat-paginator>
   </div>
 </div>

@@ -1,14 +1,7 @@
 <div class="table-list-container">
-  <!-- Loading Overlay -->
-  @if (isLoading) {
-    <div class="loading-overlay">
-      <div class="loading-spinner"></div>
-    </div>
-  }
-
   <div class="toolbar">
     <mat-form-field class="search" appearance="outline">
-      <mat-label>Buscar</mat-label>
+      <mat-label>Buscar personal</mat-label>
       <input
         matInput
         (keyup)="applyFilter($event)"
@@ -16,13 +9,23 @@
       />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
-    <button mat-raised-button class="button-add" (click)="openPersonal()">
-      <mat-icon>person_add</mat-icon> Nuevo personal
+
+    <button mat-raised-button color="primary" class="button-add" (click)="openPersonal()">
+      <mat-icon>person_add</mat-icon>
+      Nuevo personal
     </button>
   </div>
 
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0 tabla-personal">
+  <div class="table-wrapper" [class.loading]="isLoading">
+    <ng-container *ngIf="isLoading">
+      <div class="loading-overlay">
+        <mat-icon class="spinner">sync</mat-icon>
+        <span>Cargando personal...</span>
+      </div>
+    </ng-container>
+
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 tabla-personal">
+
       <!-- Legajo -->
       <ng-container matColumnDef="legajo">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Legajo</th>
@@ -31,15 +34,10 @@
         </td>
       </ng-container>
 
-      <!-- Nombre Completo -->
+      <!-- Nombre completo -->
       <ng-container matColumnDef="nombreCompleto">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-        <td mat-cell *matCellDef="let p">
-          <div class="personal-info">
-            <span class="personal-nombre">{{ p.nombre }} {{ p.apellido }}</span>
-            <span class="personal-email" *ngIf="p.email">{{ p.email }}</span>
-          </div>
-        </td>
+        <td mat-cell *matCellDef="let p">{{ p.nombre }} {{ p.apellido }}</td>
       </ng-container>
 
       <!-- DNI -->
@@ -60,9 +58,7 @@
       <ng-container matColumnDef="rol">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
         <td mat-cell *matCellDef="let p">
-          <mat-chip [ngClass]="getRolClass(p.rol)">
-            {{ p.rol || '-' }}
-          </mat-chip>
+          <mat-chip [ngClass]="getRolClass(p.rol)">{{ p.rol || '-' }}</mat-chip>
         </td>
       </ng-container>
 
@@ -70,52 +66,50 @@
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
         <td mat-cell *matCellDef="let p">
-          <mat-chip [ngClass]="getEstadoClass(p.estado)">
-            {{ p.estado || 'Activo' }}
-          </mat-chip>
+          <mat-chip [ngClass]="getEstadoClass(p.estado)">{{ p.estado || 'Activo' }}</mat-chip>
         </td>
       </ng-container>
 
       <!-- Teléfono -->
       <ng-container matColumnDef="telefono">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
-        <td mat-cell *matCellDef="let p">
-          <span class="telefono-text">{{ p.telefono || '-' }}</span>
-        </td>
+        <td mat-cell *matCellDef="let p">{{ p.telefono || '-' }}</td>
       </ng-container>
 
       <!-- Acciones -->
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let p">
-          <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Acciones">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="openPersonal(p)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
+          <div class="acciones-cell">
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones">
+              <mat-icon>more_vert</mat-icon>
             </button>
-            <button mat-menu-item (click)="deletePersonal(p.id)" class="menu-delete">
-              <mat-icon>delete</mat-icon>
-              <span>Eliminar</span>
-            </button>
-          </mat-menu>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openPersonal(p)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+              <button mat-menu-item (click)="deletePersonal(p.id)" class="menu-delete">
+                <mat-icon>delete</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </mat-menu>
+          </div>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <!-- Empty State -->
       <tr class="mat-row empty-row" *matNoDataRow>
         <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
           <div class="empty-state">
             <mat-icon>people_outline</mat-icon>
-            <span>No se encontró personal</span>
+            <p>No se encontró personal</p>
           </div>
         </td>
       </tr>
+
     </table>
 
     <mat-paginator
@@ -124,8 +118,8 @@
       [pageIndex]="page"
       [pageSizeOptions]="[16, 24, 40]"
       showFirstLastButtons
-      (page)="onPage($event)"
-    >
+      (page)="onPage($event)">
     </mat-paginator>
   </div>
 </div>
+
