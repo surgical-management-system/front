@@ -87,6 +87,7 @@ Este frontend es parte de una arquitectura distribuida. Puedes ver todos los com
 
 
 - Gestión de cuenta mediante Keycloack
+
     ![Configuracion de cuenta](assets/configurar-cuenta.psd.png)
 
     ![Redireccion a Keycloack](assets/keycloack.psd.png)
