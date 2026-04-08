@@ -1,113 +1,98 @@
 # FrontEnd-DACS2025 🏥
 
-Interfaz Angular para la gestión de turnos hospitalarios: funcionalidades esenciales listas; quedan mejoras y optimizaciones por implementar.
+Angular interface for hospital appointment management: essential features ready; further improvements and optimizations to be implemented.
 
-## 📝 Descripción
-Este proyecto es la capa de presentación del ecosistema. Su arquitectura está diseñada para comunicarse con el backend mediante un patrón **BFF (Backend For Frontend)**, lo que permite centralizar la lógica de seguridad y normalizar los datos provenientes del backend.
+## Description
+This project is the presentation layer of the ecosystem. Its architecture is designed to communicate with the backend using a **BFF (Backend For Frontend)** pattern, which centralizes security logic and normalizes data coming from the backend.
 
-## Objetivo
+## Objective
 
-![Texto alternativo](assets/infraestructura.png)
+![Alternative text](assets/infraestructura.png)
 
+## System Architecture
+This frontend is part of a distributed architecture. You can see all components, microservices, and the complete infrastructure in our GitHub organization:
 
-## 🏗️ Arquitectura del Sistema
-Este frontend es parte de una arquitectura distribuida. Puedes ver todos los componentes, microservicios y la infraestructura completa en nuestra organización de GitHub:
+👉 **[Explore the Surgical Management System ecosystem](https://github.com/orgs/surgical-management-system/repositories)**
 
-👉 **[Explorar el ecosistema de Surgical Management System](https://github.com/orgs/surgical-management-system/repositories)**
-
-
-## 🛠️ Stack Tecnológico
+## Technology Stack
 - **Framework:** Angular (v18/19)
-- **Lenguaje:** TypeScript
-- **Estilos:** CSS3, Angular Material
-- **Comunicación:** REST API con integración BFF
-- **Seguridad:** Autenticación y Autorización basada en roles (RBAC)
-- **Control de versiones:** Git
-- **Consumo de APIs:** HTTP REST
+- **Language:** TypeScript
+- **Styles:** CSS3, Angular Material
+- **Communication:** REST API with BFF integration
+- **Security:** Role-Based Authentication and Authorization (RBAC)
+- **Version control:** Git
+- **API consumption:** HTTP REST
 
+## Features
 
-## Funcionalidades
-
-- Autenticación y autorización de usuarios mediante Keycloak.
+- User authentication and authorization via Keycloak.
   
-	![Login Keycloak](assets/login-keycloack.psd.png)
+	![Keycloak Login](assets/login-keycloack.psd.png)
 
-  
-- Visualizacion de cirugías programadas
+- Visualization of scheduled surgeries
 
-    ![Calendario](assets/home-calendario.psd.png)
+    ![Calendar](assets/home-calendario.psd.png)
 
+- Visualization of metrics
 
-- Visualizacion de metricas
+    ![Metrics](assets/home-metricas.psd.png)
 
-    ![Metricas](assets/home-metricas.psd.png)
+- Reports
 
+    ![Reports](assets/home-reportes.psd.png)
 
-- Reportes
+- Listing and filtering of surgeries.
 
-    ![Reportes](assets/home-reportes.psd.png)
+    ![Surgery list](assets/cirugias.psd.png)
 
+    ![Surgery filtering](assets/filtrado-cirugia.psd.png)
 
-- Listado y filtrado de cirugías.
+- Management of surgeries and medical teams.
 
-    ![Listado cirugias](assets/cirugias.psd.png)
+    ![New surgery](assets/nueva-cirugia.psd.png)
 
-    ![Filtrado cirugias](assets/filtrado-cirugia.psd.png)
+    ![Select patient](assets/seleccionar-paciente-para-cirugia.psd.png)
 
+    ![Select available slot](assets/seleccionar-turno-disponible.psd.png)
 
-- Gestión de cirugías y equipos médicos.
+    ![Add medical team to a surgery](assets/seleccion-medicos.psd.png)
 
-    ![Nueva cirugia](assets/nueva-cirugia.psd.png)
+    ![Finish surgery by recording performed interventions](assets/finalizar-cirugia.psd.png)
 
-    ![Seleccionar paciente](assets/seleccionar-paciente-para-cirugia.psd.png)
+- Staff management.
 
-    ![Seleccionar turno disponible](assets/seleccionar-turno-disponible.psd.png)
+    ![Staff list](assets/personal-list.psd.png)
 
-    ![Agregar equipo medico a una cirugia](assets/seleccion-medicos.psd.png)
+- Patient management: listing and advanced search.
 
-    ![Finalizar cirugia cargando intervenciones realizadas](assets/finalizar-cirugia.psd.png)
+	![Patient list](assets/pacientes-list.psd.png)
 
+- Patient registration from external API.
 
-- Gestión de personal.
+    ![Select patient from API](assets/seleccionar-paciente-api-externa.psd.png)
 
-    ![Listado de personal](assets/personal-list.psd.png)
+    ![Patient registration](assets/agregar-paciente.psd.png)
 
+- User/role management using Keycloak API
 
-- Gestión de pacientes: listado y búsqueda avanzada.
+    ![List of users registered in the system](assets/usuarios-list.psd.png)
 
-	![Listado de pacientes](assets/pacientes-list.psd.png)
+    ![User CRUD](assets/editar-usuario.psd.png)
 
+- Account management via Keycloak
 
-- Alta de pacientes desde API externa.
+    ![Account configuration](assets/configurar-cuenta.psd.png)
 
-    ![Seleccionar paciente desde api](assets/seleccionar-paciente-api-externa.psd.png)
+    ![Redirect to Keycloak](assets/keycloack.psd.png)
 
-    ![Alta de pacientes](assets/agregar-paciente.psd.png)
+## Learnings and Experience
 
+- Deepening in the development of SPA applications with Angular and good architectural practices.
+- Integration of robust authentication and authorization systems + Roles (Keycloak).
+- Implementation of reusable components and responsive design.
+- State management, services, and efficient communication with APIs REST.
+- Improved user experience (UX/UI) using Angular Material.
+- Implementation of the BFF pattern.
 
-- Gestión de usuarios/roles mediante uso Keycloack API
-
-    ![Listado de usuarios registrados en sistema](assets/usuarios-list.psd.png)
-
-    ![ABM de usuarios](assets/editar-usuario.psd.png)
-
-
-- Gestión de cuenta mediante Keycloack
-
-    ![Configuracion de cuenta](assets/configurar-cuenta.psd.png)
-
-    ![Redireccion a Keycloack](assets/keycloack.psd.png)
-
-
-## Aprendizajes y Experiencia
-
-- Profundización en el desarrollo de aplicaciones SPA con Angular y buenas prácticas de arquitectura.
-- Integración de sistemas de autenticación y autorización robustos + Roles (Keycloak).
-- Implementación de componentes reutilizables y diseño responsivo.
-- Manejo de estados, servicios y comunicación eficiente con APIs REST.
-- Mejora en la experiencia de usuario (UX/UI) utilizando Angular Material.
-- Implementacion de patron bff.
-
-
-## Configuracion
-[Ver la configuración de infraestructura (PDF)](assets/DACS-configuracion-de-infraestructura.pdf)
+## Configuration
+[View the infrastructure configuration (PDF)](assets/DACS-configuracion-de-infraestructura.pdf)
