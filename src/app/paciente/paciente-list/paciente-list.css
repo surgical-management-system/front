@@ -1,100 +1,289 @@
 .table-list-container {
   min-height: auto;
   max-width: 4000px;
-  padding: 16px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 16px 0 0 0;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   border-radius: 0px;
   box-shadow: none;
   background: white;
 }
 
 .table-list-container .mat-mdc-header-cell {
-    background: #6a60ff;
-    color: white;
-    font-weight: 600;
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+}
+
+.table-list-container .mat-mdc-row {
+  transition: background 0.15s ease;
+}
+.table-list-container .mat-mdc-row:nth-child(odd) {
+  background: #ffffff;
+}
+.table-list-container .mat-mdc-row:nth-child(even) {
+  background: #fafafa;
+}
+.table-list-container .mat-mdc-row:hover {
+  background: #f0f0ff;
+}
+.table-list-container .mat-mdc-cell {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0 0 0 14px ;
+}
+.search {
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+/* Hide very specific sub-element the inspector removed: mat-form-field:nth-child(1) > div:nth-child(2) */
+.toolbar mat-form-field.mat-mdc-form-field:nth-child(1) > div:nth-child(2) {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.btn-crear,
+.button-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 24px;
+  font-weight: 500;
+}
+.btn-crear mat-icon,
+.button-add mat-icon {
+  margin-right: 4px;
+}
+
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+}
+.table-wrapper.loading {
+  opacity: 0.6;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  color: #6a60ff;
+}
+.loading-overlay .spinner {
+  animation: spin 1s linear infinite;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
-
-  .table-list-container .mat-mdc-row { transition: background 0.15s ease; }
-  .table-list-container .mat-mdc-row:nth-child(odd) { background: #ffffff; }
-  .table-list-container .mat-mdc-row:nth-child(even) { background: #fafafa; }
-  .table-list-container .mat-mdc-row:hover { background: #f0f0ff; }
-  .table-list-container .mat-mdc-cell { border-bottom: 1px solid #f5f5f5; }
-
-  .toolbar { display:flex; justify-content:flex-start; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
-    .search { flex: 1; min-width: 250px; max-width: 400px; }
-  /* Hide very specific sub-element the inspector removed: mat-form-field:nth-child(1) > div:nth-child(2) */
-  .toolbar mat-form-field.mat-mdc-form-field:nth-child(1) > div:nth-child(2) {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+  to {
+    transform: rotate(360deg);
   }
-  .btn-crear, .button-add { display:flex; align-items:center; gap:8px; height:56px; padding:0 24px; font-weight:500; }
-  .btn-crear mat-icon, .button-add mat-icon { margin-right:4px; }
+}
 
-  .table-wrapper { position:relative; overflow-x:auto; }
-  .table-wrapper.loading { opacity:0.6; }
+.tabla-pacientes {
+  width: 100%;
+}
+.tabla-pacientes.mat-elevation-z8,
+.tabla-pacientes.mat-elevation-z0,
+.mat-elevation-z8.tabla-pacientes {
+  box-shadow: none !important;
+}
 
-  .loading-overlay { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:8px; z-index:10; color:#6a60ff; }
-  .loading-overlay .spinner { animation: spin 1s linear infinite; font-size:32px; width:32px; height:32px; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* Paciente info */
+.paciente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.paciente-nombre {
+  font-weight: 500;
+  color: #1a1a1a;
+  font-size: 13px;
+}
+.paciente-direccion {
+  font-size: 11px;
+  color: #666;
+}
 
-  .tabla-pacientes { width:100%; }
-  .tabla-pacientes.mat-elevation-z8, .tabla-pacientes.mat-elevation-z0, .mat-elevation-z8.tabla-pacientes { box-shadow:none !important; }
+/* DNI Badge */
+.dni-badge {
+  background: #e8e6ff;
+  color: #6a60ff;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
 
-  /* Paciente info */
-  .paciente-info { display:flex; flex-direction:column; gap:1px; }
-  .paciente-nombre { font-weight:500; color:#1a1a1a; font-size:13px; }
-  .paciente-direccion { font-size:11px; color:#666; }
+/* alias y estilos para que coincida con personal */
+.legajo-badge {
+  background: #e8e6ff;
+  color: #6a60ff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
 
-  /* DNI Badge */
-  .dni-badge { background:#e8e6ff; color:#6a60ff; padding:2px 7px; border-radius:6px; font-weight:600; font-size:12px; font-family:'SF Mono','Monaco',monospace; }
+/* Personal-style info (copiado de personal-list.css) */
+.personal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.personal-nombre {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+.personal-email {
+  font-size: 12px;
+  color: #666;
+}
 
-  /* alias y estilos para que coincida con personal */
-  .legajo-badge { background:#e8e6ff; color:#6a60ff; padding:4px 10px; border-radius:6px; font-weight:600; font-size:13px; }
+/* Fecha */
+.fecha-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.fecha-text {
+  color: #333;
+  font-size: 13px;
+}
+.edad-text {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
 
-  /* Personal-style info (copiado de personal-list.css) */
-  .personal-info { display:flex; flex-direction:column; gap:2px; }
-  .personal-nombre { font-weight:500; color:#1a1a1a; }
-  .personal-email { font-size:12px; color:#666; }
+/* Datos fisicos chips */
+.chip-altura,
+.chip-peso {
+  height: 20px !important;
+  min-height: 20px !important;
+  font-size: 11px !important;
+  padding: 0 6px !important;
+  width: fit-content !important;
+}
+.chip-altura {
+  background-color: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+.chip-peso {
+  background-color: #f3e5f5 !important;
+  color: #7b1fa2 !important;
+}
+.chip-altura mat-icon,
+.chip-peso mat-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-right: 2px;
+}
 
-  /* Fecha */
-  .fecha-info { display:flex; flex-direction:column; gap:1px; }
-  .fecha-text { color:#333; font-size:13px; }
-  .edad-text { font-size:11px; color:#666; font-style:italic; }
+/* Contacto */
+.telefono-text {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+.contact-icon {
+  font-size: 15px !important;
+  width: 15px !important;
+  height: 15px !important;
+  color: #888;
+}
 
-  /* Datos fisicos chips */
-  .chip-altura, .chip-peso { height:20px !important; min-height:20px !important; font-size:11px !important; padding:0 6px !important; width:fit-content !important; }
-  .chip-altura { background-color:#e3f2fd !important; color:#1565c0 !important; }
-  .chip-peso { background-color:#f3e5f5 !important; color:#7b1fa2 !important; }
-  .chip-altura mat-icon, .chip-peso mat-icon { font-size:14px !important; width:14px !important; height:14px !important; margin-right:2px; }
+/* Actions */
+.acciones-cell {
+  display: flex;
+  justify-content: center;
+}
+.acciones-cell button {
+  color: #616161;
+}
+.acciones-cell button:hover {
+  color: #6a60ff;
+}
 
-  /* Contacto */
-  .telefono-text { display:flex; align-items:stretch; gap:16px; margin-bottom:4px; flex-wrap:wrap; font-size:12px; }
-  .contact-icon { font-size:15px !important; width:15px !important; height:15px !important; color:#888; }
+/* Empty state */
+.empty-row {
+  height: 200px;
+}
+.empty-cell {
+  text-align: center !important;
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #999;
+}
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+}
 
-  /* Actions */
-  .acciones-cell { display:flex; justify-content:center; }
-  .acciones-cell button { color:#616161; }
-  .acciones-cell button:hover { color:#6a60ff; }
+/* Paginator */
+.mat-mdc-paginator {
+  background: #fafafa;
+  border-top: 1px solid #e8e8e8;
+}
 
-  /* Empty state */
-  .empty-row { height:200px; }
-  .empty-cell { text-align:center !important; }
-  .empty-state { display:flex; flex-direction:column; align-items:center; gap:12px; color:#999; }
-  .empty-state mat-icon { font-size:48px; width:48px; height:48px; color:#ccc; }
-
-  /* Paginator */
-  .mat-mdc-paginator { background:#fafafa; border-top:1px solid #e8e8e8; }
-
-  /* Column widths */
-  .mat-column-nombreCompleto { width: 140px; }
-  .mat-column-dni { width: 120px; }
-  .mat-column-fechaNacimiento { width: 130px; }
-  .mat-column-datosFisicos { width: 160px; }
-  .mat-column-contacto { width: 140px; }
-  .mat-column-acciones { width: 80px; text-align: center; }
+/* Column widths */
+.mat-column-nombreCompleto {
+  width: 140px;
+}
+.mat-column-dni {
+  width: 120px;
+}
+.mat-column-fechaNacimiento {
+  width: 130px;
+}
+.mat-column-datosFisicos {
+  width: 160px;
+}
+.mat-column-contacto {
+  width: 140px;
+}
+.mat-column-acciones {
+  width: 80px;
+  text-align: center;
+}
 
 /* Fecha Info */
 .fecha-info {
@@ -166,8 +355,12 @@
 }
 
 /* Menu */
-.menu-delete { color: #d32f2f !important; }
-.menu-delete mat-icon { color: #d32f2f !important; }
+.menu-delete {
+  color: #d32f2f !important;
+}
+.menu-delete mat-icon {
+  color: #d32f2f !important;
+}
 
 /* Empty State */
 .empty-row {
@@ -194,15 +387,31 @@
 }
 
 /* Paginator */
-.mat-mdc-paginator { background: #fafafa; border-top: 1px solid #e8e8e8; }
+.mat-mdc-paginator {
+  background: #fafafa;
+  border-top: 1px solid #e8e8e8;
+}
 
 /* Column widths */
-.mat-column-nombreCompleto { width: 140px; }
-.mat-column-dni { width: 120px; }
-.mat-column-fechaNacimiento { width: 130px; }
-.mat-column-datosFisicos { width: 160px; }
-.mat-column-contacto { width: 140px; }
-.mat-column-acciones { width: 80px; text-align: center; }
+.mat-column-nombreCompleto {
+  width: 140px;
+}
+.mat-column-dni {
+  width: 120px;
+}
+.mat-column-fechaNacimiento {
+  width: 130px;
+}
+.mat-column-datosFisicos {
+  width: 160px;
+}
+.mat-column-contacto {
+  width: 140px;
+}
+.mat-column-acciones {
+  width: 80px;
+  text-align: center;
+}
 
 /* Remove column separators and shadows */
 .tabla-pacientes.mat-elevation-z8,

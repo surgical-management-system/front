@@ -193,7 +193,7 @@
 
 .menu-header {
   padding: 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
   color: white;
   border-radius: 12px 12px 0 0;
 }
@@ -249,9 +249,14 @@
 }
 
 .menu-section-title {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #6c757d;
+  color: #1e3a8a;
+  background: #e8f0ff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
   margin: 0 0 0.75rem 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;

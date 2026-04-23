@@ -13,7 +13,7 @@
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
       <div class="btn-crear-wrapper">
-        <button mat-raised-button color="primary" class="btn-crear" (click)="openCirugia()">
+        <button mat-raised-button class="btn-crear" (click)="openCirugia()">
           <mat-icon>add_circle</mat-icon>
           Nueva cirugía
         </button>
@@ -32,6 +32,12 @@
           <mat-icon>autorenew</mat-icon> En curso
         </button>
       </div>
+      <div class="view-toggle" aria-label="Cambiar vista de listado">
+        <button mat-button class="view-btn" (click)="toggleViewMode()">
+          <mat-icon>{{ viewMode === 'table' ? 'view_module' : 'table_rows' }}</mat-icon>
+          {{ viewMode === 'table' ? 'Cards' : 'Lista' }}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -43,6 +49,7 @@
       </div>
     }
 
+    @if (viewMode === 'table') {
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 tabla-solicitudes">
       <!-- Fecha y Hora -->
       <ng-container matColumnDef="fechaInicio">
@@ -119,7 +126,7 @@
             <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones">
               <mat-icon>more_vert</mat-icon>
             </button>
-            <mat-menu #menu="matMenu">
+            <mat-menu #menu="matMenu" panelClass="dark-menu-panel">
               <button mat-menu-item (click)="openCirugia(s)">
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>
@@ -144,6 +151,78 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+    } @else {
+      <div class="cards-grid">
+        @for (s of dataSource.filteredData; track trackByCirugiaId($index, s)) {
+          <article class="cirugia-card">
+            <header class="card-top">
+              <div class="card-date">
+                <mat-icon class="fecha-icon">event</mat-icon>
+                <span>{{ formatFechaHora(s.fechaInicio, s.horaInicio) }}</span>
+              </div>
+              <button mat-icon-button [matMenuTriggerFor]="menuCard" matTooltip="Opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuCard="matMenu" panelClass="dark-menu-panel">
+                <button mat-menu-item (click)="openCirugia(s)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="finalizarCirugia(s)" class="finalizar-option">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Marcar como finalizada</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="s.id != null && deleteCirugia(s.id)" class="delete-option">
+                    <mat-icon>delete</mat-icon>
+                    <span>Cancelar</span>
+                  </button>
+                </ng-container>
+              </mat-menu>
+            </header>
+
+            <div class="card-patient">
+              <div class="patient-name">{{ s.pacienteNombre || '-' }}</div>
+              @if (s.dni) {
+                <div class="patient-dni">DNI: {{ s.dni }}</div>
+              }
+            </div>
+
+            <div class="card-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">Servicio</span>
+                <span class="meta-value">{{ s.servicioNombre || '-' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Tipo</span>
+                <span class="meta-value">{{ s.tipo || '-' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Quirófano</span>
+                <span class="meta-value">{{ s.quirofanoNombre || '-' }}</span>
+              </div>
+            </div>
+
+            <footer class="card-chips">
+              <div class="chip-item">
+                <span class="chip-label">Estado</span>
+                <mat-chip class="chip-estado" [ngClass]="getEstadoClass(s.estado)">
+                  {{ s.estado || '-' }}
+                </mat-chip>
+              </div>
+              <div class="chip-item">
+                <span class="chip-label">Prioridad</span>
+                <mat-chip class="chip-prioridad" [ngClass]="getPrioridadClass(s.prioridad)">
+                  {{ s.prioridad || '-' }}
+                </mat-chip>
+              </div>
+            </footer>
+          </article>
+        }
+      </div>
+    }
 
     @if (dataSource.data.length === 0 && !isLoading) {
       <div class="empty-state">
@@ -156,7 +235,7 @@
       [length]="totalItems"
       [pageSize]="pageSize"
       [pageIndex]="page"
-      [pageSizeOptions]="[16, 24, 40]"
+      [pageSizeOptions]="[18, 24, 40]"
       showFirstLastButtons
       (page)="onPage($event)"
     >

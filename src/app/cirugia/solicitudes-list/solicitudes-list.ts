@@ -43,6 +43,7 @@ import { FinalizarCirugiaDialog } from '../finalizar-cirugia-dialog/finalizar-ci
 })
 export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedEstado: string | null = null;
+  viewMode: 'table' | 'cards' = 'table';
   displayedColumns: string[] = [
     'fechaInicio',
     'pacienteNombre',
@@ -55,7 +56,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
   ];
   dataSource = new MatTableDataSource<ICirugia>([]);
   page = 0;
-  pageSize = 16;
+  pageSize = 18;
   totalItems = 0;
   isLoading = false;
   private pageCache = new Map<string, { data: ICirugia[]; total: number }>();
@@ -154,6 +155,14 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  toggleViewMode() {
+    this.viewMode = this.viewMode === 'table' ? 'cards' : 'table';
+  }
+
+  trackByCirugiaId(index: number, cirugia: ICirugia): number {
+    return cirugia.id ?? index;
   }
 
   filtrarPorEstado(estado: string) {
@@ -258,7 +267,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
     return '';
   }
 
-  formatFechaHora(fecha: string, hora: string): string {
+  formatFechaHora(fecha: string | Date, hora: string): string {
     if (!fecha) return '-';
     const fechaStr = new Date(fecha).toLocaleDateString('es-AR', {
       day: '2-digit',

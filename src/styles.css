@@ -4,7 +4,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #4663e4 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #4663e4 0%, #764ba2 100%); */
+  background: white;
 }
 
 /* .mat-mdc-form-field-subscript-wrapper {
@@ -38,4 +39,67 @@ mat-form-field.search .mat-form-field-subscript-wrapper {
 /* Also ensure any surface inside the overlay has squared corners */
 .cdk-overlay-pane .mat-mdc-select-panel * {
   border-radius: 0 !important;
+}
+
+/* Dark submenu for cirugías actions */
+.dark-menu-panel.mat-mdc-menu-panel {
+  --mat-menu-container-color: #111827;
+  --mat-menu-item-label-text-color: #e5e7eb;
+  --mat-menu-item-icon-color: #94a3b8;
+  background-color: #111827 !important;
+  color: #e5e7eb !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-content {
+  padding: 8px;
+  background-color: #111827 !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item {
+  color: #e5e7eb !important;
+  border-radius: 10px;
+  margin: 4px 6px;
+  min-height: 44px;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item .mat-mdc-menu-item-text,
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item span,
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item mat-icon {
+  color: inherit !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item mat-icon {
+  color: #94a3b8 !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.finalizar-option {
+  color: #86efac !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.finalizar-option mat-icon {
+  color: #86efac !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.delete-option {
+  color: #fca5a5 !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.delete-option mat-icon {
+  color: #fca5a5 !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.finalizar-option:hover {
+  background: rgba(34, 197, 94, 0.12) !important;
+}
+
+.dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.delete-option:hover {
+  background: rgba(239, 68, 68, 0.14) !important;
 }

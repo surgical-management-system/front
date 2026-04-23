@@ -1,7 +1,7 @@
 .table-list-container {
   min-height: auto;
   max-width: 4000px;
-  padding: 16px;
+  padding: 16px 0px 0px 0px;
   font-family:
     'Inter',
     -apple-system,
@@ -21,7 +21,7 @@
 }
 
 .table-list-container .mat-mdc-header-cell {
-  background: #6a60ff;
+  background: #1e3a8a;
   color: white;
   font-weight: 600;
   padding-top: 10px;
@@ -57,6 +57,7 @@
   align-items: center;
   gap: 12px; /* a little more breathing room between search, create and filtros */
   justify-content: flex-start;
+  padding: 0px 0px 0px 14px;
 }
 
 .btn-crear-wrapper {
@@ -65,9 +66,59 @@
   margin-left: 4px;
 }
 
+.btn-crear {
+  background: #2346a6 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  transition: background 0.2s ease !important;
+}
+
+.btn-crear:hover {
+  background: #0d5e56 !important;
+}
+
+.btn-crear mat-icon {
+  margin-right: 8px;
+}
+
 .estado-filtros {
   display: flex;
   gap: 4px;
+}
+
+.view-toggle {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0px 14px;
+}
+
+.view-btn {
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  background: #2346a6 !important;
+  min-width: 110px;
+  height: 40px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px !important;
+  box-shadow: none !important;
+  transition: background 0.2s ease !important;
+}
+
+.view-btn:hover {
+  background: #1a3788 !important;
+}
+
+.view-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .estado-btn {
@@ -152,6 +203,105 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
 .table-wrapper {
   position: relative;
   overflow-x: auto;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  padding: 0px 14px;
+}
+
+.cirugia-card {
+  border: 1px solid #e5e9f2;
+  border-radius: 12px;
+  padding: 0px 2px 10px 14px;
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f325f;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.card-patient {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #18253f;
+}
+
+.patient-dni {
+  font-size: 12px;
+  color: #61708e;
+}
+
+.card-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: #7b879f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meta-value {
+  font-size: 14px;
+  color: #1f2a44;
+  font-weight: 500;
+}
+
+.card-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.chip-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.chip-label {
+  font-size: 11px;
+  color: #6b7894;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .table-wrapper.loading {
@@ -279,19 +429,19 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
 }
 
 .finalizar-option {
-  color: #2e7d32 !important;
+  color: #86efac !important;
 }
 
 .finalizar-option mat-icon {
-  color: #2e7d32 !important;
+  color: #86efac !important;
 }
 
 .delete-option {
-  color: #c62828 !important;
+  color: #fca5a5 !important;
 }
 
 .delete-option mat-icon {
-  color: #c62828 !important;
+  color: #fca5a5 !important;
 }
 
 /* Estado vacío */
@@ -326,5 +476,18 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
 
   .search {
     max-width: 100%;
+  }
+
+  .view-toggle {
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+
+  .view-btn {
+    min-width: 104px;
+  }
+
+  .card-meta-grid {
+    grid-template-columns: 1fr;
   }
 }
