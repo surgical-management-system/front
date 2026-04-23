@@ -14,6 +14,13 @@
       <mat-icon>person_add</mat-icon>
       Nuevo usuario
     </button>
+
+    <div class="view-toggle" aria-label="Cambiar vista de listado">
+      <button mat-button class="view-btn" (click)="toggleViewMode()">
+        <mat-icon>{{ viewMode === 'table' ? 'view_module' : 'table_rows' }}</mat-icon>
+        {{ viewMode === 'table' ? 'Cards' : 'Lista' }}
+      </button>
+    </div>
   </div>
 
   <div class="table-wrapper" [class.loading]="isLoading">
@@ -24,6 +31,7 @@
       </div>
     }
 
+    @if (viewMode === 'table') {
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 tabla-usuarios">
       <!-- Username -->
       <ng-container matColumnDef="username">
@@ -113,6 +121,69 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+    } @else {
+      <div class="cards-grid">
+        @for (u of dataSource.filteredData; track trackByUserId($index, u)) {
+          <article class="usuario-card">
+            <header class="card-top">
+              <div class="card-user">
+                <mat-icon class="user-icon">person</mat-icon>
+                <span>{{ u.username || '-' }}</span>
+              </div>
+              <button mat-icon-button [matMenuTriggerFor]="menuCard" matTooltip="Opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuCard="matMenu">
+                <button mat-menu-item (click)="editarUsuario(u)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="toggleEstado(u)">
+                  <mat-icon>{{ u.enabled ? 'person_off' : 'person' }}</mat-icon>
+                  <span>{{ u.enabled ? 'Dar de baja' : 'Activar' }}</span>
+                </button>
+              </mat-menu>
+            </header>
+
+            <div class="card-name">{{ getFullName(u) }}</div>
+            <div class="card-email">{{ u.email || '-' }}</div>
+
+            <div class="card-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">Creado</span>
+                <span class="meta-value">{{ formatDate(u.createdTimestamp) }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Email verificado</span>
+                <span class="meta-value verify-value">
+                  <mat-icon [class.verified]="u.emailVerified" [class.not-verified]="!u.emailVerified">
+                    {{ u.emailVerified ? 'verified' : 'warning' }}
+                  </mat-icon>
+                  {{ u.emailVerified ? 'Sí' : 'No' }}
+                </span>
+              </div>
+            </div>
+
+            <footer class="card-chips">
+              <div class="chip-item">
+                <span class="chip-label">Rol</span>
+                <mat-chip class="chip-rol" [class.chip-admin]="hasRole(u, 'admin')" [class.chip-medico]="hasRole(u, 'personal_medico')">
+                  <mat-icon class="chip-icon">{{ getRolIcon(u) }}</mat-icon>
+                  {{ getRolLabel(u) }}
+                </mat-chip>
+              </div>
+              <div class="chip-item">
+                <span class="chip-label">Estado</span>
+                <mat-chip [class.chip-active]="u.enabled" [class.chip-inactive]="!u.enabled">
+                  <mat-icon class="chip-icon">{{ u.enabled ? 'check_circle' : 'cancel' }}</mat-icon>
+                  {{ u.enabled ? 'Activo' : 'Inactivo' }}
+                </mat-chip>
+              </div>
+            </footer>
+          </article>
+        }
+      </div>
+    }
 
     @if (dataSource.data.length === 0 && !isLoading) {
       <div class="empty-state">

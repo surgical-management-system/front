@@ -66,22 +66,8 @@
   margin-left: 4px;
 }
 
-.btn-crear {
-  background: #2346a6 !important;
-  color: #ffffff !important;
-  border-radius: 8px !important;
-  padding: 8px 16px !important;
-  font-weight: 500 !important;
-  box-shadow: none !important;
-  transition: background 0.2s ease !important;
-}
-
-.btn-crear:hover {
-  background: #0d5e56 !important;
-}
-
 .btn-crear mat-icon {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 
 .estado-filtros {

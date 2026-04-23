@@ -39,6 +39,7 @@ export class UsuariosList implements OnInit {
   pageSize: number = 16;
   page: number = 0;
   isLoading: boolean = false;
+  viewMode: 'table' | 'cards' = 'table';
 
   dataSource = new MatTableDataSource<IKeycloakUser>([]);
   displayedColumns: string[] = [
@@ -100,6 +101,14 @@ export class UsuariosList implements OnInit {
     } else {
       this.loadPage(this.page, this.pageSize);
     }
+  }
+
+  toggleViewMode() {
+    this.viewMode = this.viewMode === 'table' ? 'cards' : 'table';
+  }
+
+  trackByUserId(index: number, user: IKeycloakUser): string | number {
+    return user.id ?? index;
   }
 
   formatDate(timestamp?: number): string {
