@@ -1,14 +1,23 @@
 .layout {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+}
+
+app-slide-menu {
+  flex: 0 0 270px;
+  max-width: 270px;
 }
 
 .main-content {
-  min-height: calc(100vh - 70px);
-  margin: 0 auto; /* centra horizontalmente */
-  width: 100%; /* asegura que se adapte */
-  padding-right: 50px;
-  padding-left: 50px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  width: auto;
+  box-sizing: border-box;
+  padding: 0px 0px;
+  overflow-x: hidden;
 }
 
 
