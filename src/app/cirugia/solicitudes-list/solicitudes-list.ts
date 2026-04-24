@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +15,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { CirugiaService } from '../../core/services/cirugia.service';
 import { ICirugia } from '../../core/models/cirugia';
 import { IPaginatedResponse } from '../../core/models/api-response';
-import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { CirugiaDialog } from '../cirugia-dialog/cirugia-dialog';
 import { EquipoMedicoDialog } from '../equipo-medico-dialog/equipo-medico-dialog';
@@ -41,8 +40,12 @@ import { FinalizarCirugiaDialog } from '../finalizar-cirugia-dialog/finalizar-ci
     MatMenuModule,
   ],
 })
-export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SolicitudesListComponent implements OnInit {
   selectedEstado: string | null = null;
+  private estadoApiParam: string | undefined;
+  private searchApiParam: string | undefined;
+  sortActive = 'fechaInicio';
+  sortDirection: SortDirection = 'asc';
   viewMode: 'table' | 'cards' = 'table';
   displayedColumns: string[] = [
     'fechaInicio',
@@ -60,10 +63,17 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
   totalItems = 0;
   isLoading = false;
   private pageCache = new Map<string, { data: ICirugia[]; total: number }>();
+  private readonly sortFieldMap: Record<string, string> = {
+    fechaInicio: 'fechaHoraInicio',
+    pacienteNombre: 'paciente',
+    servicioNombre: 'servicio',
+    estado: 'estado',
+    tipo: 'tipo',
+    prioridad: 'prioridad',
+    quirofanoNombre: 'quirofano',
+  };
 
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  private paginatorSub?: Subscription;
 
   private cirugiaService = inject(CirugiaService);
   private dialog = inject(MatDialog);
@@ -74,33 +84,15 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
     this.loadPage(this.page, this.pageSize);
   }
 
-  ngAfterViewInit(): void {
-    // configurar sort por fecha + hora
-    this.dataSource.sortingDataAccessor = (item: any, prop: string) => {
-      if (prop === 'fechaInicio') {
-        return new Date(`${item.fechaInicio}T${item.horaInicio ?? '00:00:00'}`);
-      }
-      if (prop === 'horaInicio') {
-        return item.horaInicio;
-      }
-      return (item as any)[prop];
-    };
-
-    this.dataSource.sort = this.sort;
-
-    // default: ordenar por fecha ascendente
-    setTimeout(() => {
-      this.sort.active = 'fechaInicio';
-      this.sort.direction = 'asc';
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.paginatorSub?.unsubscribe();
-  }
-
-  loadPage(page: number, pageSize: number, estado?: string) {
-    const cacheKey = `${page}-${pageSize}-${estado || ''}`;
+  loadPage(
+    page: number,
+    pageSize: number,
+    estado: string | undefined = this.estadoApiParam,
+    search: string | undefined = this.searchApiParam
+  ) {
+    const sortKey = this.getBackendSortKey();
+    const orderKey = this.sortDirection || 'asc';
+    const cacheKey = `${page}-${pageSize}-${estado || ''}-${search || ''}-${sortKey}-${orderKey}`;
 
     // verificar si la página está en caché
     if (this.pageCache.has(cacheKey)) {
@@ -119,7 +111,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
 
     // si no está en caché, llamar al servidor
     this.isLoading = true;
-    this.cirugiaService.getCirugias(page, pageSize, estado).subscribe({
+    this.cirugiaService.getCirugias(page, pageSize, estado, search, sortKey, orderKey).subscribe({
       next: (resp: any) => {
         // Adaptar a la estructura real de la respuesta del backend
         const content = resp?.data?.contenido || [];
@@ -152,9 +144,23 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
+  onSortChange(sort: Sort) {
+    this.sortActive = sort.active;
+    this.sortDirection = sort.direction || 'asc';
+    this.pageCache.clear();
+    this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
+  }
+
+  private getBackendSortKey(): string {
+    return this.sortFieldMap[this.sortActive] ?? 'fechaHoraInicio';
+  }
+
 
   applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const normalizedValue = filterValue.trim();
+    this.searchApiParam = normalizedValue || undefined;
+    this.pageCache.clear();
+    this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
   }
 
   toggleViewMode() {
@@ -169,12 +175,13 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
     // Si el botón ya está seleccionado, deselecciona y quita el filtro
     if (this.selectedEstado === estado) {
       this.selectedEstado = null;
+      this.estadoApiParam = undefined;
       this.pageCache.clear();
-      this.loadPage(0, this.pageSize);
+      this.loadPage(0, this.pageSize, undefined, this.searchApiParam);
       return;
     }
     this.selectedEstado = estado;
-    let estadoParam = '';
+    let estadoParam: string | undefined;
     switch (estado) {
       case 'FINALIZADA':
         estadoParam = 'FINALIZADA';
@@ -189,14 +196,15 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
         estadoParam = 'EN_CURSO';
         break;
       default:
-        estadoParam = '';
+        estadoParam = undefined;
     }
+    this.estadoApiParam = estadoParam;
     this.pageCache.clear();
-    this.loadPage(0, this.pageSize, estadoParam);
+    this.loadPage(0, this.pageSize, estadoParam, this.searchApiParam);
   }
 
   onPage(event: PageEvent) {
-    this.loadPage(event.pageIndex, event.pageSize);
+    this.loadPage(event.pageIndex, event.pageSize, this.estadoApiParam, this.searchApiParam);
   }
 
   openCirugia(cirugia?: ICirugia) {
@@ -206,7 +214,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
       .subscribe((result) => {
         if (result) {
           this.pageCache.clear(); // limpiar caché cuando se modifica data
-          this.loadPage(this.page, this.pageSize);
+          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
         }
       });
   }
@@ -226,7 +234,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
       .subscribe((result) => {
         if (result) {
           this.pageCache.clear();
-          this.loadPage(this.page, this.pageSize);
+          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
         }
       });
   }
@@ -244,7 +252,7 @@ export class SolicitudesListComponent implements OnInit, AfterViewInit, OnDestro
         if (confirmed) {
           this.cirugiaService.deleteCirugia(cirugiaId).subscribe(() => {
             this.pageCache.clear(); // limpiar caché cuando se elimina
-            this.loadPage(this.page, this.pageSize);
+            this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
           });
         }
       });

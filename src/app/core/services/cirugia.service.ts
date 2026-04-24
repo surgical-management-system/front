@@ -18,10 +18,19 @@ export class CirugiaService extends BaseApiService {
     return this.put<IApiResponse<ICirugia>>(`/cirugias/${data.id}`, data);
   }
 
-  getCirugias(page = 0, pageSize = 16, estado?: string) {
+  getCirugias(page = 0, pageSize = 16, estado?: string, search?: string, sort?: string, order?: 'asc' | 'desc') {
     const params: any = { pagina: String(page), tamano: String(pageSize) };
     if (estado) {
       params.estado = estado;
+    }
+    if (search) {
+      params.search = search;
+    }
+    if (sort) {
+      params.sort = sort;
+    }
+    if (order) {
+      params.order = order;
     }
     return this.get<IPaginatedResponse<ICirugia>>('/cirugias', params);
   }
