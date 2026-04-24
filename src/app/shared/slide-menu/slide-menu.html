@@ -4,9 +4,9 @@
   <div class="sidebar-brand">
     <a routerLink="/home" class="brand-link">
       <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb"
-        >health_and_safety</mat-icon
+        ></mat-icon
       >
-      <span class="brand-text" style="color: #2563eb">DACS Frontend</span>
+      <span class="brand-text" style="color: #cbd5e1">DACS Frontend</span>
     </a>
   </div>
 
@@ -59,16 +59,12 @@
       </button>
     } @else {
       <div class="user-box" (click)="toggleUserMenu()">
-        <div class="avatar">{{ getFullName().charAt(0).toUpperCase() }}</div>
+        <div class="avatar">{{ getAvatarLetter() }}</div>
 
         <div class="user-details">
           <div class="name">{{ getFullName() }}</div>
-          <div class="role">{{ getUserRoles().join(', ') }}</div>
+          <div class="email">{{ getEmail() }}</div>
         </div>
-
-        <mat-icon fontSet="material-symbols-outlined" class="arrow" [class.rotated]="showUserMenu">
-          expand_more
-        </mat-icon>
       </div>
 
       @if (showUserMenu) {

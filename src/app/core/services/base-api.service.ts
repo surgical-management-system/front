@@ -147,6 +147,7 @@ export class BaseApiService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage: string = APP_MESSAGES.ERRORS.UNKNOWN;
     let errorCode = 'UNKNOWN_ERROR';
+    const backendMessage = error.error?.message || error.error?.description;
 
     if (error.error instanceof ErrorEvent) {
       // Error del cliente
@@ -160,27 +161,27 @@ export class BaseApiService {
           errorCode = 'NETWORK_ERROR';
           break;
         case 400:
-          errorMessage = error.error?.message || 'Solicitud inválida';
+          errorMessage = backendMessage || 'Solicitud inválida';
           errorCode = 'BAD_REQUEST';
           break;
         case 401:
-          errorMessage = APP_MESSAGES.ERRORS.UNAUTHORIZED;
+          errorMessage = backendMessage || APP_MESSAGES.ERRORS.UNAUTHORIZED;
           errorCode = 'UNAUTHORIZED';
           break;
         case 404:
-          errorMessage = APP_MESSAGES.ERRORS.NOT_FOUND;
+          errorMessage = backendMessage || APP_MESSAGES.ERRORS.NOT_FOUND;
           errorCode = 'NOT_FOUND';
           break;
         case 408:
-          errorMessage = APP_MESSAGES.ERRORS.TIMEOUT;
+          errorMessage = backendMessage || APP_MESSAGES.ERRORS.TIMEOUT;
           errorCode = 'TIMEOUT';
           break;
         case 500:
-          errorMessage = APP_MESSAGES.ERRORS.SERVER_ERROR;
+          errorMessage = backendMessage || APP_MESSAGES.ERRORS.SERVER_ERROR;
           errorCode = 'SERVER_ERROR';
           break;
         default:
-          errorMessage = error.error?.message || APP_MESSAGES.ERRORS.SERVER_ERROR;
+          errorMessage = backendMessage || APP_MESSAGES.ERRORS.SERVER_ERROR;
           errorCode = `HTTP_${error.status}`;
       }
     }

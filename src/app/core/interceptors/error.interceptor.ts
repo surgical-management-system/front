@@ -25,6 +25,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   private handleError(error: HttpErrorResponse): void {
     let errorMessage = 'Ha ocurrido un error inesperado';
     let errorTitle = 'Error';
+    const backendMessage = error.error?.message || error.error?.description;
 
     if (error.error instanceof ErrorEvent) {
       // Error del cliente
@@ -38,20 +39,20 @@ export class ErrorInterceptor implements HttpInterceptor {
           errorTitle = 'Error de Conexión';
           break;
         case 400:
-          errorMessage = error.error?.message || 'Solicitud inválida.';
+          errorMessage = backendMessage || 'Solicitud inválida.';
           errorTitle = 'Error de Validación';
           break;
         case 401:
-          errorMessage = 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
+          errorMessage = backendMessage || 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
           errorTitle = 'Sesión Expirada';
           void this.keycloakService.logout();
           break;
         case 403:
-          errorMessage = 'No tiene permisos para realizar esta acción.';
+          errorMessage = backendMessage || 'No tiene permisos para realizar esta acción.';
           errorTitle = 'Acceso Denegado';
           break;
         case 404:
-          errorMessage = 'El recurso solicitado no fue encontrado.';
+          errorMessage = backendMessage || 'El recurso solicitado no fue encontrado.';
           errorTitle = 'No Encontrado';
           break;
         case 408:
@@ -59,19 +60,19 @@ export class ErrorInterceptor implements HttpInterceptor {
           errorTitle = 'Tiempo Agotado';
           break;
         case 500:
-          errorMessage = 'Error interno del servidor. Intente más tarde.';
+          errorMessage = backendMessage || 'Error interno del servidor. Intente más tarde.';
           errorTitle = 'Error del Servidor';
           break;
         case 502:
-          errorMessage = 'El servidor no está disponible temporalmente.';
+          errorMessage = backendMessage || 'El servidor no está disponible temporalmente.';
           errorTitle = 'Servidor No Disponible';
           break;
         case 503:
-          errorMessage = 'El servicio está temporalmente fuera de línea.';
+          errorMessage = backendMessage || 'El servicio está temporalmente fuera de línea.';
           errorTitle = 'Servicio No Disponible';
           break;
         default:
-          errorMessage = error.error?.message || `Error ${error.status}: ${error.statusText}`;
+          errorMessage = backendMessage || `Error ${error.status}: ${error.statusText}`;
           errorTitle = 'Error del Servidor';
       }
     }

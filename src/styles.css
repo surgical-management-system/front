@@ -8,6 +8,15 @@ body {
   background: white;
 }
 
+body.home-page {
+  background: #1e3a8a;
+}
+
+body.home-page .layout,
+body.home-page .main-content {
+  background: #1e3a8a;
+}
+
 /* .mat-mdc-form-field-subscript-wrapper {
   display: none;
 } */

@@ -31,12 +31,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(public keycloakService: KeycloakService, private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
+    document.body.classList.add('home-page');
     this.checkLoginStatus();
     this.subscribeToUserProfile();
     this.loadEstadisticasGenerales();
   }
 
   ngOnDestroy(): void {
+    document.body.classList.remove('home-page');
     this.destroy$.next();
     this.destroy$.complete();
   }

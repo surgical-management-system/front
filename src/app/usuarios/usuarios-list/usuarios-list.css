@@ -8,6 +8,7 @@
   background: white;
 }
 
+
 .table-list-container .mat-mdc-header-cell {
   background: #1e3a8a;
   color: white;
@@ -41,7 +42,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
-  padding: 0 0 0 14px ;
+  padding: 0 14px 0 14px ;
 }
 
 .search {

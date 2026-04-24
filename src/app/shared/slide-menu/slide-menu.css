@@ -1,7 +1,7 @@
 .sidebar {
   top: 0;
   left: 0;
-  width: 270px;
+  width: 250px;
   height: 100vh;
   background:
     radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.16) 0%, transparent 38%),
@@ -18,14 +18,23 @@
 .sidebar-brand .brand-link {
   display: flex;
   align-items: center;
+  gap: 10px;
   font-weight: bold;
-  padding-top: 25px;
-  padding-bottom: 25px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   padding-left: 15px;
   text-decoration: none;
   color: #dbeafe;
   font-size: 1.85rem;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.01em;
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.95;
 }
 
 .sidebar-nav {
@@ -37,34 +46,38 @@
 }
 
 .nav-link {
-  padding: 14px 16px;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap:16px;
   text-decoration: none;
   color: #cbd5e1;
   cursor: pointer;
-  font: 500 16px 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   border: 1px solid transparent;
-  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .nav-link:hover {
-  background: rgba(148, 163, 184, 0.14);
-  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.08);
+  border-color: rgba(148, 163, 184, 0.12);
   transform: translateX(2px);
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-  color: #ffffff;
-  border-color: rgba(191, 219, 254, 0.4);
-  /* box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35); */
+  background: rgba(37, 99, 235, 0.12);
+  color: #eff6ff;
+  border-color: rgba(96, 165, 250, 0.24);
+  box-shadow: inset 3px 0 0 #60a5fa;
+  border-radius: 0 10px 10px 0;
 }
 
 .nav-link.active .mat-icon {
-  color: #ffffff !important;
+  color: #93c5fd !important;
 }
 
 .nav-link .mat-icon {
@@ -97,9 +110,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(15, 23, 42, 0.65);
-  padding: 12px;
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.45);
+  padding: 12px 14px;
+  border-radius: 14px;
   cursor: pointer;
   transition: 0.2s;
   border: 1px solid rgba(148, 163, 184, 0.2);
@@ -115,24 +128,29 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+  background: #2563eb;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 600;
   font-size: 18px;
+  flex: 0 0 42px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .user-details .name {
   font-weight: 600;
   font-size: 15px;
   color: #f8fafc;
+  font-family: 'Poppins', sans-serif;
 }
 
-.user-details .role {
+.user-details .email {
   font-size: 12px;
   color: #94a3b8;
+  font-family: 'Poppins', sans-serif;
+  word-break: break-word;
 }
 
 /* Dropdown */
@@ -157,6 +175,9 @@
   color: #cbd5e1;
   cursor: pointer;
   border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .dropdown-item:hover {

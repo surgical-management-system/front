@@ -77,6 +77,11 @@ export class SlideMenuComponent implements OnInit, OnDestroy {
     return this.keycloakService.getEmail();
   }
 
+  getAvatarLetter(): string {
+    const fullName = this.getFullName().trim();
+    return fullName ? fullName.charAt(0).toUpperCase() : 'U';
+  }
+
   getUsername(): string {
     return this.keycloakService.getUsername();
   }
