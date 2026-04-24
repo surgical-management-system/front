@@ -1,134 +1,53 @@
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  overflow-y: auto !important;
+}
 
-/* disposición: dos columnas para fecha+hora, resto en columna */
-.row.two-columns {
+.dialog-title {
+  margin: 0;
+  padding: 18px 24px 8px;
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin-bottom: 8px;
-}
-
-/* fecha ocupa el espacio restante */
-.half-width {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-/* hora con ancho fijo menor */
-.time-width {
-  flex: 0 0 120px;
-  min-width: 100px;
-}
-
-/* Botón externo del selector de turnos */
-.turno-button {
-  flex: 0 0 auto;
-  height: 48px; /* match compact input height */
-  width: 48px;
-  box-sizing: border-box;
-  border: 1px solid rgba(0,0,0,0.38); /* similar al borde de outline */
-  border-radius: 4px;
-  background: #fff;
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
-}
-
-.turno-button:hover {
-  background: #f6f6f6;
-}
-
-.turno-button:disabled {
-  background: #f5f5f5;
-  border-color: rgba(0,0,0,0.12);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.turno-button:disabled mat-icon {
-  color: rgba(0,0,0,0.26);
-}
-
-.row.two-columns.disabled {
-  opacity: 0.7;
-}
-
-.turno-button:focus-visible {
-  outline: 2px solid rgba(25,118,210,0.6);
-  outline-offset: 1px;
-}
-
-/* campos que deben ocupar el ancho total (ambas columnas) */
-.full-width {
-  width: 100%;
-  box-sizing: border-box;
-  display: block;
-}
-
-/* responsive: en pantallas pequeñas apilar fecha/hora */
-@media (max-width: 600px) {
-  .row.two-columns {
-    flex-direction: column;
-  }
-  .time-width {
-    flex: 1 1 0;
-    min-width: 0;
-  }
-}
-
-/* Fuente general moderna */
-mat-dialog-content, h2[mat-dialog-title] {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Fondo general y bordes redondeados */
-::ng-deep .mat-mdc-dialog-container {
-  border-radius: 24px !important;
-  overflow: hidden !important;
-}
-mat-dialog-content.dialog-content {
+  gap: 10px;
+  color: #1f2937;
+  font-size: 2rem;
+  font-weight: 500;
   background: #fff;
-  padding: 0 16px 8px 16px;
-  /* restored previous fixed width limits */
-  min-width: 440px;
-  max-width: 620px;
-  max-height: 80vh;
+}
+
+.title-icon {
+  color: #6a60ff;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.dialog-content {
+  width: 100%;
+  padding: 4px 24px 16px;
+  overflow-y: auto;
+  max-height: 76vh;
   box-sizing: border-box;
 }
 
-/* ==================== TABS ==================== */
 .cirugia-tabs {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 ::ng-deep .cirugia-tabs .mat-mdc-tab-header {
-  margin-bottom: 8px;
-}
-
-::ng-deep .cirugia-tabs .mat-mdc-tab {
-  min-width: 120px;
+  margin-bottom: 10px;
 }
 
 ::ng-deep .cirugia-tabs .mat-mdc-tab-labels {
-  gap: 8px;
+  gap: 10px;
 }
 
-.tab-content {
-  padding: 12px 0 8px 0;
-  /* allow content to size naturally and scroll if it exceeds the available dialog height */
-  min-height: 0;
-  max-height: calc(80vh - 140px);
-  overflow-y: auto;
-}
-
-.tab-content form {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+::ng-deep .cirugia-tabs .mat-mdc-tab {
+  min-width: 140px;
 }
 
 .tab-disabled {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .tab-lock-icon {
@@ -139,139 +58,202 @@ mat-dialog-content.dialog-content {
   opacity: 0.6;
 }
 
-/* ==================== EQUIPO MÉDICO TAB ==================== */
+.tab-content {
+  padding: 4px 0 2px;
+  max-height: calc(76vh - 140px);
+  overflow-y: auto;
+}
+
+.tab-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.row.two-columns {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.half-width {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.time-width {
+  flex: 0 0 130px;
+  min-width: 110px;
+}
+
+.row.two-columns.disabled {
+  opacity: 0.72;
+}
+
+.turno-button {
+  flex: 0 0 auto;
+  height: 56px;
+  width: 56px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #9ca3af;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+}
+
+.turno-button:hover {
+  background: #f9fafb;
+}
+
+.turno-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.turno-button:focus-visible {
+  outline: 2px solid #9ca3af;
+  outline-offset: 1px;
+}
+
+::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: #c9cdd4;
+  --mdc-outlined-text-field-hover-outline-color: #9ca3af;
+  --mdc-outlined-text-field-focus-outline-color: #6b7280;
+  --mdc-outlined-text-field-label-text-color: #6b7280;
+  --mdc-outlined-text-field-hover-label-text-color: #4b5563;
+  --mdc-outlined-text-field-focus-label-text-color: #374151;
+  --mdc-theme-primary: #374151;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: #fff;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep input[matinput],
+::ng-deep .mat-mdc-select-value,
+::ng-deep .mat-mdc-select-placeholder {
+  color: #111827;
+}
+
 .equipo-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-/* ==================== EQUIPO MÉDICO - HEADER ==================== */
 .equipo-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  margin-bottom: 16px;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
 }
 
 .equipo-header-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .equipo-header-icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
   color: #6a60ff;
-  opacity: 0.8;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
 }
 
 .equipo-title {
-  margin: 0 0 2px 0;
+  margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #1f2937;
 }
 
 .equipo-subtitle {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.5);
+  margin: 2px 0 0;
+  color: #6b7280;
   font-size: 12px;
 }
 
 .btn-agregar {
-  border-radius: 20px !important;
-  padding: 0 20px !important;
+  border-radius: 8px !important;
+  padding: 0 14px !important;
 }
 
-.btn-agregar mat-icon {
-  margin-right: 6px;
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-/* ==================== EQUIPO MÉDICO - EMPTY STATE ==================== */
 .equipo-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  padding: 34px 20px;
   text-align: center;
-  background: #fff;
-  border-radius: 16px;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
 }
 
 .equipo-empty-icon {
-  width: 64px;
-  height: 64px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  background: rgba(106, 96, 255, 0.1);
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .equipo-empty-icon mat-icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
   color: #6a60ff;
 }
 
 .equipo-empty h4 {
-  margin: 0 0 6px 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
+  margin: 0 0 4px;
+  color: #1f2937;
 }
 
 .equipo-empty p {
   margin: 0;
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.5);
+  color: #6b7280;
 }
 
-/* ==================== EQUIPO MÉDICO - LISTA DE TARJETAS ==================== */
 .equipo-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 320px;
+  max-height: 300px;
   overflow-y: auto;
-  padding-right: 4px;
 }
 
 .equipo-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.equipo-card:hover {
-  border-color: rgba(106, 96, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(106, 96, 255, 0.1);
 }
 
 .equipo-card-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6a60ff 0%, #8b7fff 100%);
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -279,10 +261,7 @@ mat-dialog-content.dialog-content {
 }
 
 .equipo-card-avatar mat-icon {
-  color: #fff;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  color: #6a60ff;
 }
 
 .equipo-card-info {
@@ -295,7 +274,7 @@ mat-dialog-content.dialog-content {
 .equipo-card-name {
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: #1f2937;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -303,7 +282,7 @@ mat-dialog-content.dialog-content {
 
 .equipo-card-legajo {
   font-size: 11px;
-  color: rgba(0, 0, 0, 0.45);
+  color: #6b7280;
   margin-top: 2px;
 }
 
@@ -316,17 +295,13 @@ mat-dialog-content.dialog-content {
   width: 100%;
 }
 
-::ng-deep .equipo-card-rol .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
 ::ng-deep .equipo-card-rol .mat-mdc-text-field-wrapper {
   padding: 0 12px !important;
 }
 
 ::ng-deep .equipo-card-rol .mat-mdc-form-field-flex {
-  height: 40px !important;
   min-height: 40px !important;
+  height: 40px !important;
 }
 
 ::ng-deep .equipo-card-rol .mat-mdc-floating-label {
@@ -338,28 +313,16 @@ mat-dialog-content.dialog-content {
 }
 
 .equipo-card-delete {
-  flex-shrink: 0;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  opacity: 0.55;
 }
 
 .equipo-card:hover .equipo-card-delete {
   opacity: 1;
 }
 
-.equipo-card-delete mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
-/* ==================== EQUIPO MÉDICO - FOOTER ==================== */
 .equipo-footer {
-  display: flex;
-  justify-content: flex-start;
+  border-top: 1px solid #e5e7eb;
   padding-top: 12px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .equipo-count {
@@ -367,91 +330,93 @@ mat-dialog-content.dialog-content {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #4caf50;
+  color: #059669;
   font-weight: 500;
 }
 
-.equipo-count mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-}
-
-/* Título con fondo y bordes arriba */
-h2[mat-dialog-title] {
-  background: #6a60ff;
-  color: #fff;
-  margin: 0;
-  padding: 12px 0 16px 0;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 400;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-}
-
-/* Contenedor de los campos */
-.content-dialog, form {
-  padding-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-mat-form-field.full-width, mat-form-field.half-width, mat-form-field.time-width {
+.dialog-actions {
+  padding: 16px 24px 20px;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
   background: #ffffff;
-  border-radius: 18px;
 }
 
-mat-label {
-  color: #6a60ff;
-  font-weight: 500;
-}
-
-/* Inputs y selects más compactos */
-::ng-deep .mat-mdc-form-field-flex {
-  /* slightly more compact form fields so more fit vertically */
-  min-height: 42px !important;
-  height: 48px !important;
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-}
-
-input[matInput], mat-select {
-  padding: 0px 0 !important;
-  font-size: 0.98rem;
-}
-
-mat-error {
-  font-size: 0.85rem;
-  color: #e53935;
-}
-
-mat-dialog-actions {
-  padding: 8px 16px 16px 16px;
-}
-
-button[mat-button], button[mat-raised-button] {
-  min-width: 100px;
-  font-size: 1rem;
-  border-radius: 20px;
-  margin-left: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-
-button[mat-raised-button] {
-  background: #6a60ff;
-  color: #fff;
+.dialog-actions button {
+  min-width: 116px;
+  height: 40px;
+  border-radius: 10px;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(106, 96, 255, 0.1);
+  letter-spacing: 0.01em;
+  transition: all 0.18s ease;
 }
 
-button[mat-raised-button]:hover {
-  background: #5548d9;
+.save-button {
+  box-shadow: 0 6px 14px rgba(106, 96, 255, 0.25) !important;
 }
 
-button[mat-button]:hover {
-  background: #f0f0f7;
+.save-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(106, 96, 255, 0.3) !important;
 }
 
+.save-button:active {
+  transform: translateY(0);
+}
 
+.save-button:disabled {
+  box-shadow: none !important;
+}
+
+.dialog-actions button[mat-button] {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.dialog-actions button[mat-button]:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.dialog-actions button[mat-button]:focus-visible,
+.save-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .dialog-content {
+    padding: 4px 16px 12px;
+  }
+
+  .dialog-title {
+    padding: 14px 16px 8px;
+    font-size: 1.5rem;
+  }
+
+  .dialog-actions {
+    padding: 12px 16px 16px;
+  }
+
+  .row.two-columns {
+    flex-direction: column;
+  }
+
+  .time-width {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .equipo-card {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .equipo-card-info {
+    flex: 1 1 auto;
+  }
+
+  .equipo-card-rol {
+    flex-basis: 100%;
+  }
+}

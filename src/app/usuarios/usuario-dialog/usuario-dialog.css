@@ -6,6 +6,24 @@
   max-height: 95vh;
 }
 
+h2[mat-dialog-title] {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mat-mdc-dialog-actions {
+  padding-top: 0px !important;
+  margin-top: 0 !important;
+}
+
+.mat-mdc-dialog-content {
+  padding-bottom: 10px !important;
+
+}
+
 .title-icon {
   vertical-align: middle;
   margin-right: 8px;
@@ -80,7 +98,7 @@
   color: #6a60ff;
 }
 
-mat-dialog-actions {
+::ng-deep .mat-mdc-dialog-actions {
   padding: 16px 24px;
   gap: 8px;
 }
