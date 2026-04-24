@@ -13,7 +13,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return from(this.keycloakService.getToken()).pipe(
+    return from(this.keycloakService.getValidToken()).pipe(
       switchMap(token => {
         if (token && !this.isAssetRequest(request.url)) {
           const authRequest = request.clone({

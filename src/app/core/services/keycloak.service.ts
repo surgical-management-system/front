@@ -46,6 +46,24 @@ export class KeycloakService {
   }
 
   /**
+   * Obtiene un token válido, renovándolo si está próximo a expirar.
+   */
+  async getValidToken(minValiditySeconds = 30): Promise<string | null> {
+    if (!this.isLoggedIn()) {
+      return null;
+    }
+
+    try {
+      await this.keycloak.updateToken(minValiditySeconds);
+      return await this.keycloak.getToken();
+    } catch (error) {
+      console.error('Error renovando token de Keycloak:', error);
+      await this.logout();
+      return null;
+    }
+  }
+
+  /**
    * Obtiene el perfil del usuario actual
    */
   getUserProfile(): KeycloakProfile | null {

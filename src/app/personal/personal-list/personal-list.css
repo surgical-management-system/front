@@ -13,10 +13,13 @@
   background: #1e3a8a;
   color: white;
   font-weight: 600;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .table-list-container .mat-mdc-row {
   transition: background 0.15s ease;
+  height: 40px;
 }
 
 .table-list-container .mat-mdc-row:nth-child(odd) {
@@ -32,7 +35,12 @@
 }
 
 .table-list-container .mat-mdc-cell {
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f0f0f0;
+  padding-top: 3px;
+  padding-bottom: 2px;
+  font-size: 14px;
+  color: #333;
+  height: 32px;
 }
 
 .toolbar {
@@ -98,15 +106,6 @@
   box-shadow: none !important;
 }
 
-/* Cells */
-.table-list-container .mat-mdc-cell {
-  border-bottom: 1px solid #f0f0f0;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  font-size: 14px;
-  color: #333;
-}
-
 /* Legajo Badge */
 .legajo-badge {
   background: #e8e6ff;
@@ -147,17 +146,17 @@
 }
 
 /* Chips de Rol */
-.rol-medico { background-color: #e3f2fd !important; color: #1565c0 !important; }
-.rol-enfermero { background-color: #f3e5f5 !important; color: #7b1fa2 !important; }
-.rol-anestesista { background-color: #fff3e0 !important; color: #e65100 !important; }
-.rol-instrumentista { background-color: #e8f5e9 !important; color: #2e7d32 !important; }
-.rol-default { background-color: #f5f5f5 !important; color: #616161 !important; }
+.rol-medico { background-color: #e3f2fd !important; color: #1565c0 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.rol-enfermero { background-color: #f3e5f5 !important; color: #7b1fa2 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.rol-anestesista { background-color: #fff3e0 !important; color: #e65100 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.rol-instrumentista { background-color: #e8f5e9 !important; color: #2e7d32 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.rol-default { background-color: #f5f5f5 !important; color: #616161 !important; padding: 2px 8px !important; font-size: 12px !important; }
 
 /* Chips de Estado */
-.estado-activo { background-color: #e8f5e9 !important; color: #2e7d32 !important; }
-.estado-inactivo { background-color: #ffebee !important; color: #c62828 !important; }
-.estado-licencia { background-color: #fff8e1 !important; color: #f57f17 !important; }
-.estado-default { background-color: #f5f5f5 !important; color: #616161 !important; }
+.estado-activo { background-color: #e8f5e9 !important; color: #2e7d32 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.estado-inactivo { background-color: #ffebee !important; color: #c62828 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.estado-licencia { background-color: #fff8e1 !important; color: #f57f17 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.estado-default { background-color: #f5f5f5 !important; color: #616161 !important; padding: 2px 8px !important; font-size: 12px !important; }
 
 /* Menu */
 .menu-delete { color: #d32f2f !important; }

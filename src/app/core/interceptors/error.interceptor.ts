@@ -44,7 +44,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         case 401:
           errorMessage = 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
           errorTitle = 'Sesión Expirada';
-          this.keycloakService.logout();
+          void this.keycloakService.logout();
           break;
         case 403:
           errorMessage = 'No tiene permisos para realizar esta acción.';
