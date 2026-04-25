@@ -10,6 +10,7 @@ import { API_ENDPOINTS } from '../constants/api-endpoints';
  */
 export interface IKeycloakUser {
   id: string;
+  legajo?: string;
   username: string;
   email: string;
   firstName: string;
@@ -34,6 +35,7 @@ export interface IKeycloakCredential {
  * Interfaz para crear usuario en Keycloak
  */
 export interface IKeycloakUserCreate {
+  legajo: string;
   username: string;
   email: string;
   firstName: string;

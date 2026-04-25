@@ -1,11 +1,11 @@
 <div class="table-list-container">
   <div class="toolbar">
     <mat-form-field class="search" appearance="outline">
-      <mat-label>Buscar usuario</mat-label>
+      <mat-label>Buscar legajo</mat-label>
       <input
         matInput
         (keyup)="applyFilter($any($event.target).value)"
-        placeholder="Usuario, email, nombre..."
+        placeholder="Legajo, email, nombre..."
       />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
@@ -34,12 +34,11 @@
     @if (viewMode === 'table') {
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 tabla-usuarios">
       <!-- Username -->
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+      <ng-container matColumnDef="legajo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Legajo</th>
         <td mat-cell *matCellDef="let u">
           <div class="user-cell">
-            <mat-icon class="user-icon">person</mat-icon>
-            <span>{{ u.username }}</span>
+            <span>{{ u.legajo || u.username }}</span>
           </div>
         </td>
       </ng-container>
@@ -128,7 +127,7 @@
             <header class="card-top">
               <div class="card-user">
                 <mat-icon class="user-icon">person</mat-icon>
-                <span>{{ u.username || '-' }}</span>
+                <span>{{ u.legajo || u.username || '-' }}</span>
               </div>
               <button mat-icon-button [matMenuTriggerFor]="menuCard" matTooltip="Opciones">
                 <mat-icon>more_vert</mat-icon>
@@ -188,7 +187,7 @@
     @if (dataSource.data.length === 0 && !isLoading) {
       <div class="empty-state">
         <mat-icon>people_outline</mat-icon>
-        <p>No se encontraron usuarios</p>
+        <p>No se encontraron legajos</p>
       </div>
     }
 

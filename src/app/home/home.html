@@ -128,23 +128,6 @@
         </mat-tab>
       </mat-tab-group>
     </div>
-
-    <!-- Información de roles del usuario -->
-    <div class="user-roles">
-      <h4>Roles asignados:</h4>
-      <div class="roles-list">
-        @for (role of keycloakService.getUserRoles(); track role) {
-          <span
-            class="role-badge"
-            [class.role-a]="role === 'ROLE-A'"
-            [class.role-b]="role === 'ROLE-B'"
-            [class.other-role]="role !== 'ROLE-A' && role !== 'ROLE-B'"
-          >
-            {{ role }}
-          </span>
-        }
-      </div>
-    </div>
   }
 
   <div class="footer">

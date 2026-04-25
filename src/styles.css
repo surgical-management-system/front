@@ -147,3 +147,31 @@ mat-form-field.search .mat-form-field-subscript-wrapper {
   border-bottom-right-radius: 2px !important;
   overflow: hidden !important;
 }
+
+/* Error snackbar popup */
+.error-snackbar,
+.error-snackbar.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #dc2626;
+  --mat-snack-bar-button-color: #ffffff;
+  color: #ffffff !important;
+}
+
+.error-snackbar .mdc-snackbar__surface,
+.error-snackbar.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.error-snackbar .mdc-snackbar__label,
+.error-snackbar.mat-mdc-snack-bar-container .mdc-snackbar__label,
+.error-snackbar .mat-mdc-snack-bar-label,
+.error-snackbar.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: #ffffff !important;
+}
+
+.error-snackbar .mat-mdc-snack-bar-action,
+.error-snackbar.mat-mdc-snack-bar-container .mat-mdc-snack-bar-action,
+.error-snackbar .mat-mdc-button,
+.error-snackbar.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: #ffffff !important;
+}

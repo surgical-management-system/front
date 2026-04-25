@@ -9,8 +9,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UsuarioService, IKeycloakUserCreate } from '../../core/services/usuario.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { APP_CONSTANTS } from '../../core/constants/app-constants';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -26,6 +28,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
     MatSelectModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   templateUrl: './usuario-dialog.html',
   styleUrl: './usuario-dialog.css'
@@ -47,12 +50,13 @@ export class UsuarioDialogComponent {
     private usuarioService: UsuarioService,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.isEditMode = !!data?.id;
     
     this.form = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      legajo: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -67,7 +71,7 @@ export class UsuarioDialogComponent {
     // Si es edición, cargar datos
     if (this.isEditMode && data) {
       this.form.patchValue({
-        username: data.username,
+        legajo: data.legajo || data.username,
         email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -75,8 +79,8 @@ export class UsuarioDialogComponent {
         enabled: data.enabled,
         emailVerified: data.emailVerified,
       });
-      // Deshabilitar username en edición
-      this.form.get('username')?.disable();
+      // Deshabilitar legajo en edición
+      this.form.get('legajo')?.disable();
     }
   }
 
@@ -121,7 +125,8 @@ export class UsuarioDialogComponent {
     const formValue = this.form.value;
 
     const userData: IKeycloakUserCreate = {
-      username: formValue.username,
+      legajo: formValue.legajo,
+      username: formValue.legajo,
       email: formValue.email,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
@@ -141,7 +146,7 @@ export class UsuarioDialogComponent {
         this.dialogRef.close(response);
       },
       error: (error) => {
-        console.error('Error al crear usuario:', error);
+        this.showError(error, 'Unable to create user.');
         this.isLoading = false;
       }
     });
@@ -153,6 +158,8 @@ export class UsuarioDialogComponent {
 
     const userData: any = {
       id: this.data.id,
+      legajo: formValue.legajo,
+      username: formValue.legajo,
       email: formValue.email,
       firstName: formValue.firstName,
       lastName: formValue.lastName,
@@ -176,7 +183,7 @@ export class UsuarioDialogComponent {
         this.dialogRef.close(response);
       },
       error: (error) => {
-        console.error('Error al actualizar usuario:', error);
+        this.showError(error, 'Unable to update user.');
         this.isLoading = false;
       }
     });
@@ -184,5 +191,21 @@ export class UsuarioDialogComponent {
 
   cancelar() {
     this.dialogRef.close();
+  }
+
+  private showError(error: any, fallbackMessage: string) {
+    const message =
+      error?.errorDescription ||
+      error?.description ||
+      error?.error?.description ||
+      error?.error?.message ||
+      fallbackMessage;
+
+    this.snackBar.open(message, 'Close', {
+      duration: APP_CONSTANTS.TIMEOUTS.TOAST_DURATION,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['error-snackbar'],
+    });
   }
 }

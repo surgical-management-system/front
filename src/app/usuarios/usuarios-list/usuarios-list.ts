@@ -12,8 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { UsuarioService, IKeycloakUser } from '../../core/services/usuario.service';
-import { UsuarioDialogComponent } from '../usuario-dialog/usuario-dialog';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { UsuarioDialogComponent } from '../usuario-dialog/usuario-dialog';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -43,7 +43,7 @@ export class UsuariosList implements OnInit {
 
   dataSource = new MatTableDataSource<IKeycloakUser>([]);
   displayedColumns: string[] = [
-    'username',
+    'legajo',
     'email',
     'nombre',
     'rol',
@@ -125,6 +125,10 @@ export class UsuariosList implements OnInit {
     return parts.length > 0 ? parts.join(' ') : '-';
   }
 
+  getLegajo(user: IKeycloakUser): string {
+    return user.legajo || user.username || '-';
+  }
+
   hasRole(user: IKeycloakUser, role: string): boolean {
     return user.roles?.includes(role) ?? false;
   }
@@ -185,7 +189,7 @@ export class UsuariosList implements OnInit {
     const confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: `Confirmar ${accion}`,
-        message: `¿Estás seguro de que deseas ${accion} al usuario "${user.username}"?`,
+        message: `¿Estás seguro de que deseas ${accion} al usuario "${this.getLegajo(user)}"?`,
       },
     });
 

@@ -5,15 +5,15 @@
 
 <mat-dialog-content class="dialog-content">
   <form [formGroup]="form" class="form-grid">
-    <!-- Username -->
+    <!-- Legajo -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nombre de usuario</mat-label>
-      <input matInput formControlName="username" placeholder="ej: jperez" />
+      <mat-label>Legajo</mat-label>
+      <input matInput formControlName="legajo" placeholder="ej: 12345" />
       <mat-icon matPrefix>account_circle</mat-icon>
-      @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
-        <mat-error>El nombre de usuario es requerido</mat-error>
+      @if (form.get('legajo')?.hasError('required') && form.get('legajo')?.touched) {
+        <mat-error>El legajo es requerido</mat-error>
       }
-      @if (form.get('username')?.hasError('minlength')) {
+      @if (form.get('legajo')?.hasError('minlength')) {
         <mat-error>Mínimo 3 caracteres</mat-error>
       }
     </mat-form-field>
