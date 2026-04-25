@@ -27,27 +27,33 @@
       Urgencias
     </a>
 
-    <a routerLink="/personal" routerLinkActive="active" class="nav-link">
-      <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">groups</mat-icon>
-      Personal
-    </a>
+    @if (!hasRole('personal_medico')) {
+      <a routerLink="/personal" routerLinkActive="active" class="nav-link">
+        <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">groups</mat-icon>
+        Personal
+      </a>
+    }
 
     <a routerLink="/insumos" routerLinkActive="active" class="nav-link">
       <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">inventory_2</mat-icon>
       Insumos
     </a>
 
-    <a routerLink="/paciente" routerLinkActive="active" class="nav-link">
-      <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">monitor_heart</mat-icon>
-      Pacientes
-    </a>
+    @if (!hasRole('personal_medico')) {
+      <a routerLink="/paciente" routerLinkActive="active" class="nav-link">
+        <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">monitor_heart</mat-icon>
+        Pacientes
+      </a>
+    }
 
-    <a routerLink="/usuarios" routerLinkActive="active" class="nav-link">
-      <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb"
-        >manage_accounts</mat-icon
-      >
-      Usuarios
-    </a>
+    @if (!hasRole('personal_medico')) {
+      <a routerLink="/usuarios" routerLinkActive="active" class="nav-link">
+        <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb"
+          >manage_accounts</mat-icon
+        >
+        Usuarios
+      </a>
+    }
   </nav>
 
   <!-- User -->

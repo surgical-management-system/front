@@ -19,6 +19,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { CirugiaDialog } from '../cirugia-dialog/cirugia-dialog';
 import { EquipoMedicoDialog } from '../equipo-medico-dialog/equipo-medico-dialog';
 import { FinalizarCirugiaDialog } from '../finalizar-cirugia-dialog/finalizar-cirugia-dialog';
+import { KeycloakService } from '../../core/services/keycloak.service';
 
 @Component({
   selector: 'app-solicitudes-list',
@@ -77,6 +78,7 @@ export class SolicitudesListComponent implements OnInit {
 
   private cirugiaService = inject(CirugiaService);
   private dialog = inject(MatDialog);
+  private keycloakService = inject(KeycloakService);
 
   constructor() {}
 
@@ -165,6 +167,10 @@ export class SolicitudesListComponent implements OnInit {
 
   toggleViewMode() {
     this.viewMode = this.viewMode === 'table' ? 'cards' : 'table';
+  }
+
+  canCreateCirugia(): boolean {
+    return !this.keycloakService.hasRole('personal_medico');
   }
 
   trackByCirugiaId(index: number, cirugia: ICirugia): number {

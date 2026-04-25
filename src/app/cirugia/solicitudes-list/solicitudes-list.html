@@ -12,12 +12,14 @@
         />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
-      <div class="btn-crear-wrapper">
-        <button mat-raised-button class="btn-crear" (click)="openCirugia()">
-          <mat-icon>add_circle</mat-icon>
-          Nueva cirugía
-        </button>
-      </div>
+      @if (canCreateCirugia()) {
+        <div class="btn-crear-wrapper">
+          <button mat-raised-button class="btn-crear" (click)="openCirugia()">
+            <mat-icon>add_circle</mat-icon>
+            Nueva cirugía
+          </button>
+        </div>
+      }
       <div class="estado-filtros">
         <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'FINALIZADA'}" (click)="filtrarPorEstado('FINALIZADA')">
           <mat-icon>check_circle</mat-icon> Finalizada
