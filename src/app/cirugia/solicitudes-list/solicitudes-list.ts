@@ -229,6 +229,7 @@ export class SolicitudesListComponent implements OnInit {
         data: { cirugia },
         width: '600px',
         maxHeight: '90vh',
+        panelClass: 'finalizar-cirugia-dialog-panel',
       })
       .afterClosed()
       .subscribe((result) => {

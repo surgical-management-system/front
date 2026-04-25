@@ -1,99 +1,101 @@
-<h2 mat-dialog-title>
+<h2 mat-dialog-title class="dialog-title">
   <mat-icon class="title-icon">check_circle</mat-icon>
   Finalizar cirugía
 </h2>
 
 <mat-dialog-content class="dialog-content">
-  <!-- Info de la cirugía -->
-  <div class="cirugia-info">
-    <div class="info-row">
-      <span class="info-label">Paciente:</span>
-      <span class="info-value">{{ data.cirugia.pacienteNombre }}</span>
+  <div class="content-dialog">
+    <!-- Info de la cirugía -->
+    <div class="cirugia-info">
+      <div class="info-row">
+        <span class="info-label">Paciente:</span>
+        <span class="info-value">{{ data.cirugia.pacienteNombre }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Fecha:</span>
+        <span class="info-value">{{ data.cirugia.fechaInicio }}</span>
+      </div>
     </div>
-    <div class="info-row">
-      <span class="info-label">Fecha:</span>
-      <span class="info-value">{{ data.cirugia.fechaInicio }}</span>
-    </div>
-  </div>
 
-  <div class="section-divider"></div>
+    <div class="section-divider"></div>
 
-  <!-- Formulario para agregar intervención -->
-  <div class="form-section">
-    <h3 class="section-title">
-      {{ editingIndex !== null ? 'Editar intervención' : 'Agregar intervención' }}
-    </h3>
-    <form [formGroup]="form" novalidate class="intervencion-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Intervención</mat-label>
-        <mat-select formControlName="tipoIntervencionId">
-          <mat-option *ngFor="let tipo of tiposIntervencion" [value]="tipo.id">
-            {{ tipo.nombre }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('tipoIntervencionId')?.hasError('required')">
-          Selecciona una intervención
-        </mat-error>
-      </mat-form-field>
+    <!-- Formulario para agregar intervención -->
+    <div class="form-section">
+      <h3 class="section-title">
+        {{ editingIndex !== null ? 'Editar intervención' : 'Agregar intervención' }}
+      </h3>
+      <form [formGroup]="form" novalidate class="intervencion-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Intervención</mat-label>
+          <mat-select formControlName="tipoIntervencionId">
+            <mat-option *ngFor="let tipo of tiposIntervencion" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('tipoIntervencionId')?.hasError('required')">
+            Selecciona una intervención
+          </mat-error>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Observaciones</mat-label>
-        <textarea matInput 
-                  formControlName="observaciones" 
-                  rows="2"
-                  placeholder="Descripción de lo realizado..."></textarea>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput
+                    formControlName="observaciones"
+                    rows="2"
+                    placeholder="Descripción de lo realizado..."></textarea>
+        </mat-form-field>
 
-      <div class="form-actions">
-        @if (editingIndex !== null) {
-          <button mat-button type="button" (click)="cancelarEdicion()">
-            Cancelar
+        <div class="form-actions">
+          @if (editingIndex !== null) {
+            <button mat-button type="button" (click)="cancelarEdicion()">
+              Cancelar
+            </button>
+          }
+          <button mat-raised-button color="primary" type="button" (click)="agregarIntervencion()" class="btn-agregar">
+            <mat-icon>{{ editingIndex !== null ? 'save' : 'add' }}</mat-icon>
+            {{ editingIndex !== null ? 'Guardar cambios' : 'Agregar' }}
           </button>
-        }
-        <button mat-raised-button color="primary" type="button" (click)="agregarIntervencion()" class="btn-agregar">
-          <mat-icon>{{ editingIndex !== null ? 'save' : 'add' }}</mat-icon>
-          {{ editingIndex !== null ? 'Guardar cambios' : 'Agregar' }}
-        </button>
-      </div>
-    </form>
-  </div>
+        </div>
+      </form>
+    </div>
 
-  <div class="section-divider"></div>
+    <div class="section-divider"></div>
 
-  <!-- Lista de intervenciones -->
-  <div class="intervenciones-section">
-    <h3 class="section-title">Intervenciones registradas ({{ intervenciones.length }})</h3>
-    
-    @if (intervenciones.length === 0) {
-      <div class="empty-intervenciones">
-        <mat-icon>medical_services</mat-icon>
-        <p>No hay intervenciones registradas</p>
-        <span class="hint">Agrega al menos una intervención para finalizar la cirugía</span>
-      </div>
-    } @else {
-      <div class="intervenciones-list">
-        @for (intervencion of intervenciones; track $index; let i = $index) {
-          <div class="intervencion-item" [class.editing]="editingIndex === i">
-            <div class="intervencion-info">
-              <span class="intervencion-nombre">{{ intervencion.tipoIntervencionNombre || getTipoNombre(intervencion.tipoIntervencionId) }}</span>
-              <span class="intervencion-observaciones">{{ intervencion.observaciones || 'Sin observaciones' }}</span>
+    <!-- Lista de intervenciones -->
+    <div class="intervenciones-section">
+      <h3 class="section-title">Intervenciones registradas ({{ intervenciones.length }})</h3>
+
+      @if (intervenciones.length === 0) {
+        <div class="empty-intervenciones">
+          <mat-icon>medical_services</mat-icon>
+          <p>No hay intervenciones registradas</p>
+          <span class="hint">Agrega al menos una intervención para finalizar la cirugía</span>
+        </div>
+      } @else {
+        <div class="intervenciones-list">
+          @for (intervencion of intervenciones; track $index; let i = $index) {
+            <div class="intervencion-item" [class.editing]="editingIndex === i">
+              <div class="intervencion-info">
+                <span class="intervencion-nombre">{{ intervencion.tipoIntervencionNombre || getTipoNombre(intervencion.tipoIntervencionId) }}</span>
+                <span class="intervencion-observaciones">{{ intervencion.observaciones || 'Sin observaciones' }}</span>
+              </div>
+              <div class="intervencion-actions">
+                <button mat-icon-button matTooltip="Ver/Editar" (click)="editarIntervencion(i)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Remover" class="btn-remover" (click)="removerIntervencion(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </div>
-            <div class="intervencion-actions">
-              <button mat-icon-button matTooltip="Ver/Editar" (click)="editarIntervencion(i)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Remover" class="btn-remover" (click)="removerIntervencion(i)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </div>
-        }
-      </div>
-    }
+          }
+        </div>
+      }
+    </div>
   </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button (click)="cancelar()" [disabled]="isLoading">Cancelar</button>
   <button mat-raised-button 
           color="primary" 

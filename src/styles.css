@@ -112,3 +112,38 @@ mat-form-field.search .mat-form-field-subscript-wrapper {
 .dark-menu-panel.mat-mdc-menu-panel .mat-mdc-menu-item.delete-option:hover {
   background: rgba(239, 68, 68, 0.14) !important;
 }
+
+/* Finalizar cirugia dialog: force squared bottom corners through overlay wrappers */
+.finalizar-cirugia-dialog-panel {
+  border-radius: 2px !important;
+}
+
+.finalizar-cirugia-dialog-panel .mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 2px;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+.finalizar-cirugia-dialog-panel .mdc-dialog,
+.finalizar-cirugia-dialog-panel .mdc-dialog__surface,
+.finalizar-cirugia-dialog-panel .mat-mdc-dialog-content,
+.finalizar-cirugia-dialog-panel .mat-mdc-dialog-actions,
+.finalizar-cirugia-dialog-panel .mdc-dialog__actions {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+.finalizar-cirugia-dialog-panel .mat-mdc-dialog-actions,
+.finalizar-cirugia-dialog-panel .mdc-dialog__actions {
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+}
+
+.cdk-overlay-pane.finalizar-cirugia-dialog-panel .mat-mdc-dialog-container .mdc-dialog__surface,
+.cdk-overlay-pane.finalizar-cirugia-dialog-panel .mat-mdc-dialog-container .mat-mdc-dialog-actions,
+.cdk-overlay-pane.finalizar-cirugia-dialog-panel .mat-mdc-dialog-container .mdc-dialog__actions {
+  border-radius: 2px !important;
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+}

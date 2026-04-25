@@ -1,18 +1,37 @@
 /* ==================== DIALOG CONTAINER ==================== */
-::ng-deep .mat-mdc-dialog-container {
-  border-radius: 24px !important;
+::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container {
+  border-radius: 2px !important;
   overflow: hidden !important;
 }
 
+::ng-deep .mat-mdc-dialog-container {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  border-radius: 2px !important;
+}
+
 /* ==================== TITLE ==================== */
-h2[mat-dialog-title] {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: #fff;
+h2[mat-dialog-title].dialog-title {
+  background: #fff;
+  color: #1f2937;
   margin: 0;
-  padding: 16px 24px;
+  padding: 18px 24px 8px;
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: 400;
+  font-size: 2rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,26 +39,34 @@ h2[mat-dialog-title] {
 }
 
 .title-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  color: #6a60ff;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 /* ==================== CONTENT ==================== */
 mat-dialog-content.dialog-content {
   background: #fff;
-  padding: 20px 24px;
-  min-width: 500px;
+  padding: 4px 24px 16px;
+  min-width: 460px;
   max-width: 600px;
-  max-height: 65vh;
+  max-height: 76vh;
   overflow-y: auto;
+}
+
+.content-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-top: 4px;
 }
 
 /* ==================== CIRUGIA INFO ==================== */
 .cirugia-info {
   background: #f8f9fa;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -63,8 +90,8 @@ mat-dialog-content.dialog-content {
 /* ==================== SECTION DIVIDER ==================== */
 .section-divider {
   height: 1px;
-  background: #e8e8e8;
-  margin: 16px 0;
+  background: #e5e7eb;
+  margin: 0;
 }
 
 /* ==================== FORM SECTION ==================== */
@@ -78,7 +105,7 @@ mat-dialog-content.dialog-content {
 .intervencion-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 18px;
 }
 
 .full-width {
@@ -89,13 +116,14 @@ mat-dialog-content.dialog-content {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .btn-agregar {
   background: #6a60ff !important;
   color: #fff !important;
-  border-radius: 20px !important;
+  border-radius: 2px !important;
+  box-shadow: 0 6px 14px rgba(106, 96, 255, 0.25) !important;
 }
 
 .btn-agregar mat-icon {
@@ -119,7 +147,7 @@ mat-dialog-content.dialog-content {
   color: #666;
   gap: 8px;
   background: #fafafa;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 2px dashed #e0e0e0;
 }
 
@@ -154,7 +182,7 @@ mat-dialog-content.dialog-content {
   align-items: center;
   padding: 10px 14px;
   background: #f8f8fc;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid #e8e8f0;
   transition: all 0.2s;
 }
@@ -215,21 +243,46 @@ mat-dialog-content.dialog-content {
 }
 
 /* ==================== DIALOG ACTIONS ==================== */
-mat-dialog-actions {
-  padding: 12px 24px 20px 24px;
-  gap: 8px;
+::ng-deep .mat-mdc-dialog-actions {
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
 }
 
-button[mat-button], button[mat-raised-button] {
+::ng-deep .mdc-dialog__actions {
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+mat-dialog-actions.dialog-actions {
+  padding: 16px 24px 20px 24px;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+  background-clip: padding-box;
+}
+
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-raised-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-unelevated-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-outlined-button,
+button[mat-button],
+button[mat-raised-button] {
   min-width: 100px;
-  border-radius: 20px;
+  border-radius: 2px !important;
 }
 
 .btn-finalizar {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%) !important;
+  background: #4caf50 !important;
   color: #fff !important;
   font-weight: 500;
   padding: 0 20px !important;
+  box-shadow: 0 6px 14px rgba(76, 175, 80, 0.25) !important;
+  border-radius: 2px !important;
 }
 
 .btn-finalizar mat-icon {
@@ -252,6 +305,24 @@ button[mat-button], button[mat-raised-button] {
 /* ==================== MAT FORM FIELD OVERRIDES ==================== */
 ::ng-deep .intervencion-form .mat-mdc-form-field-flex {
   min-height: 48px !important;
+}
+
+::ng-deep .intervencion-form .mat-mdc-text-field-wrapper {
+  background: #fff;
+}
+
+::ng-deep .intervencion-form .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .intervencion-form .mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: #c9cdd4;
+  --mdc-outlined-text-field-hover-outline-color: #9ca3af;
+  --mdc-outlined-text-field-focus-outline-color: #6b7280;
+  --mdc-outlined-text-field-label-text-color: #6b7280;
+  --mdc-outlined-text-field-hover-label-text-color: #4b5563;
+  --mdc-outlined-text-field-focus-label-text-color: #374151;
+  --mdc-theme-primary: #374151;
 }
 
 mat-label {

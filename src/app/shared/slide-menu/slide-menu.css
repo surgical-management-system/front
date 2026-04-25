@@ -38,11 +38,11 @@
 }
 
 .sidebar-nav {
-  padding: 14px 12px;
+  padding: 14px 14px;
   display: flex;
   flex-direction: column;
   border-top: 1px solid rgba(148, 163, 184, 0.18);
-  gap: 8px;
+  gap: 12px;
 }
 
 .nav-link {
@@ -50,7 +50,7 @@
   border-radius: 10px;
   display: flex;
   align-items: center;
-  gap:16px;
+  gap:18px;
   text-decoration: none;
   color: #cbd5e1;
   cursor: pointer;
@@ -128,7 +128,7 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #647db3;
   color: white;
   display: flex;
   justify-content: center;
