@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeycloakService } from '../services/keycloak.service';
+import { APP_CONSTANTS } from '../constants/app-constants';
 
 /**
  * Interceptor para manejo global de errores HTTP
@@ -10,7 +12,8 @@ import { KeycloakService } from '../services/keycloak.service';
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
+    private snackBar: MatSnackBar
   ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -83,6 +86,13 @@ export class ErrorInterceptor implements HttpInterceptor {
       message: errorMessage,
       url: error.url,
       error: error.error
+    });
+
+    this.snackBar.open(errorMessage, 'Close', {
+      duration: APP_CONSTANTS.TIMEOUTS.TOAST_DURATION,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['error-snackbar'],
     });
   }
 }

@@ -388,6 +388,105 @@
   opacity: 0.9;
 }
 
+.metric-label-main {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.metric-subtitle {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+.metric-card.wide {
+  grid-column: 1 / -1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.quirofano-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.quirofano-count {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.quirofano-count-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.quirofano-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.quirofano-list li {
+  margin: 0;
+}
+
+.quirofano-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.quirofano-chip-available {
+  background: rgba(67, 160, 71, 0.22);
+  border-color: rgba(67, 160, 71, 0.35);
+}
+
+.quirofano-chip-busy {
+  background: rgba(229, 57, 53, 0.2);
+  border-color: rgba(229, 57, 53, 0.35);
+}
+
+.quirofano-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.quirofano-nombre {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.quirofano-estado {
+  font-size: 0.78rem;
+  opacity: 0.85;
+  text-transform: capitalize;
+}
+
+.no-data {
+  display: inline-block;
+  text-align: left;
+  opacity: 0.85;
+  font-style: italic;
+}
+
 .metrics-note {
   color: #999;
   font-size: 0.85rem;

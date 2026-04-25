@@ -72,15 +72,27 @@
                 </div>
                 <div class="metric-card wide pretty-card">
                   <mat-icon class="metric-icon">meeting_room</mat-icon>
-                  <div class="metric-label">Quirófanos Activos</div>
-                  <ul class="quirofano-list" *ngIf="estadisticas">
-                    <li *ngFor="let q of (estadisticas?.quirofanosDisponibles || []).concat(estadisticas?.quirofanosEnUso || [])">
-                      <span class="quirofano-nombre" [ngStyle]="{color: (q.estado && q.estado.toLowerCase().includes('disponible')) ? '#43a047' : '#e53935', 'font-weight': 'bold'}">
-                        {{ q.nombre }}
-                      </span>
-                    </li>
-                  </ul>
-                  <span *ngIf="!(estadisticas?.quirofanosDisponibles?.length || estadisticas?.quirofanosEnUso?.length)" class="no-data">Ninguno</span>
+                  <div class="metric-label metric-label-main">Quirófanos Activos</div>
+                  <div class="metric-subtitle">Disponibles y en uso</div>
+                  @if (estadisticas; as stats) {
+                    <div class="quirofano-summary">
+                      <span class="quirofano-count">{{ stats.quirofanosDisponibles.length + stats.quirofanosEnUso.length }}</span>
+                      <span class="quirofano-count-label">Activos</span>
+                    </div>
+                    <ul class="quirofano-list">
+                      @for (q of stats.quirofanosDisponibles.concat(stats.quirofanosEnUso); track q.nombre) {
+                        <li>
+                          <span class="quirofano-chip" [ngClass]="(q.estado && q.estado.toLowerCase().includes('disponible')) ? 'quirofano-chip-available' : 'quirofano-chip-busy'">
+                            <span class="quirofano-dot"></span>
+                            <span class="quirofano-nombre">{{ q.nombre }}</span>
+                            <span class="quirofano-estado">{{ q.estado || 'Sin estado' }}</span>
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <span class="no-data">Ninguno</span>
+                  }
                 </div>
               </div>
               <div *ngIf="!estadisticas" class="metrics-note">Cargando métricas...</div>
