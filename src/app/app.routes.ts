@@ -22,6 +22,11 @@ export const routes: Routes = [
     canActivate: [RoleBGuard],
   },
   {
+    path: 'urgencias',
+    loadComponent: () => import('./urgencia/urgencias').then((m) => m.UrgenciasComponent),
+    canActivate: [RoleBGuard],
+  },
+  {
     path: 'personal',
     loadComponent: () => import('./personal/personal').then((m) => m.PersonalComponent),
   },

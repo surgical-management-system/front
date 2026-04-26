@@ -1,0 +1,254 @@
+<div class="table-list-container">
+  <div class="toolbar">
+    <div class="search-filtros-row">
+      <mat-form-field class="search" appearance="outline">
+        <mat-label>Buscar urgencia</mat-label>
+        <input
+          matInput
+          (keyup)="applyFilter($any($event.target).value)"
+          placeholder="Paciente, servicio, tipo..."
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      @if (canCreateUrgencia()) {
+        <div class="btn-crear-wrapper">
+          <button mat-raised-button class="btn-crear" (click)="openUrgencia()">
+            <mat-icon>add_circle</mat-icon>
+            Nueva urgencia
+          </button>
+        </div>
+      }
+
+      <div class="estado-filtros">
+        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'PENDIENTE'}" (click)="filtrarPorEstado('PENDIENTE')">
+          <mat-icon>schedule</mat-icon> Pendiente
+        </button>
+        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'PROGRAMADA'}" (click)="filtrarPorEstado('PROGRAMADA')">
+          <mat-icon>event_available</mat-icon> Programada
+        </button>
+        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'EN_CURSO'}" (click)="filtrarPorEstado('EN_CURSO')">
+          <mat-icon>autorenew</mat-icon> En curso
+        </button>
+        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'FINALIZADA'}" (click)="filtrarPorEstado('FINALIZADA')">
+          <mat-icon>check_circle</mat-icon> Finalizada
+        </button>
+        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'CANCELADA'}" (click)="filtrarPorEstado('CANCELADA')">
+          <mat-icon>cancel</mat-icon> Cancelada
+        </button>
+      </div>
+
+      <div class="view-toggle" aria-label="Cambiar modo de vista del listado">
+        <button mat-button class="view-btn" (click)="toggleViewMode()">
+          <mat-icon>{{ viewMode === 'table' ? 'view_module' : 'table_rows' }}</mat-icon>
+          {{ viewMode === 'table' ? 'Tarjetas' : 'Lista' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrapper" [class.loading]="isLoading">
+    @if (isLoading) {
+      <div class="loading-overlay">
+        <mat-icon class="spinner">sync</mat-icon>
+        <span>Cargando urgencias...</span>
+      </div>
+    }
+
+    @if (viewMode === 'table') {
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        [matSortActive]="sortActive"
+        [matSortDirection]="sortDirection"
+        [matSortDisableClear]="true"
+        (matSortChange)="onSortChange($event)"
+        class="mat-elevation-z8 tabla-solicitudes"
+      >
+        <ng-container matColumnDef="fechaHoraInicio">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha / Hora</th>
+          <td mat-cell *matCellDef="let s">
+            <div class="fecha-cell">
+              <mat-icon class="fecha-icon">event</mat-icon>
+              <span>{{ formatFechaHora(s.fechaHoraInicio) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="pacienteNombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Paciente</th>
+          <td mat-cell *matCellDef="let s">
+            <div class="paciente-cell">
+              <span class="nombre">{{ s.pacienteNombre || '-' }}</span>
+              @if (s.dni) {
+                <span class="dni">DNI: {{ s.dni }}</span>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="servicioNombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Servicio</th>
+          <td mat-cell *matCellDef="let s">{{ s.servicioNombre || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let s">
+            <mat-chip class="chip-estado" [ngClass]="getEstadoClass(s.estado)">
+              {{ s.estado || '-' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let s">{{ s.tipo || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="prioridad">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Prioridad</th>
+          <td mat-cell *matCellDef="let s">
+            <mat-chip class="chip-prioridad" [ngClass]="getPrioridadClass(s.prioridad)">
+              {{ s.prioridad || '-' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nivelUrgencia">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel de urgencia</th>
+          <td mat-cell *matCellDef="let s">{{ s.nivelUrgencia ?? '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quirofanoNombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Quirófano</th>
+          <td mat-cell *matCellDef="let s">
+            <div class="quirofano-cell">
+              <mat-icon class="quirofano-icon">meeting_room</mat-icon>
+              <span>{{ s.quirofanoNombre || '-' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let s">
+            <div class="acciones-cell">
+              <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" panelClass="dark-menu-panel">
+                <button mat-menu-item (click)="openUrgencia(s)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button
+                  *ngIf="s.id != null && s.estado !== 'FINALIZADA'"
+                  mat-menu-item
+                  (click)="deleteUrgencia(s.id)"
+                  class="delete-option"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    } @else {
+      <div class="cards-grid">
+        @for (s of dataSource.filteredData; track trackByUrgenciaId($index, s)) {
+          <article class="cirugia-card">
+            <header class="card-top">
+              <div class="card-date">
+                <mat-icon class="fecha-icon">event</mat-icon>
+                <span>{{ formatFechaHora(s.fechaHoraInicio) }}</span>
+              </div>
+              <button mat-icon-button [matMenuTriggerFor]="menuCard" matTooltip="Opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menuCard="matMenu" panelClass="dark-menu-panel">
+                <button mat-menu-item (click)="openUrgencia(s)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button
+                  *ngIf="s.id != null && s.estado !== 'FINALIZADA'"
+                  mat-menu-item
+                  (click)="deleteUrgencia(s.id)"
+                  class="delete-option"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+              </mat-menu>
+            </header>
+
+            <div class="card-patient">
+              <div class="patient-name">{{ s.pacienteNombre || '-' }}</div>
+              @if (s.dni) {
+                <div class="patient-dni">DNI: {{ s.dni }}</div>
+              }
+            </div>
+
+            <div class="card-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">Servicio</span>
+                <span class="meta-value">{{ s.servicioNombre || '-' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Tipo</span>
+                <span class="meta-value">{{ s.tipo || '-' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Quirófano</span>
+                <span class="meta-value">{{ s.quirofanoNombre || '-' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Nivel de urgencia</span>
+                <span class="meta-value">{{ s.nivelUrgencia ?? '-' }}</span>
+              </div>
+            </div>
+
+            <footer class="card-chips">
+              <div class="chip-item">
+                <span class="chip-label">Estado</span>
+                <mat-chip class="chip-estado" [ngClass]="getEstadoClass(s.estado)">
+                  {{ s.estado || '-' }}
+                </mat-chip>
+              </div>
+              <div class="chip-item">
+                <span class="chip-label">Prioridad</span>
+                <mat-chip class="chip-prioridad" [ngClass]="getPrioridadClass(s.prioridad)">
+                  {{ s.prioridad || '-' }}
+                </mat-chip>
+              </div>
+            </footer>
+          </article>
+        }
+      </div>
+    }
+
+    @if (dataSource.data.length === 0 && !isLoading) {
+      <div class="empty-state">
+        <mat-icon>emergency</mat-icon>
+        <p>No se encontraron urgencias</p>
+      </div>
+    }
+
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageIndex]="page"
+      [pageSizeOptions]="[18, 24, 40]"
+      showFirstLastButtons
+      (page)="onPage($event)"
+    >
+    </mat-paginator>
+  </div>
+</div>

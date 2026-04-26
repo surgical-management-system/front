@@ -1,0 +1,420 @@
+.table-list-container {
+  min-height: auto;
+  max-width: 4000px;
+  padding: 16px 0px 0px 0px;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  border-radius: 0px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.171);
+  background: white;
+}
+
+.table-list-container .mat-mdc-cell {
+  border-bottom: 1px solid #f0f0f0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.table-list-container .mat-mdc-header-cell {
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.table-list-container .mat-mdc-row {
+  transition: background 0.15s ease;
+  height: 48px;
+}
+
+.table-list-container .mat-mdc-row:nth-child(odd) {
+  background: #ffffff;
+}
+
+.table-list-container .mat-mdc-row:nth-child(even) {
+  background: #fafafa;
+}
+
+.table-list-container .mat-mdc-row:hover {
+  background: #f0f0ff;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.search-filtros-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 0px 0px 0px 14px;
+}
+
+.btn-crear-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.btn-crear mat-icon {
+  margin-right: 4px;
+}
+
+.estado-filtros {
+  display: flex;
+  gap: 4px;
+}
+
+.view-toggle {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0px 14px;
+}
+
+.view-btn {
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  background: #2346a6 !important;
+  min-width: 110px;
+  height: 40px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px !important;
+  box-shadow: none !important;
+  transition: background 0.2s ease !important;
+}
+
+.view-btn:hover {
+  background: #1a3788 !important;
+}
+
+.view-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.estado-btn {
+  border-radius: 8px !important;
+  background: #f5f5f7 !important;
+  color: #333 !important;
+  font-weight: 500;
+  box-shadow: none !important;
+  padding: 0 16px !important;
+  min-width: 116px;
+  height: 40px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.estado-btn.selected {
+  background: #6a60ff !important;
+  color: #fff !important;
+}
+
+.estado-btn mat-icon {
+  font-size: 20px;
+  margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+  .search-filtros-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .estado-filtros {
+    justify-content: flex-start;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+}
+
+.search {
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+mat-form-field.search,
+mat-form-field.search .mat-mdc-form-field-wrapper,
+mat-form-field.search .mat-mdc-form-field-outline,
+mat-form-field.search .mat-mdc-form-field-infix {
+  border-radius: 0 !important;
+  overflow: visible;
+}
+
+mat-form-field.search .mat-mdc-select-trigger,
+mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
+  border-radius: 0 !important;
+}
+
+.btn-crear {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 24px;
+  font-weight: 500;
+}
+
+.btn-crear mat-icon {
+  margin-right: 4px;
+}
+
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  padding: 0px 14px;
+}
+
+.cirugia-card {
+  border: 1px solid #e5e9f2;
+  border-radius: 12px;
+  padding: 0px 2px 10px 14px;
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f325f;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.card-patient {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #18253f;
+}
+
+.patient-dni {
+  font-size: 12px;
+  color: #61708e;
+}
+
+.card-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: #7b879f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meta-value {
+  font-size: 14px;
+  color: #1f2a44;
+  font-weight: 500;
+}
+
+.card-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.chip-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.chip-label {
+  font-size: 11px;
+  color: #6b7894;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table-wrapper.loading {
+  opacity: 0.6;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  color: #6a60ff;
+}
+
+.loading-overlay .spinner {
+  animation: spin 1s linear infinite;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tabla-solicitudes {
+  width: 100%;
+}
+
+.fecha-cell,
+.quirofano-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fecha-icon,
+.quirofano-icon {
+  color: #6a60ff;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.paciente-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.paciente-cell .nombre {
+  font-weight: 500;
+}
+
+.paciente-cell .dni {
+  font-size: 12px;
+  color: #666;
+}
+
+.chip-estado,
+.chip-prioridad {
+  font-size: 12px;
+  min-height: 24px;
+}
+
+.chip-pendiente {
+  background-color: #fff9e5 !important;
+  color: #fbc02d !important;
+}
+
+.chip-programada {
+  background-color: #e5f6ff !important;
+  color: #1976d2 !important;
+}
+
+.chip-realizada {
+  background-color: #e5ffe5 !important;
+  color: #388e3c !important;
+}
+
+.chip-cancelada {
+  background-color: #ffe5e5 !important;
+  color: #c62828 !important;
+}
+
+.chip-alta {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+}
+
+.chip-media {
+  background-color: #fff3e0 !important;
+  color: #e65100 !important;
+}
+
+.chip-baja {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.acciones-cell {
+  display: flex;
+  justify-content: center;
+}
+
+.acciones-cell button {
+  color: #616161;
+}
+
+.acciones-cell button:hover {
+  color: #6a60ff;
+}
+
+.delete-option {
+  color: #ef4444 !important;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 28px;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}

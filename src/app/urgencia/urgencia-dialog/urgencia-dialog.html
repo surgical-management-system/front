@@ -1,0 +1,107 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon class="title-icon">{{ form.value.id ? 'edit_calendar' : 'add_circle' }}</mat-icon>
+  {{ form.value.id ? 'Editar urgencia' : 'Crear urgencia' }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="form" novalidate>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Paciente</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="pacienteCtrl"
+        placeholder="Selecciona un paciente"
+        readonly
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="openPacienteListDialog()"
+        aria-label="Abrir listado de pacientes"
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Servicio</mat-label>
+      <mat-select formControlName="servicioId">
+        <mat-option *ngFor="let s of servicios" [value]="s.id">{{ s.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Quirófano</mat-label>
+      <mat-select formControlName="quirofanoId">
+        <mat-option *ngFor="let q of quirofanos" [value]="q.id">{{ q.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="row two-columns">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha y hora de inicio</mat-label>
+        <input matInput type="datetime-local" formControlName="fechaHoraInicio" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nivel de urgencia (1-5)</mat-label>
+        <input matInput type="number" min="1" max="5" formControlName="nivelUrgencia" />
+      </mat-form-field>
+    </div>
+
+    <div class="row two-columns">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="estado">
+          <mat-option value="PENDIENTE">Pendiente</mat-option>
+          <mat-option value="PROGRAMADA">Programada</mat-option>
+          <mat-option value="EN_CURSO">En curso</mat-option>
+          <mat-option value="FINALIZADA">Finalizada</mat-option>
+          <mat-option value="CANCELADA">Cancelada</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="prioridad">
+          <mat-option value="CRITICA">Crítica</mat-option>
+          <mat-option value="ALTA">Alta</mat-option>
+          <mat-option value="MEDIA">Media</mat-option>
+          <mat-option value="BAJA">Baja</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row two-columns">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Anestesia</mat-label>
+        <mat-select formControlName="anestesia">
+          <mat-option value="GENERAL">General</mat-option>
+          <mat-option value="LOCAL">Local</mat-option>
+          <mat-option value="REGIONAL">Regional</mat-option>
+          <mat-option value="SEDACION">Sedación</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="TRAUMATICA">Traumática</mat-option>
+          <mat-option value="CARDIOVASCULAR">Cardiovascular</mat-option>
+          <mat-option value="NEUROLOGICA">Neurológica</mat-option>
+          <mat-option value="GENERAL">General</mat-option>
+          <mat-option value="OTRA">Otra</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-raised-button color="primary" class="save-button" (click)="guardar()">
+    {{ form.value.id ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
