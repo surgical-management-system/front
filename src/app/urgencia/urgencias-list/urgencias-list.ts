@@ -236,25 +236,56 @@ export class UrgenciasListComponent implements OnInit {
   }
 
   finalizarUrgencia(urgencia: IUrgencia) {
+    if (!urgencia.id) {
+      return;
+    }
+
     this.dialog
-      .open(FinalizarUrgenciaDialog, {
-        data: { urgencia },
-        width: '600px',
-        maxHeight: '90vh',
-        panelClass: 'finalizar-urgencia-dialog-panel',
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Finalizar urgencia',
+          message: `¿Estás seguro de que deseas marcar como finalizada la urgencia de ${urgencia.pacienteNombre}?`,
+        },
       })
       .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.pageCache.clear();
-          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
         }
+
+        this.urgenciaService.getIntervencionesbyUrgenciaId(urgencia.id!).subscribe({
+          next: (resp: any) => {
+            const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
+
+            this.urgenciaService.finalizarUrgencia(urgencia.id!, intervenciones).subscribe({
+              next: () => {
+                this.pageCache.clear();
+                this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+              },
+              error: (err) => {
+                console.error('Error finalizing urgency', err);
+              },
+            });
+          },
+          error: (err) => {
+            console.error('Error loading interventions before finalizing urgency', err);
+          },
+        });
       });
   }
 
-    openEquipoMedico(urgenciaId: number) {
-      this.dialog.open(EquipoMedicoUrgenciaDialog, { data: { urgenciaId } });
-    }
+  gestionarIntervenciones(urgencia: IUrgencia) {
+    this.dialog.open(FinalizarUrgenciaDialog, {
+      data: { urgencia },
+      width: '600px',
+      maxHeight: '90vh',
+      panelClass: 'finalizar-urgencia-dialog-panel',
+    });
+  }
+
+  openEquipoMedico(urgenciaId: number) {
+    this.dialog.open(EquipoMedicoUrgenciaDialog, { data: { urgenciaId } });
+  }
 
   deleteUrgencia(urgenciaId: number) {
     this.dialog

@@ -153,16 +153,22 @@
                     <span>Iniciar urgencia</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado === 'FINALIZADA'">
-                  <button mat-menu-item (click)="verInfo(s)" class="info-option">
-                    <mat-icon>visibility</mat-icon>
-                    <span>Ver info</span>
+                <ng-container *ngIf="s.estado === 'EN_CURSO'">
+                  <button mat-menu-item (click)="gestionarIntervenciones(s)" class="intervenciones-option">
+                    <mat-icon>medical_services</mat-icon>
+                    <span>Intervenciones</span>
                   </button>
                 </ng-container>
                 <ng-container *ngIf="s.estado === 'EN_CURSO'">
                   <button mat-menu-item (click)="finalizarUrgencia(s)" class="finalizar-option">
                     <mat-icon>check_circle</mat-icon>
-                    <span>Marcar como finalizada</span>
+                    <span>Finalizar urgencia</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                  <button mat-menu-item (click)="verInfo(s)" class="info-option">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver info</span>
                   </button>
                 </ng-container>
                 <button
@@ -205,16 +211,22 @@
                     <span>Iniciar urgencia</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado === 'FINALIZADA'">
-                  <button mat-menu-item (click)="verInfo(s)" class="info-option">
-                    <mat-icon>visibility</mat-icon>
-                    <span>Ver info</span>
+                <ng-container *ngIf="s.estado === 'EN_CURSO'">
+                  <button mat-menu-item (click)="gestionarIntervenciones(s)" class="intervenciones-option">
+                    <mat-icon>medical_services</mat-icon>
+                    <span>Intervenciones</span>
                   </button>
                 </ng-container>
                 <ng-container *ngIf="s.estado === 'EN_CURSO'">
                   <button mat-menu-item (click)="finalizarUrgencia(s)" class="finalizar-option">
                     <mat-icon>check_circle</mat-icon>
-                    <span>Marcar como finalizada</span>
+                    <span>Finalizar urgencia</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                  <button mat-menu-item (click)="verInfo(s)" class="info-option">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver info</span>
                   </button>
                 </ng-container>
                 <button

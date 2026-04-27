@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogRef,
   MatDialogModule,
 } from '@angular/material/dialog';
@@ -17,7 +16,6 @@ import { MatTableModule } from '@angular/material/table';
 import { IIntervencion, ITipoIntervencion } from '../../core/models/intervencion';
 import { IUrgencia } from '../../core/models/urgencia';
 import { UrgenciaService } from '../../core/services/urgencia.service';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
 export interface FinalizarUrgenciaDialogData {
   urgencia: IUrgencia;
@@ -52,7 +50,6 @@ export class FinalizarUrgenciaDialog implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<FinalizarUrgenciaDialog>,
-    private dialog: MatDialog,
     private urgenciaService: UrgenciaService,
     @Inject(MAT_DIALOG_DATA) public data: FinalizarUrgenciaDialogData
   ) {
@@ -101,6 +98,7 @@ export class FinalizarUrgenciaDialog implements OnInit {
 
   agregarIntervencion(): void {
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -112,14 +110,37 @@ export class FinalizarUrgenciaDialog implements OnInit {
       observaciones: this.form.get('observaciones')?.value || '',
     };
 
-    if (this.editingIndex !== null) {
-      this.intervenciones[this.editingIndex] = nuevaIntervencion;
-      this.editingIndex = null;
-    } else {
-      this.intervenciones.push(nuevaIntervencion);
-    }
+    this.isLoading = true;
 
-    this.form.reset();
+    if (this.editingIndex !== null) {
+      nuevaIntervencion.id = this.intervenciones[this.editingIndex].id;
+      this.urgenciaService.updateIntervencion(this.data.urgencia.id!, nuevaIntervencion).subscribe({
+        next: (resp: any) => {
+          const data = resp?.data ?? resp;
+          this.intervenciones[this.editingIndex!] = data;
+          this.editingIndex = null;
+          this.form.reset();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error actualizando intervención de urgencia', err);
+          this.isLoading = false;
+        },
+      });
+    } else {
+      this.urgenciaService.createIntervencion(this.data.urgencia.id!, nuevaIntervencion).subscribe({
+        next: (resp: any) => {
+          const data = resp?.data ?? resp;
+          this.intervenciones.push(data);
+          this.form.reset();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error creando intervención de urgencia', err);
+          this.isLoading = false;
+        },
+      });
+    }
   }
 
   editarIntervencion(index: number): void {
@@ -137,41 +158,36 @@ export class FinalizarUrgenciaDialog implements OnInit {
   }
 
   removerIntervencion(index: number): void {
+    const intervencion = this.intervenciones[index];
+
+    if (intervencion.id) {
+      this.isLoading = true;
+      this.urgenciaService.deleteIntervencion(this.data.urgencia.id!, intervencion.id).subscribe({
+        next: () => {
+          this.intervenciones.splice(index, 1);
+          if (this.editingIndex === index) {
+            this.editingIndex = null;
+            this.form.reset();
+          } else if (this.editingIndex !== null && this.editingIndex > index) {
+            this.editingIndex--;
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error eliminando intervención de urgencia', err);
+          this.isLoading = false;
+        },
+      });
+      return;
+    }
+
     this.intervenciones.splice(index, 1);
     if (this.editingIndex === index) {
       this.editingIndex = null;
       this.form.reset();
+    } else if (this.editingIndex !== null && this.editingIndex > index) {
+      this.editingIndex--;
     }
-  }
-
-  finalizar(): void {
-    if (this.intervenciones.length === 0) {
-      return;
-    }
-
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: 'Finalizar urgencia',
-          message: `¿Estás seguro de que deseas finalizar la urgencia de ${this.data.urgencia.pacienteNombre}?`,
-        },
-      })
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.isLoading = true;
-          this.urgenciaService.finalizarUrgencia(this.data.urgencia.id!, this.intervenciones).subscribe({
-            next: () => {
-              this.isLoading = false;
-              this.dialogRef.close(true);
-            },
-            error: (err) => {
-              console.error('Error finalizing urgency', err);
-              this.isLoading = false;
-            }
-          });
-        }
-      });
   }
 
   cancelar(): void {
