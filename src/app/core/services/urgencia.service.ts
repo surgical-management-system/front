@@ -3,6 +3,8 @@ import { map } from 'rxjs/operators';
 import { BaseApiService } from './base-api.service';
 import { IApiResponse, IPaginatedResponse } from '../models/api-response';
 import { IUrgencia } from '../models/urgencia';
+import { IMiembroEquipoMedico } from '../models/miembro-equipo';
+import { IIntervencion } from '../models/intervencion';
 
 @Injectable({
   providedIn: 'root',
@@ -78,6 +80,43 @@ export class UrgenciaService extends BaseApiService {
 
   getServicios() {
     return this.get<IApiResponse<any>>('/cirugias/servicios');
+  }
+
+  // Equipo médico
+  getEquipoMedicoByUrgenciaId(urgenciaId: number) {
+    return this.get<IApiResponse<IMiembroEquipoMedico[]>>(`/urgencia/${urgenciaId}/equipo-medico`);
+  }
+
+  saveEquipoMedico(equipo: IMiembroEquipoMedico, urgenciaId: number) {
+    return this.post<IApiResponse<IMiembroEquipoMedico[]>>(
+      `/urgencia/${urgenciaId}/equipo-medico`,
+      equipo
+    );
+  }
+
+  // Intervenciones
+  getIntervencionesbyUrgenciaId(urgenciaId: number) {
+    return this.get<IApiResponse<IIntervencion[]>>(`/urgencia/${urgenciaId}/intervenciones`);
+  }
+
+  createIntervencion(urgenciaId: number, intervencion: IIntervencion) {
+    return this.post<IApiResponse<IIntervencion>>(`/urgencia/${urgenciaId}/intervenciones`, intervencion);
+  }
+
+  updateIntervencion(urgenciaId: number, intervencion: IIntervencion) {
+    return this.put<IApiResponse<IIntervencion>>(`/urgencia/${urgenciaId}/intervenciones/${intervencion.id}`, intervencion);
+  }
+
+  deleteIntervencion(urgenciaId: number, intervencionId: number) {
+    return this.delete<void>(`/urgencia/${urgenciaId}/intervenciones/${intervencionId}`);
+  }
+
+  finalizarUrgencia(urgenciaId: number, intervenciones: IIntervencion[]) {
+    return this.put<IApiResponse<IUrgencia>>(`/urgencia/${urgenciaId}/finalizar`, { intervenciones });
+  }
+
+  inicializarUrgencia(urgenciaId: number) {
+    return this.put<IApiResponse<IUrgencia>>(`/urgencia/${urgenciaId}/inicializar`, {});
   }
 
   private fromResponse(item: any): IUrgencia {
@@ -198,5 +237,9 @@ export class UrgenciaService extends BaseApiService {
       return value;
     }
     return value.length === 16 ? `${value}:00` : value;
+  }
+
+  getTiposIntervencion() {
+    return this.get<IApiResponse<any>>('/tipos-intervenciones');
   }
 }

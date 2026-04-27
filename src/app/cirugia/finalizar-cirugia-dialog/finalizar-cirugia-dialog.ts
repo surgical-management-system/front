@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogRef,
   MatDialogModule,
 } from '@angular/material/dialog';
@@ -16,7 +15,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { IIntervencion, ITipoIntervencion } from '../../core/models/intervencion';
 import { ICirugia } from '../../core/models/cirugia';
 import { CirugiaService } from '../../core/services/cirugia.service';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
 export interface FinalizarCirugiaDialogData {
   cirugia: ICirugia;
@@ -50,7 +48,6 @@ export class FinalizarCirugiaDialog implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<FinalizarCirugiaDialog>,
-    private dialog: MatDialog,
     private cirugiaService: CirugiaService,
     @Inject(MAT_DIALOG_DATA) public data: FinalizarCirugiaDialogData
   ) {
@@ -192,35 +189,6 @@ export class FinalizarCirugiaDialog implements OnInit {
         this.editingIndex--;
       }
     }
-  }
-
-  finalizar(): void {
-    if (this.intervenciones.length === 0) {
-      return;
-    }
-
-    const confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmar finalización',
-        message: '¿Estás seguro de que deseas marcar esta cirugía como finalizada?',
-      },
-    });
-
-    confirmDialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-
-      this.isLoading = true;
-      this.cirugiaService.finalizarCirugia(this.data.cirugia.id!, this.intervenciones).subscribe({
-        next: (resp: any) => {
-          this.isLoading = false;
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          console.error('Error finalizando cirugía', err);
-          this.isLoading = false;
-        }
-      });
-    });
   }
 
   cancelar(): void {

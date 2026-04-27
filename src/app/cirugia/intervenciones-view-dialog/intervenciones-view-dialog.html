@@ -1,0 +1,132 @@
+<div class="cirugia-detalle-dialog">
+  <h2 mat-dialog-title>Detalles de la Cirugía</h2>
+
+  <mat-dialog-content>
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner [diameter]="40"></mat-spinner>
+        <p>Cargando detalles...</p>
+      </div>
+    } @else {
+      <div class="dialog-sections">
+        <!-- Información de la Cirugía -->
+        <section class="info-section">
+          <h3 class="section-title">
+            <mat-icon>info</mat-icon>
+            Información General
+          </h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Paciente:</span>
+              <span class="info-value">{{ cirugia.pacienteNombre || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">DNI:</span>
+              <span class="info-value">{{ cirugia.dni || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha / Hora:</span>
+              <span class="info-value">{{ formatFechaHora(cirugia.fechaInicio, cirugia.horaInicio) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Servicio:</span>
+              <span class="info-value">{{ cirugia.servicioNombre || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tipo:</span>
+              <span class="info-value">{{ cirugia.tipo || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Quirófano:</span>
+              <span class="info-value">{{ cirugia.quirofanoNombre || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Anestesia:</span>
+              <span class="info-value">{{ cirugia.anestesia || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estado:</span>
+              <mat-chip class="chip-estado" [ngClass]="getEstadoClass(cirugia.estado)">
+                {{ cirugia.estado || '-' }}
+              </mat-chip>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Prioridad:</span>
+              <mat-chip class="chip-prioridad" [ngClass]="getPrioridadClass(cirugia.prioridad)">
+                {{ cirugia.prioridad || '-' }}
+              </mat-chip>
+            </div>
+          </div>
+        </section>
+
+        <!-- Equipo Médico -->
+        <section class="equipo-section">
+          <h3 class="section-title">
+            <mat-icon>people</mat-icon>
+            Equipo Médico
+          </h3>
+          @if (equipoMedico.length > 0) {
+            <table mat-table [dataSource]="equipoMedico" class="equipo-table">
+              <!-- Nombre -->
+              <ng-container matColumnDef="personalNombre">
+                <th mat-header-cell *matHeaderCellDef>Personal</th>
+                <td mat-cell *matCellDef="let element">{{ element.personalNombre || '-' }}</td>
+              </ng-container>
+
+              <!-- Rol -->
+              <ng-container matColumnDef="rolNombre">
+                <th mat-header-cell *matHeaderCellDef>Rol</th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip class="chip-rol">{{ element.rolNombre || '-' }}</mat-chip>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsEquipo"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsEquipo"></tr>
+            </table>
+          } @else {
+            <div class="empty-message">
+              <mat-icon>people_outline</mat-icon>
+              <p>No hay equipo médico registrado</p>
+            </div>
+          }
+        </section>
+
+        <!-- Intervenciones -->
+        <section class="intervenciones-section">
+          <h3 class="section-title">
+            <mat-icon>healing</mat-icon>
+            Intervenciones Realizadas
+          </h3>
+          @if (intervenciones.length > 0) {
+            <table mat-table [dataSource]="intervenciones" class="intervenciones-table">
+              <!-- Tipo -->
+              <ng-container matColumnDef="tipoIntervencionNombre">
+                <th mat-header-cell *matHeaderCellDef>Tipo de Intervención</th>
+                <td mat-cell *matCellDef="let element">{{ element.tipoIntervencionNombre || '-' }}</td>
+              </ng-container>
+
+              <!-- Observaciones -->
+              <ng-container matColumnDef="observaciones">
+                <th mat-header-cell *matHeaderCellDef>Observaciones</th>
+                <td mat-cell *matCellDef="let element">{{ element.observaciones || '-' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsIntervenciones"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsIntervenciones"></tr>
+            </table>
+          } @else {
+            <div class="empty-message">
+              <mat-icon>healing_outline</mat-icon>
+              <p>No hay intervenciones registradas</p>
+            </div>
+          }
+        </section>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="closeDialog()">Cerrar</button>
+  </mat-dialog-actions>
+</div>

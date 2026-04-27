@@ -19,6 +19,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { CirugiaDialog } from '../cirugia-dialog/cirugia-dialog';
 import { EquipoMedicoDialog } from '../equipo-medico-dialog/equipo-medico-dialog';
 import { FinalizarCirugiaDialog } from '../finalizar-cirugia-dialog/finalizar-cirugia-dialog';
+import { IntervencionesViewDialog } from '../intervenciones-view-dialog/intervenciones-view-dialog';
 import { KeycloakService } from '../../core/services/keycloak.service';
 
 @Component({
@@ -230,20 +231,83 @@ export class SolicitudesListComponent implements OnInit {
   }
 
   finalizarCirugia(cirugia: ICirugia) {
+    if (!cirugia.id) {
+      return;
+    }
+
     this.dialog
-      .open(FinalizarCirugiaDialog, {
-        data: { cirugia },
-        width: '600px',
-        maxHeight: '90vh',
-        panelClass: 'finalizar-cirugia-dialog-panel',
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Finalizar cirugía',
+          message: `¿Estás seguro de que deseas marcar como finalizada la cirugía de ${cirugia.pacienteNombre}?`,
+        },
       })
       .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.pageCache.clear();
-          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.cirugiaService.getIntervencionesByCirugiaId(cirugia.id!).subscribe({
+          next: (resp: any) => {
+            const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
+
+            this.cirugiaService.finalizarCirugia(cirugia.id!, intervenciones).subscribe({
+              next: () => {
+                this.pageCache.clear();
+                this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+              },
+              error: (err) => {
+                console.error('Error finalizing surgery', err);
+              },
+            });
+          },
+          error: (err) => {
+            console.error('Error loading interventions before finalizing surgery', err);
+          },
+        });
+      });
+  }
+
+  gestionarIntervenciones(cirugia: ICirugia) {
+    this.dialog.open(FinalizarCirugiaDialog, {
+      data: { cirugia },
+      width: '600px',
+      maxHeight: '90vh',
+      panelClass: 'finalizar-cirugia-dialog-panel',
+    });
+  }
+
+  inicializarCirugia(cirugia: ICirugia) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Iniciar Cirugía',
+          message: `¿Estás seguro de que deseas iniciar la cirugía de ${cirugia.pacienteNombre}?`,
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed && cirugia.id) {
+          this.cirugiaService.inicializarCirugia(cirugia.id).subscribe({
+            next: () => {
+              this.pageCache.clear();
+              this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+            },
+            error: (err) => {
+              console.error('Error initializing surgery', err);
+            }
+          });
         }
       });
+  }
+
+  verIntervenciones(cirugia: ICirugia) {
+    this.dialog.open(IntervencionesViewDialog, {
+      data: { cirugia },
+      width: '600px',
+      maxHeight: '90vh',
+    });
   }
 
   deleteCirugia(cirugiaId: number) {

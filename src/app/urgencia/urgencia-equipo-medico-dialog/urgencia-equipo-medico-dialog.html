@@ -1,0 +1,73 @@
+<mat-dialog-content class="em-container">
+  <form [formGroup]="form" class="em-form">
+    <header class="em-header">
+      <h2>Equipo Médico</h2>
+      <div class="em-subtitle-row">
+        <p class="em-sub">Asignar integrantes al equipo médico de la urgencia.</p>
+        <button mat-stroked-button color="primary" aria-label="Agregar integrante" (click)="openPersonalListDialog()">
+          <mat-icon>person_add</mat-icon>
+          Agregar
+        </button>
+      </div>
+    </header>
+
+    <div class="em-content">
+
+      <aside class="em-right">
+        <!-- LISTA DE INTEGRANTES SELECCIONADOS (tabla similar a resultados) -->
+        <section class="em-integrantes">
+          
+          <div *ngIf="equipoMedico.length === 0" class="em-empty">No hay integrantes agregados todavía.</div>
+
+          <div class="em-selected-table-wrapper" *ngIf="equipoMedico.length > 0">
+            <table mat-table [dataSource]="dataSourceSelected" class="mat-elevation-z1">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef class="col-nombre">Nombre</th>
+                <td mat-cell *matCellDef="let row" class="col-nombre">
+                  <div class="em-name">{{ row.nombre }}</div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="legajo">
+                <th mat-header-cell *matHeaderCellDef class="col-legajo">Legajo</th>
+                <td mat-cell *matCellDef="let row" class="col-legajo">{{ row.legajo }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="rol">
+                <th mat-header-cell *matHeaderCellDef class="col-rol">Rol</th>
+                <td mat-cell *matCellDef="let row; let i = index" class="col-rol">
+                  <div [formGroup]="$any(equipoMedico.at(i))">
+                    <input matInput formControlName="rol" placeholder="Rol" />
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="accionEliminar">
+                <th mat-header-cell *matHeaderCellDef class="col-accion"></th>
+                <td mat-cell *matCellDef="let row; let i = index" class="col-accion">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="removeIntegrante(i)"
+                    aria-label="Eliminar integrante"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsSelected"></tr>
+              <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumnsSelected"></tr>
+            </table>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- FOOTER: cancelar / guardar -->
+    <div class="em-actions">
+      <button mat-stroked-button (click)="cancel()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="saveEquipoMedico()">Guardar Equipo</button>
+    </div>
+  </form>
+</mat-dialog-content>

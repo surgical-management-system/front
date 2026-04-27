@@ -14,6 +14,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { IUrgencia } from '../../core/models/urgencia';
 import { UrgenciaService } from '../../core/services/urgencia.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { UrgenciaInfoDialog } from '../urgencia-info-dialog/urgencia-info-dialog';
+import { FinalizarUrgenciaDialog } from '../finalizar-urgencia-dialog/finalizar-urgencia-dialog';
+
+import { EquipoMedicoUrgenciaDialog } from '../urgencia-equipo-medico-dialog/urgencia-equipo-medico-dialog';
 
 import { KeycloakService } from '../../core/services/keycloak.service';
 import { UrgenciaDialog } from '../urgencia-dialog/urgencia-dialog';
@@ -198,6 +202,59 @@ export class UrgenciasListComponent implements OnInit {
         }
       });
   }
+
+  inicializarUrgencia(urgencia: IUrgencia) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Iniciar Urgencia',
+          message: `¿Estás seguro de que deseas iniciar la urgencia de ${urgencia.pacienteNombre}?`,
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed && urgencia.id) {
+          this.urgenciaService.inicializarUrgencia(urgencia.id).subscribe({
+            next: () => {
+              this.pageCache.clear();
+              this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+            },
+            error: (err) => {
+              console.error('Error initializing emergency', err);
+            }
+          });
+        }
+      });
+  }
+
+  verInfo(urgencia: IUrgencia) {
+    this.dialog.open(UrgenciaInfoDialog, {
+      data: { urgencia },
+      width: '600px',
+      maxHeight: '90vh',
+    });
+  }
+
+  finalizarUrgencia(urgencia: IUrgencia) {
+    this.dialog
+      .open(FinalizarUrgenciaDialog, {
+        data: { urgencia },
+        width: '600px',
+        maxHeight: '90vh',
+        panelClass: 'finalizar-urgencia-dialog-panel',
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.pageCache.clear();
+          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+        }
+      });
+  }
+
+    openEquipoMedico(urgenciaId: number) {
+      this.dialog.open(EquipoMedicoUrgenciaDialog, { data: { urgenciaId } });
+    }
 
   deleteUrgencia(urgenciaId: number) {
     this.dialog

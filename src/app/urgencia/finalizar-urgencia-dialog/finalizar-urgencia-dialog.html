@@ -1,19 +1,19 @@
 <h2 mat-dialog-title class="dialog-title">
-  <mat-icon class="title-icon">medical_services</mat-icon>
-  Gestor de intervenciones
+  <mat-icon class="title-icon">check_circle</mat-icon>
+  Finalizar urgencia
 </h2>
 
 <mat-dialog-content class="dialog-content">
   <div class="content-dialog">
-    <!-- Info de la cirugía -->
-    <div class="cirugia-info">
+    <!-- Info de la urgencia -->
+    <div class="urgencia-info">
       <div class="info-row">
         <span class="info-label">Paciente:</span>
-        <span class="info-value">{{ data.cirugia.pacienteNombre }}</span>
+        <span class="info-value">{{ data.urgencia.pacienteNombre }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Fecha:</span>
-        <span class="info-value">{{ data.cirugia.fechaInicio }}</span>
+        <span class="info-value">{{ data.urgencia.fechaHoraInicio }}</span>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
     <!-- Formulario para agregar intervención -->
     <div class="form-section">
       <h3 class="section-title">
-          {{ editingIndex !== null ? 'Editar intervención' : 'Agregar intervención' }}
+        {{ editingIndex !== null ? 'Editar intervención' : 'Agregar intervención' }}
       </h3>
       <form [formGroup]="form" novalidate class="intervencion-form">
         <mat-form-field appearance="outline" class="full-width">
@@ -69,7 +69,7 @@
         <div class="empty-intervenciones">
           <mat-icon>medical_services</mat-icon>
           <p>No hay intervenciones registradas</p>
-          <span class="hint">Agrega intervenciones para registrar el procedimiento</span>
+          <span class="hint">Agrega al menos una intervención para finalizar la urgencia</span>
         </div>
       } @else {
         <div class="intervenciones-list">
@@ -96,8 +96,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog-actions">
-  <button mat-raised-button color="primary" (click)="cancelar()" [disabled]="isLoading" class="btn-finalizar">
-    <mat-icon>close</mat-icon>
-    Cerrar
+  <button mat-button (click)="cancelar()" [disabled]="isLoading">Cancelar</button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="finalizar()" 
+          [disabled]="isLoading || intervenciones.length === 0"
+          class="btn-finalizar">
+    @if (isLoading) {
+      <mat-icon class="spinner">sync</mat-icon>
+    } @else {
+      <mat-icon>check_circle</mat-icon>
+    }
+    Finalizar urgencia
   </button>
 </mat-dialog-actions>

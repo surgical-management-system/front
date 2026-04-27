@@ -1,0 +1,206 @@
+.cirugia-detalle-dialog {
+  width: 100%;
+  max-width: 900px;
+
+  h2 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+mat-dialog-content {
+  padding: 16px 0;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 16px;
+
+  p {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+  }
+}
+
+.mat-mdc-dialog-actions{
+    padding: 14px;
+}
+
+.dialog-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.info-section,
+.equipo-section,
+.intervenciones-section {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #1976d2;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .info-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.54);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
+    word-break: break-word;
+  }
+}
+
+/* Tables */
+.equipo-table,
+.intervenciones-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+
+  th {
+    background-color: rgba(0, 0, 0, 0.04);
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    font-size: 13px;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+/* Empty message */
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 12px;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: rgba(0, 0, 0, 0.38);
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* Chips */
+.chip-estado {
+  font-size: 12px;
+  padding: 4px 8px;
+
+  &.chip-programada {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  &.chip-pendiente {
+    background-color: #cfe2ff;
+    color: #084298;
+  }
+
+  &.chip-realizada {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+
+  &.chip-cancelada {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+}
+
+.chip-prioridad {
+  font-size: 12px;
+  padding: 4px 8px;
+
+  &.chip-alta {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+
+  &.chip-media {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  &.chip-baja {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+}
+
+.chip-rol {
+  font-size: 12px;
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+}
+
+mat-dialog-actions {
+  padding: 16px 0 0 0;
+  gap: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  margin-top: 16px;
+}

@@ -1,0 +1,308 @@
+/* ==================== DIALOG CONTAINER ==================== */
+::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  border-radius: 2px !important;
+}
+
+/* ==================== TITLE ==================== */
+h2[mat-dialog-title].dialog-title {
+  background: #fff;
+  color: #1f2937;
+  margin: 0;
+  padding: 18px 24px 8px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.title-icon {
+  color: #f59e0b;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* ==================== CONTENT ==================== */
+mat-dialog-content.dialog-content {
+  background: #fff;
+  padding: 4px 24px 16px;
+  min-width: 460px;
+  max-width: 600px;
+  max-height: 76vh;
+  overflow-y: auto;
+}
+
+.content-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-top: 4px;
+}
+
+/* ==================== URGENCIA INFO ==================== */
+.urgencia-info {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-row {
+  display: flex;
+  gap: 8px;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 70px;
+}
+
+.info-value {
+  color: #333;
+}
+
+/* ==================== SECTION DIVIDER ==================== */
+.section-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0;
+}
+
+/* ==================== FORM SECTION ==================== */
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.intervencion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.btn-agregar {
+  background: #f59e0b !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25) !important;
+}
+
+.btn-agregar mat-icon {
+  margin-right: 4px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ==================== INTERVENCIONES LIST ==================== */
+.intervenciones-section {
+  margin-top: 8px;
+}
+
+.empty-intervenciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: #666;
+  gap: 8px;
+  background: #fafafa;
+  border-radius: 4px;
+  border: 2px dashed #e0e0e0;
+}
+
+.empty-intervenciones mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #ccc;
+}
+
+.empty-intervenciones p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.empty-intervenciones .hint {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.intervenciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.intervencion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fef9f3;
+  border-radius: 4px;
+  border: 1px solid #fce4d6;
+  transition: all 0.2s;
+}
+
+.intervencion-item:hover {
+  background: #fdf2eb;
+}
+
+.intervencion-item.editing {
+  background: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.intervencion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.intervencion-nombre {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.intervencion-observaciones {
+  font-size: 0.8rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intervencion-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.intervencion-actions button {
+  width: 32px;
+  height: 32px;
+}
+
+.intervencion-actions mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.btn-remover {
+  color: #e53935 !important;
+}
+
+.btn-remover:hover {
+  background: rgba(229, 57, 53, 0.1) !important;
+}
+
+/* ==================== DIALOG ACTIONS ==================== */
+::ng-deep .mat-mdc-dialog-actions {
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mdc-dialog__actions {
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+mat-dialog-actions.dialog-actions {
+  padding: 16px 24px 20px 24px;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-bottom-left-radius: 2px !important;
+  border-bottom-right-radius: 2px !important;
+  overflow: hidden !important;
+  background-clip: padding-box;
+}
+
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-raised-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-unelevated-button,
+::ng-deep .mat-mdc-dialog-actions.dialog-actions .mat-mdc-outlined-button,
+button[mat-button],
+button[mat-raised-button] {
+  min-width: 100px;
+  border-radius: 2px !important;
+}
+
+.btn-finalizar {
+  background: #f59e0b !important;
+  color: #fff !important;
+  font-weight: 500;
+  padding: 0 20px !important;
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25) !important;
+  border-radius: 2px !important;
+}
+
+.btn-finalizar mat-icon {
+  margin-right: 6px;
+}
+
+.btn-finalizar:disabled {
+  background: #ccc !important;
+  color: #999 !important;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

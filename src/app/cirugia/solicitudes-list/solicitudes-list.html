@@ -133,10 +133,32 @@
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>
               </button>
-              <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+              <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
+                <mat-icon>people</mat-icon>
+                <span>Equipo médico</span>
+              </button>
+              <ng-container *ngIf="s.estado === 'PROGRAMADA'">
+                <button mat-menu-item (click)="inicializarCirugia(s)" class="iniciar-option">
+                  <mat-icon>play_circle_filled</mat-icon>
+                  <span>Iniciar cirugía</span>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="s.estado === 'EN_CURSO'">
+                <button mat-menu-item (click)="gestionarIntervenciones(s)" class="intervenciones-option">
+                  <mat-icon>medical_services</mat-icon>
+                  <span>Intervenciones</span>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="s.estado === 'EN_CURSO'">
                 <button mat-menu-item (click)="finalizarCirugia(s)" class="finalizar-option">
                   <mat-icon>check_circle</mat-icon>
-                  <span>Marcar como finalizada</span>
+                  <span>Finalizar cirugía</span>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                <button mat-menu-item (click)="verIntervenciones(s)" class="intervenciones-option">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Ver info</span>
                 </button>
               </ng-container>
               <ng-container *ngIf="s.estado !== 'FINALIZADA'">
@@ -170,10 +192,28 @@
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
-                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                <ng-container *ngIf="s.estado === 'PROGRAMADA'">
+                  <button mat-menu-item (click)="inicializarCirugia(s)" class="iniciar-option">
+                    <mat-icon>play_circle_filled</mat-icon>
+                    <span>Iniciar cirugía</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado === 'EN_CURSO'">
+                  <button mat-menu-item (click)="gestionarIntervenciones(s)" class="intervenciones-option">
+                    <mat-icon>medical_services</mat-icon>
+                    <span>Intervenciones</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado === 'EN_CURSO'">
                   <button mat-menu-item (click)="finalizarCirugia(s)" class="finalizar-option">
                     <mat-icon>check_circle</mat-icon>
-                    <span>Marcar como finalizada</span>
+                    <span>Finalizar cirugía</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                  <button mat-menu-item (click)="verIntervenciones(s)" class="intervenciones-option">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver info</span>
                   </button>
                 </ng-container>
                 <ng-container *ngIf="s.estado !== 'FINALIZADA'">

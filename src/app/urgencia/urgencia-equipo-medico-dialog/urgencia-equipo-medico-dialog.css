@@ -1,0 +1,305 @@
+.em-container {
+  padding: 18px 20px;
+  max-width: calc(100vw - 48px);
+  width: 760px !important; /* ancho fijo preferido */
+  box-sizing: border-box;
+  /* Allow the dialog to size to content, but cap its height to viewport */
+  height: auto;
+  max-height: 95vh; /* prevent growing beyond viewport */
+}
+.em-header {
+  margin-bottom: 5px;
+}
+.em-header h2 {
+  margin: 0 0 0 0;
+  font-size: 20px;
+}
+.em-subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 100%;
+}
+.em-sub {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+.em-subtitle-row button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.em-subtitle-row mat-icon {
+  margin-right: 6px;
+}
+
+.em-search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0 0px;
+} /* reducido */
+
+/* fila de título con botón a la derecha */
+.em-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+.em-title-row h2 { margin: 0; flex: 0 0 auto; }
+.em-title-row button { flex: 0 0 auto; white-space: nowrap; }
+.em-title-row mat-icon { margin-right: 6px; }
+
+.em-search-field {
+  flex: 1;
+  min-width: 160px;
+}
+
+.em-integrantes-header mat-icon { margin-right: 6px; }
+.em-integrantes-header h3 {
+  margin: 0;
+  font-weight: 600;
+}
+.em-empty {
+  color: rgba(0, 0, 0, 0.54);
+  max-height: 440px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0px; /* separación entre integrantes */
+  padding: 46px 40px;
+  border-radius: 5px;
+  text-align: center;
+}
+/* legacy list styles removed (not used in current dialog) */
+/* Tabla de seleccionados: estilo similar a resultados */
+.em-selected-table-wrapper {
+  margin-top: 6px;
+  overflow: visible;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.em-selected-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.em-selected-table-wrapper th.mat-header-cell {
+  font-weight: 600;
+  padding: 6px 8px;
+  color: rgba(0,0,0,0.65);
+  border-bottom: 1px solid rgba(0,0,0,0.02);
+}
+.em-selected-table-wrapper td.mat-cell {
+  padding: 6px 8px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(0,0,0,0.02);
+}
+.em-selected-table-wrapper .em-name {
+  font-weight: 600;
+}
+.em-selected-table-wrapper tr.mat-row:hover {
+  background: rgba(0,0,0,0.01);
+}
+
+/* remove Material elevation shadow for a flatter, less boxed look */
+.em-selected-table-wrapper.mat-elevation-z1,
+.em-selected-table-wrapper .mat-elevation-z1 {
+  box-shadow: none !important;
+}
+
+/* inputs en la tabla: minimalistas (sin caja) */
+.em-selected-table-wrapper input {
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+  margin: 0;
+  width: 100%;
+  box-shadow: none;
+  border-bottom: 1px solid transparent;
+}
+.em-selected-table-wrapper input:focus {
+  outline: none;
+  border-bottom: 1px solid rgba(63,81,181,0.25);
+}
+
+.em-table-wrapper { display: none; }
+.em-selected-table-wrapper {
+  /* make selected table visually match results but a bit lighter */
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  overflow: auto;
+  background: #fff;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+}
+
+.em-selected-table-wrapper table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.em-selected-table-wrapper th.mat-header-cell {
+  font-weight: 600;
+  color: #374151;
+  background: #fafafa;
+}
+
+.em-selected-table-wrapper td.mat-cell,
+.em-selected-table-wrapper th.mat-header-cell {
+  padding: 12px 16px;
+}
+
+.em-selected-table-wrapper tr.mat-row:hover td.mat-cell {
+  background: #fafafa;
+}
+
+.em-selected-table-wrapper .em-name {
+  font-weight: 600;
+}
+
+/* Ajustes de iconos y paginator para que coincidan */
+.em-left button[mat-icon-button], .em-right button[mat-icon-button] {
+  color: #2563eb;
+}
+
+.em-right button[mat-icon-button][color="warn"] {
+  color: #dc2626; /* rojo para eliminar */
+}
+
+.em-left mat-paginator { display: none; } /* paginator not used in this dialog */
+
+.mat-sort-header-button {
+  text-transform: none;
+  font-weight: 600;
+}
+
+/* Column width rules to keep headers and cells aligned */
+.col-nombre { width: 30%; }
+.col-rol { width: 22%; }
+.col-legajo { width: 30%; }
+.col-accion { width: 10%; text-align: center; }
+
+/* Ensure header and cell share same box-sizing */
+.em-table-wrapper th.mat-header-cell, .em-table-wrapper td.mat-cell,
+.em-selected-table-wrapper th.mat-header-cell, .em-selected-table-wrapper td.mat-cell {
+  box-sizing: border-box;
+}
+
+
+/* Cada item: layout horizontal con grid a la izquierda y botón a la derecha */
+.em-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 12px;
+  border-radius: 6px;
+}
+
+/* legacy grid inputs removed (not used) */
+
+/* si hay inputs dentro de mat-form-field también controlar su foco */
+.em-list .mat-form-field-appearance-outline .mat-form-field-outline {
+  transition: box-shadow 0.12s ease, border-color 0.12s ease;
+}
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline {
+  box-shadow: none; /* evita halo fuerte si lo provoca Material */
+}
+
+/* el botón de acción se empuja a la derecha de la fila */
+.em-result-item button[mat-icon-button] {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.em-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-self: flex-end;
+  margin-top: 15px;
+}
+@media (max-width: 600px) {
+  .em-list-grid {
+    grid-template-columns: 1fr;
+  }
+  .em-add-btn {
+    display: none;
+  } /* en móviles, se puede ocultar o cambiar */
+}
+
+/* responsive: en pantallas pequeñas apilar verticalmente */
+@media (max-width: 600px) {
+  .em-result-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .em-meta {
+    white-space: normal;
+  }
+}
+
+/* Más altura para el diálogo y comportamiento de scrolling */
+.em-container {
+  /* permitir que el diálogo mida según su contenido; limitar su altura máxima */
+  height: auto;
+  max-height: 95vh;
+  padding-bottom: 12px;
+}
+
+/* usar layout flex interno para que el footer quede pegado al fondo sin huecos */
+.em-form {
+  display: flex;
+  flex-direction: column;
+  height: auto; /* no forzar 100% para que el contenedor crezca según contenido */
+}
+
+.em-content {
+  flex: 0 1 auto; /* dejar que el contenido ocupe sólo lo necesario */
+  max-height: calc(95vh - 160px); /* cuando crezca demasiado, permitir scroll interno */
+  overflow: auto;
+  margin-top: 0px;
+}
+
+.em-left, .em-right {
+  overflow: visible; /* permitir que las listas ocupen su altura natural */
+}
+
+/* Estilos para la lista vertical de seleccionados */
+.em-selected-list {
+  margin-top: 6px;
+  padding: 6px 4px;
+}
+.selected-item {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.selected-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.selected-main {
+  display: flex;
+  flex-direction: column;
+}
+.selected-name {
+  font-weight: 600;
+}
+.selected-meta {
+  font-size: 13px;
+  color: rgba(0,0,0,0.6);
+}
+.selected-actions {
+  margin-left: 8px;
+}

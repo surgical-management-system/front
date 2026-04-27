@@ -88,4 +88,8 @@ export class CirugiaService extends BaseApiService {
   finalizarCirugia(cirugiaId: number, intervenciones: IIntervencion[]) {
     return this.put<IApiResponse<ICirugia>>(`/cirugias/${cirugiaId}/finalizar`, { intervenciones });
   }
+
+  inicializarCirugia(cirugiaId: number) {
+    return this.put<IApiResponse<ICirugia>>(`/cirugias/${cirugiaId}/inicializar`, {});
+  }
 }
