@@ -1,5 +1,4 @@
 export type EstadoUrgencia =
-  | 'PENDIENTE'
   | 'PROGRAMADA'
   | 'EN_CURSO'
   | 'FINALIZADA'

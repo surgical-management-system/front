@@ -61,7 +61,7 @@ export class UrgenciaDialog {
       prioridad: ['ALTA', Validators.required],
       nivelUrgencia: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
       fechaHoraInicio: ['', Validators.required],
-      estado: ['PENDIENTE', Validators.required],
+      estado: ['PROGRAMADA', Validators.required],
       anestesia: ['', Validators.required],
       tipo: ['', Validators.required],
       pacienteId: [null, Validators.required],
