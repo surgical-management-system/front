@@ -126,4 +126,12 @@ export class UrgenciaInfoDialog implements OnInit {
       hour12: false,
     });
   }
+
+  getPersonalNombre(miembro: IMiembroEquipoMedico): string {
+    return (miembro as any)?.personalNombre || miembro?.nombre || '-';
+  }
+
+  getRolNombre(miembro: IMiembroEquipoMedico): string {
+    return (miembro as any)?.rolNombre || miembro?.rol || '-';
+  }
 }

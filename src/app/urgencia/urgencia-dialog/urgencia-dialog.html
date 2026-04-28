@@ -32,24 +32,40 @@
       </mat-select>
     </mat-form-field>
 
+    <div class="row three-columns turno-row" [class.disabled]="!form.get('servicioId')?.value">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha inicio</mat-label>
+        <input matInput formControlName="fechaInicio" placeholder="dd/MM/yyyy" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Hora inicio</mat-label>
+        <input matInput type="text" formControlName="horaInicio" placeholder="HH:MM" readonly />
+      </mat-form-field>
+
+      <button
+        mat-icon-button
+        class="turno-button"
+        type="button"
+        (click)="openSeleccionTurnos()"
+        [disabled]="!form.get('servicioId')?.value"
+        [matTooltip]="!form.get('servicioId')?.value ? 'Selecciona un servicio primero' : 'Seleccionar turno'"
+        aria-label="Seleccionar turno"
+      >
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+    </div>
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Quirófano</mat-label>
-      <mat-select formControlName="quirofanoId">
-        <mat-option *ngFor="let q of quirofanos" [value]="q.id">{{ q.nombre }}</mat-option>
-      </mat-select>
+      <input
+        matInput
+        [value]="form.get('quirofanoNombre')?.value || 'Se autocompleta al elegir turno'"
+        readonly
+        [style.color]="form.get('quirofanoNombre')?.value ? 'inherit' : '#999'"
+      />
+      <mat-icon matSuffix style="color: #999; font-size: 18px;">info_outline</mat-icon>
     </mat-form-field>
-
-    <div class="row two-columns">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Fecha y hora de inicio</mat-label>
-        <input matInput type="datetime-local" formControlName="fechaHoraInicio" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Nivel de urgencia (1-5)</mat-label>
-        <input matInput type="number" min="1" max="5" formControlName="nivelUrgencia" />
-      </mat-form-field>
-    </div>
 
     <div class="row two-columns">
       <mat-form-field appearance="outline" class="full-width">
@@ -64,13 +80,8 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Prioridad</mat-label>
-        <mat-select formControlName="prioridad">
-          <mat-option value="CRITICA">Crítica</mat-option>
-          <mat-option value="ALTA">Alta</mat-option>
-          <mat-option value="MEDIA">Media</mat-option>
-          <mat-option value="BAJA">Baja</mat-option>
-        </mat-select>
+        <mat-label>Nivel de urgencia (1-5)</mat-label>
+        <input matInput type="number" min="1" max="5" formControlName="nivelUrgencia" />
       </mat-form-field>
     </div>
 

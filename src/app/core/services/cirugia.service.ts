@@ -55,8 +55,14 @@ export class CirugiaService extends BaseApiService {
     );
   }
 
-  getTurnosDisponibles(quirofanoId: number, fechaInicio: string, fechaFin: string, pagina: number, tamano: number, estado: string = '') {
-    const params = { fechaInicio, fechaFin, pagina, tamano, quirofanoId, estado };
+  getTurnosDisponibles(quirofanoId: number, fechaInicio: string, fechaFin: string, pagina: number, tamano: number, servicioId?: number, estado?: string) {
+    const params: any = { fechaInicio, fechaFin, pagina, tamano, quirofanoId };
+    if (servicioId) {
+      params.servicioId = servicioId;
+    }
+    if (estado) {
+      params.estado = estado;
+    }
     return this.get<IApiResponse<any>>('/turnos', params);
   }
 

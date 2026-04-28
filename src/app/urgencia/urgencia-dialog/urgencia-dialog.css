@@ -40,11 +40,61 @@
   width: 100%;
 }
 
+.mat-mdc-dialog-content{
+margin-top: 10px;
+}
+
 .row.two-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   align-items: flex-start;
+}
+
+.turno-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.turno-row .full-width {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.row.two-columns.disabled {
+  opacity: 0.85;
+}
+
+.turno-button {
+  flex: 0 0 48px;
+  align-self: end;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  color: #374151;
+  background: #ffffff;
+  transition: all 0.18s ease;
+}
+
+.turno-button:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.turno-button:disabled {
+  cursor: not-allowed;
+  color: #9ca3af;
+  background: #f9fafb;
+}
+
+::ng-deep .turno-button .mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
 }
 
 ::ng-deep .mat-mdc-form-field {
@@ -123,5 +173,14 @@
 
   .row.two-columns {
     grid-template-columns: 1fr;
+  }
+
+  .turno-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .turno-button {
+    justify-self: start;
   }
 }

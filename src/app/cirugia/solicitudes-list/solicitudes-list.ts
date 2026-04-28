@@ -348,12 +348,38 @@ export class SolicitudesListComponent implements OnInit {
 
   formatFechaHora(fecha: string | Date, hora: string): string {
     if (!fecha) return '-';
-    const fechaStr = new Date(fecha).toLocaleDateString('es-AR', {
+    const normalizedFecha = this.parseLocalDate(fecha);
+    const fechaStr = normalizedFecha.toLocaleDateString('es-AR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
     });
     const horaStr = hora ? hora.substring(0, 5) : '';
     return horaStr ? `${fechaStr} ${horaStr}hs` : fechaStr;
+  }
+
+  private parseLocalDate(value: string | Date): Date {
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (typeof value !== 'string') {
+      return new Date(value);
+    }
+
+    const raw = value.trim();
+    const dateOnlyMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateOnlyMatch) {
+      const [, year, month, day] = dateOnlyMatch;
+      return new Date(Number(year), Number(month) - 1, Number(day));
+    }
+
+    const dateTimeMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/);
+    if (dateTimeMatch) {
+      const [, year, month, day, hour, minute] = dateTimeMatch;
+      return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute));
+    }
+
+    return new Date(raw);
   }
 }

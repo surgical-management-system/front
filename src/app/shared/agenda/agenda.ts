@@ -3,13 +3,21 @@ import { DatePipe, CommonModule, NgFor, NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CirugiaService } from '../../core/services/cirugia.service';
+import { UrgenciaService } from '../../core/services/urgencia.service';
 import { QuirofanoService } from '../../core/services/quirofano.service';
 import { IQuirofano } from '../../core/models/quirofano';
 import { CirugiaDialog } from '../../cirugia/cirugia-dialog/cirugia-dialog';
+import { UrgenciaDialog } from '../../urgencia/urgencia-dialog/urgencia-dialog';
+import { IUrgencia } from '../../core/models/urgencia';
 
 interface TurnoAgenda {
   id: number; // ID de la cirugía
+  origen: 'cirugia' | 'urgencia';
+  cirugia?: any;
+  urgencia?: IUrgencia;
   fecha: string;
   hora: string;
   horaFin: string;
@@ -57,6 +65,7 @@ export class Agenda {
   selectedQuirofanoId: number | null = null; // null = todos
 
   private cirugiaService = inject(CirugiaService);
+  private urgenciaService = inject(UrgenciaService);
   private quirofanoService = inject(QuirofanoService);
   private dialog = inject(MatDialog);
 
@@ -102,49 +111,36 @@ export class Agenda {
     const end = this.weekDates[6];
     this.weekLabel = `${this.formatDate(start)} - ${this.formatDate(end)}`;
 
-    this.cirugiaService
-      .getCirugiasPorFechas(this.getDateString(start), this.getDateString(end))
-      .subscribe((response: any) => {
-        if (response && response.data) {
-          const cirugias = (response.data.contenido || response.data || []);
-          this.turnos = cirugias.map((cirugia: any) => {
-            const horaInicioStr = cirugia.horaInicio || '08:00';
-            const horaFinStr = cirugia.horaFin || '09:00';
-            const [hhInicio, mmInicio] = horaInicioStr.split(':').map(Number);
-            const [hhFin, mmFin] = horaFinStr.split(':').map(Number);
-            
-            // Calcular duración en medias horas
-            const inicioEnMedias = hhInicio * 2 + (mmInicio >= 30 ? 1 : 0);
-            const finEnMedias = hhFin * 2 + (mmFin >= 30 ? 1 : 0);
-            const duracionEnMedias = Math.max(1, finEnMedias - inicioEnMedias);
-            
-            return {
-              id: cirugia.id,
-              fecha: this.getDateString(new Date(cirugia.fechaInicio)),
-              hora: horaInicioStr.substring(0, 5),
-              horaFin: horaFinStr.substring(0, 5),
-              horaInicioNum: hhInicio,
-              minInicio: mmInicio,
-              horaFinNum: hhFin,
-              minFin: mmFin,
-              duracionEnMedias: duracionEnMedias,
-              descripcion: `${cirugia.pacienteNombre}\n${cirugia.servicioNombre}\n${cirugia.quirofanoNombre}`,
-              paciente: cirugia.pacienteNombre || '',
-              pacienteId: cirugia.pacienteId,
-              servicio: cirugia.servicioNombre || '',
-              servicioId: cirugia.servicioId,
-              quirofano: cirugia.quirofanoNombre || '',
-              quirofanoId: cirugia.quirofanoId || 0,
-              estado: cirugia.estado || '',
-              prioridad: cirugia.prioridad || '',
-              anestesia: cirugia.anestesia || '',
-              tipo: cirugia.tipo || '',
-              dni: cirugia.dni || '',
-              color: 'green',
-            };
-          });
+    forkJoin({
+      cirugias: this.cirugiaService
+        .getCirugiasPorFechas(this.getDateString(start), this.getDateString(end))
+        .pipe(catchError((error) => {
+          console.error('Error loading surgeries for agenda', error);
+          return of(null);
+        })),
+      urgencias: this.urgenciaService
+        .getUrgencias(0, 1000, undefined, undefined, undefined, undefined, this.getDateString(start), this.getDateString(end))
+        .pipe(catchError((error) => {
+          console.error('Error loading urgencies for agenda', error);
+          return of(null);
+        })),
+    }).subscribe(({ cirugias, urgencias }) => {
+      const turnosCirugia = this.mapCirugiasToTurnos(cirugias);
+      const turnosUrgencia = this.mapUrgenciasToTurnos(urgencias);
+
+      this.turnos = [...turnosCirugia, ...turnosUrgencia].sort((a, b) => {
+        const dateCompare = a.fecha.localeCompare(b.fecha);
+        if (dateCompare !== 0) {
+          return dateCompare;
         }
+
+        if (a.horaInicioNum !== b.horaInicioNum) {
+          return a.horaInicioNum - b.horaInicioNum;
+        }
+
+        return a.minInicio - b.minInicio;
       });
+    });
   }
 
   getStartOfWeek(date: Date): Date {
@@ -209,32 +205,17 @@ export class Agenda {
   }
 
   openCirugiaDialog(turno: TurnoAgenda) {
-    // Formatear fecha para el dialog
-    const [yyyy, mm, dd] = turno.fecha.split('-');
-    const fechaFormateada = `${dd}/${mm}/${yyyy}`;
-    
-    const dialogData = {
-      id: turno.id,
-      pacienteId: turno.pacienteId,
-      pacienteNombre: turno.paciente,
-      dni: turno.dni,
-      quirofanoId: turno.quirofanoId,
-      quirofano: turno.quirofano,
-      servicioId: turno.servicioId,
-      servicio: turno.servicio,
-      fechaInicio: fechaFormateada,
-      horaInicio: `${turno.hora} HS`,
-      estado: turno.estado,
-      prioridad: turno.prioridad,
-      anestesia: turno.anestesia,
-      tipo: turno.tipo,
-    };
-
-    const dialogRef = this.dialog.open(CirugiaDialog, {
-      width: '500px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
+    const dialogRef = turno.origen === 'urgencia'
+      ? this.dialog.open(UrgenciaDialog, {
+          width: '500px',
+          maxHeight: '90vh',
+          data: turno.urgencia as IUrgencia,
+        })
+      : this.dialog.open(CirugiaDialog, {
+          width: '500px',
+          maxHeight: '90vh',
+          data: turno.cirugia,
+        });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
@@ -242,5 +223,165 @@ export class Agenda {
         this.updateWeek();
       }
     });
+  }
+
+  private mapCirugiasToTurnos(response: any): TurnoAgenda[] {
+    const cirugias = this.extractItems(response);
+
+    return cirugias
+      .filter((cirugia: any) => !this.isCancelled(cirugia?.estado))
+      .map((cirugia: any) => {
+        const horaInicioStr = cirugia.horaInicio || '08:00';
+        const horaFinStr = cirugia.horaFin || '09:00';
+        const [hhInicio, mmInicio] = horaInicioStr.split(':').map(Number);
+        const [hhFin, mmFin] = horaFinStr.split(':').map(Number);
+        const inicioEnMedias = hhInicio * 2 + (mmInicio >= 30 ? 1 : 0);
+        const finEnMedias = hhFin * 2 + (mmFin >= 30 ? 1 : 0);
+
+        return {
+          id: cirugia.id,
+          origen: 'cirugia',
+          fecha: this.getDateString(new Date(cirugia.fechaInicio)),
+          hora: horaInicioStr.substring(0, 5),
+          horaFin: horaFinStr.substring(0, 5),
+          horaInicioNum: hhInicio,
+          minInicio: mmInicio,
+          horaFinNum: hhFin,
+          minFin: mmFin,
+          duracionEnMedias: Math.max(1, finEnMedias - inicioEnMedias),
+          descripcion: `${cirugia.pacienteNombre}\n${cirugia.servicioNombre}\n${cirugia.quirofanoNombre}`,
+          paciente: cirugia.pacienteNombre || '',
+          pacienteId: cirugia.pacienteId,
+          servicio: cirugia.servicioNombre || '',
+          servicioId: cirugia.servicioId,
+          quirofano: cirugia.quirofanoNombre || '',
+          quirofanoId: cirugia.quirofanoId || 0,
+          estado: cirugia.estado || '',
+          prioridad: cirugia.prioridad || '',
+          anestesia: cirugia.anestesia || '',
+          tipo: cirugia.tipo || '',
+          dni: cirugia.dni || '',
+          color: 'green',
+          cirugia,
+        };
+      });
+  }
+
+  private mapUrgenciasToTurnos(response: any): TurnoAgenda[] {
+    const urgencias = this.extractItems(response);
+
+    return urgencias
+      .filter((urgencia: any) => !this.isCancelled(urgencia?.estado))
+      .map((urgencia: any) => {
+        const fechaHoraInicio = new Date(urgencia.fechaHoraInicio);
+        const horaInicioNum = fechaHoraInicio.getHours();
+        const minInicio = fechaHoraInicio.getMinutes();
+        const fecha = this.getDateString(fechaHoraInicio);
+        const hora = `${String(horaInicioNum).padStart(2, '0')}:${String(minInicio).padStart(2, '0')}`;
+        const finDate = new Date(fechaHoraInicio);
+        const duracionMinutos = this.getUrgenciaDurationMinutes(urgencia);
+        finDate.setMinutes(finDate.getMinutes() + duracionMinutos);
+        const horaFinNum = finDate.getHours();
+        const minFin = finDate.getMinutes();
+        const horaFin = `${String(horaFinNum).padStart(2, '0')}:${String(minFin).padStart(2, '0')}`;
+        const duracionEnMedias = Math.max(1, Math.ceil(duracionMinutos / 30));
+
+        return {
+          id: urgencia.id,
+          origen: 'urgencia',
+          fecha,
+          hora,
+          horaFin,
+          horaInicioNum,
+          minInicio,
+          horaFinNum,
+          minFin,
+          duracionEnMedias,
+          descripcion: `${urgencia.pacienteNombre}\n${urgencia.servicioNombre}\n${urgencia.quirofanoNombre}`,
+          paciente: urgencia.pacienteNombre || '',
+          pacienteId: urgencia.pacienteId,
+          servicio: urgencia.servicioNombre || '',
+          servicioId: urgencia.servicioId,
+          quirofano: urgencia.quirofanoNombre || '',
+          quirofanoId: urgencia.quirofanoId || 0,
+          estado: urgencia.estado || '',
+          prioridad: urgencia.prioridad || '',
+          anestesia: urgencia.anestesia || '',
+          tipo: urgencia.tipo || '',
+          dni: urgencia.dni || '',
+          color: 'blue',
+          urgencia,
+        };
+      });
+  }
+
+  private getUrgenciaDurationMinutes(urgencia: any): number {
+    const candidates = [
+      urgencia?.duracionMinutos,
+      urgencia?.duracion,
+      urgencia?.duracionHoras,
+      urgencia?.servicio?.duracionMinutos,
+      urgencia?.servicio?.duracion,
+      urgencia?.servicio?.tiempoEstimadoMinutos,
+      urgencia?.servicio?.tiempoEstimado,
+      urgencia?.servicio?.duracionHoras,
+      urgencia?.servicio?.duracionServicio,
+      urgencia?.servicio?.duracionTurno,
+    ];
+
+    for (const candidate of candidates) {
+      const minutes = this.normalizeDurationToMinutes(candidate);
+      if (minutes > 0) {
+        return minutes;
+      }
+    }
+
+    return 60;
+  }
+
+  private normalizeDurationToMinutes(value: any): number {
+    if (value === null || value === undefined || value === '') {
+      return 0;
+    }
+
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      if (value <= 0) {
+        return 0;
+      }
+      return value <= 12 ? Math.round(value * 60) : Math.round(value);
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return 0;
+      }
+
+      if (/^\d+(?:[.,]\d+)?$/.test(trimmed)) {
+        const numeric = Number(trimmed.replace(',', '.'));
+        if (!Number.isFinite(numeric) || numeric <= 0) {
+          return 0;
+        }
+        return numeric <= 12 ? Math.round(numeric * 60) : Math.round(numeric);
+      }
+
+      const hourMinuteMatch = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+      if (hourMinuteMatch) {
+        const hours = Number(hourMinuteMatch[1]);
+        const minutes = Number(hourMinuteMatch[2]);
+        return hours * 60 + minutes;
+      }
+    }
+
+    return 0;
+  }
+
+  private extractItems(response: any): any[] {
+    const items = response?.data?.contenido || response?.data || [];
+    return Array.isArray(items) ? items : [];
+  }
+
+  private isCancelled(estado: string): boolean {
+    return (estado || '').toUpperCase() === 'CANCELADA';
   }
 }

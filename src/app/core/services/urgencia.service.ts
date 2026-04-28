@@ -139,6 +139,7 @@ export class UrgenciaService extends BaseApiService {
         this.buildPacienteNombre(paciente),
       dni: this.readText(item?.dni) || this.readText(paciente?.dni) || '',
       servicioId: servicio?.id ?? item?.servicioId ?? null,
+      servicio: servicio,
       servicioNombre:
         this.readText(item?.servicioNombre) ||
         this.readText(item?.servicio) ||

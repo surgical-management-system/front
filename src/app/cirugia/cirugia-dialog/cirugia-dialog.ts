@@ -120,10 +120,6 @@ export class CirugiaDialog {
       );
       // Guardar estado inicial de la cirugía (sin equipoMedico)
       this.saveInitialCirugiaState();
-      // Cargar equipo médico si existe cirugía
-      if (this.data.id) {
-        this.loadEquipoMedico(this.data.id);
-      }
     } else {
       // En modo creación, cargar servicios automáticamente
       this.openSeleccionServicios();
@@ -220,10 +216,9 @@ export class CirugiaDialog {
 
   private updateCirugia(cirugiaData: ICirugia) {
     const cirugiaChanged = this.hasCirugiaChanged();
-    const equipoChanged = this.hasEquipoMedicoChanged();
 
-    // Si no hay cambios en nada, cerrar sin hacer requests
-    if (!cirugiaChanged && !equipoChanged) {
+    // Si no hay cambios en la cirugía, cerrar sin hacer requests
+    if (!cirugiaChanged) {
       console.log('No hay cambios, cerrando sin actualizar');
       this.dialogRef.close(null);
       return;
@@ -245,36 +240,13 @@ export class CirugiaDialog {
         this.cirugiaService.updateCirugia(payload).subscribe(
           (resp: any) => {
             const cirugiaResp = resp && resp.data ? resp.data : resp;
-            // Solo guardar equipo médico si cambió
-            if (equipoChanged) {
-              this.saveEquipoMedicoAndClose(cirugiaData.id!, cirugiaResp);
-            } else {
-              this.dialogRef.close(cirugiaResp);
-            }
+            this.dialogRef.close(cirugiaResp);
           },
           (err) => {
             console.error('Error actualizando cirugía', err);
           }
         );
-      } else if (equipoChanged) {
-        // Solo cambió el equipo médico
-        this.saveEquipoMedicoAndClose(cirugiaData.id!, cirugiaData);
       }
-    });
-  }
-
-  /** Guarda el equipo médico y cierra el dialog */
-  private saveEquipoMedicoAndClose(cirugiaId: number, responseData: any) {
-    const equipoPayload = this.equipoMedico.value;
-    this.cirugiaService.saveEquipoMedico(equipoPayload, cirugiaId).subscribe({
-      next: () => {
-        console.log('Equipo médico guardado correctamente');
-        this.dialogRef.close(responseData);
-      },
-      error: (err) => {
-        console.error('Error guardando equipo médico', err);
-        this.dialogRef.close(responseData);
-      },
     });
   }
 
@@ -286,20 +258,10 @@ export class CirugiaDialog {
     this.initialCirugiaData = JSON.stringify(cirugiaFields);
   }
 
-  /** Guarda el estado inicial del equipo médico para comparar después */
-  private saveInitialEquipoState() {
-    this.initialEquipoMedico = JSON.stringify(this.equipoMedico.value);
-  }
-
   /** Verifica si los datos de la cirugía cambiaron */
   private hasCirugiaChanged(): boolean {
     const { equipoMedico, ...cirugiaFields } = this.form.value;
     return JSON.stringify(cirugiaFields) !== this.initialCirugiaData;
-  }
-
-  /** Verifica si el equipo médico cambió */
-  private hasEquipoMedicoChanged(): boolean {
-    return JSON.stringify(this.equipoMedico.value) !== this.initialEquipoMedico;
   }
 
   cancelar() {
@@ -412,17 +374,6 @@ export class CirugiaDialog {
   /** Getter para el FormArray del equipo médico */
   get equipoMedico(): FormArray {
     return this.form.get('equipoMedico') as FormArray;
-  }
-
-  /** Carga el equipo médico de una cirugía existente */
-  loadEquipoMedico(cirugiaId: number) {
-    this.cirugiaService.getEquipoMedicoByCirugiaId(cirugiaId).subscribe((resp: any) => {
-      const integrantes = (resp?.data ?? []) as IMiembroEquipoMedico[];
-      integrantes.forEach((p) => this.addIntegrante(p));
-      this.dataSourceEquipo.data = this.equipoMedico.value ?? [];
-      // Guardar estado inicial del equipo médico
-      this.saveInitialEquipoState();
-    });
   }
 
   /** Abre el diálogo de selección de personal */

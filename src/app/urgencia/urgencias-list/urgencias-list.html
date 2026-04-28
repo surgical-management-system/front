@@ -139,14 +139,18 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu" panelClass="dark-menu-panel">
-                <button mat-menu-item (click)="openUrgencia(s)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Editar</span>
-                </button>
-                <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
-                  <mat-icon>people</mat-icon>
-                  <span>Equipo médico</span>
-                </button>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="openUrgencia(s)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
+                    <mat-icon>people</mat-icon>
+                    <span>Equipo médico</span>
+                  </button>
+                </ng-container>
                 <ng-container *ngIf="s.estado === 'PROGRAMADA'">
                   <button mat-menu-item (click)="inicializarUrgencia(s)" class="iniciar-option">
                     <mat-icon>play_circle_filled</mat-icon>
@@ -178,7 +182,7 @@
                   class="delete-option"
                 >
                   <mat-icon>delete</mat-icon>
-                  <span>Eliminar</span>
+                  <span>Cancelar</span>
                 </button>
               </mat-menu>
             </div>
@@ -201,10 +205,18 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuCard="matMenu" panelClass="dark-menu-panel">
-                <button mat-menu-item (click)="openUrgencia(s)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Editar</span>
-                </button>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="openUrgencia(s)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar</span>
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
+                    <mat-icon>people</mat-icon>
+                    <span>Equipo médico</span>
+                  </button>
+                </ng-container>
                 <ng-container *ngIf="s.estado === 'PROGRAMADA'">
                   <button mat-menu-item (click)="inicializarUrgencia(s)" class="iniciar-option">
                     <mat-icon>play_circle_filled</mat-icon>

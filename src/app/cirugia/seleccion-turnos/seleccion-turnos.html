@@ -40,10 +40,13 @@
 		<section class="content">
 			<div class="day-header">{{ columns[selectedIndex].title }}</div>
 			<div class="slots">
-				<button mat-stroked-button class="slot-btn"
+				<button mat-stroked-button class="slot-btn" type="button"
 								*ngFor="let s of columns[selectedIndex]?.slots"
+								[class.available]="s.disponible"
+								[class.occupied]="!s.disponible"
+								[disabled]="!s.disponible && !allowOccupiedTurns"
 								(click)="select(s)">
-					{{ s.label }}
+						{{ s.label }}
 				</button>
 			</div>
 		</section>

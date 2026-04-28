@@ -4,198 +4,130 @@
 </h2>
 
 <mat-dialog-content class="dialog-content">
-  <mat-tab-group animationDuration="200ms" class="cirugia-tabs">
-    <!-- TAB 1: Datos de la cirugía -->
-    <mat-tab label="Datos de Cirugía">
-      <div class="tab-content">
-        <form [formGroup]="form" novalidate>
-          <!-- Paciente -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Paciente</mat-label>
-            <input type="text"
-                   matInput
-                   [formControl]="pacienteCtrl"
-                   placeholder="Seleccioná un paciente"
-                   readonly>
-            <button mat-icon-button matSuffix type="button" (click)="openPacienteListDialog()" aria-label="Abrir selector de pacientes">
-              <mat-icon>list</mat-icon>
-            </button>
-          </mat-form-field>
+  <div class="tab-content">
+    <form [formGroup]="form" novalidate>
+      <!-- Paciente -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Paciente</mat-label>
+        <input type="text"
+               matInput
+               [formControl]="pacienteCtrl"
+               placeholder="Seleccioná un paciente"
+               readonly>
+        <button mat-icon-button matSuffix type="button" (click)="openPacienteListDialog()" aria-label="Abrir selector de pacientes">
+          <mat-icon>list</mat-icon>
+        </button>
+      </mat-form-field>
 
-          <!-- Servicio -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Servicio</mat-label>
-            <!-- Mostrar input readonly cuando hay ID pero servicios no están cargados -->
-            <input *ngIf="form.get('servicioId')?.value && servicios.length === 0" 
-                   matInput 
-                   [value]="form.get('servicioNombre')?.value"
-                   (click)="switchToSelectAndLoad()"
-                   style="cursor: pointer;"
-                   readonly>
-            <button *ngIf="form.get('servicioId')?.value && servicios.length === 0"
-                    mat-icon-button 
-                    matSuffix 
-                    type="button"
-                    (click)="switchToSelectAndLoad()" 
-                    aria-label="Cambiar servicio">
-              <mat-icon>arrow_drop_down</mat-icon>
-            </button>
-            <!-- Mostrar select cuando servicios están cargados o no hay ID preseleccionado -->
-            <mat-select #servicioSelect
-                        *ngIf="!form.get('servicioId')?.value || servicios.length > 0"
-                        formControlName="servicioId">  
-              <mat-option *ngFor="let s of servicios" [value]="s.id">
-                {{ s.nombre }}
-              </mat-option> 
-            </mat-select>
-          </mat-form-field>
+      <!-- Servicio -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Servicio</mat-label>
+        <!-- Mostrar input readonly cuando hay ID pero servicios no están cargados -->
+        <input *ngIf="form.get('servicioId')?.value && servicios.length === 0"
+               matInput
+               [value]="form.get('servicioNombre')?.value"
+               (click)="switchToSelectAndLoad()"
+               style="cursor: pointer;"
+               readonly>
+        <button *ngIf="form.get('servicioId')?.value && servicios.length === 0"
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="switchToSelectAndLoad()"
+                aria-label="Cambiar servicio">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <!-- Mostrar select cuando servicios están cargados o no hay ID preseleccionado -->
+        <mat-select #servicioSelect
+                    *ngIf="!form.get('servicioId')?.value || servicios.length > 0"
+                    formControlName="servicioId">
+          <mat-option *ngFor="let s of servicios" [value]="s.id">
+            {{ s.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-          <!-- Fecha y Hora inicio (DOS COLUMNAS) -->
-          <div class="row two-columns" [class.disabled]="!form.get('servicioId')?.value">
-            <!-- Fecha: completada desde selector de turnos -->
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Fecha inicio</mat-label>
-              <input matInput formControlName="fechaInicio" placeholder="dd/MM/yyyy" readonly>
-            </mat-form-field>
+      <!-- Fecha y Hora inicio (DOS COLUMNAS) -->
+      <div class="row two-columns" [class.disabled]="!form.get('servicioId')?.value">
+        <!-- Fecha: completada desde selector de turnos -->
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Fecha inicio</mat-label>
+          <input matInput formControlName="fechaInicio" placeholder="dd/MM/yyyy" readonly>
+        </mat-form-field>
 
-            <!-- Hora: input completado desde selector de turnos (formato 24h) -->
-            <mat-form-field appearance="outline" class="time-width">
-              <mat-label>Hora inicio</mat-label>
-              <input matInput type="text" formControlName="horaInicio" placeholder="HH:MM" readonly>
-            </mat-form-field>
+        <!-- Hora: input completado desde selector de turnos (formato 24h) -->
+        <mat-form-field appearance="outline" class="time-width">
+          <mat-label>Hora inicio</mat-label>
+          <input matInput type="text" formControlName="horaInicio" placeholder="HH:MM" readonly>
+        </mat-form-field>
 
-            <!-- Botón externo para seleccionar turno (deshabilitado si no hay servicio) -->
-            <button mat-icon-button 
-                    class="turno-button" 
-                    type="button" 
-                    (click)="openSeleccionTurnos()" 
-                    [disabled]="!form.get('servicioId')?.value"
-                    [matTooltip]="!form.get('servicioId')?.value ? 'Seleccioná un servicio primero' : 'Seleccionar turno'"
-                    aria-label="Seleccionar turno">
-              <mat-icon>calendar_today</mat-icon>
-            </button>
-          </div>
-
-          <!-- Quirofano (solo lectura, se selecciona desde el selector de turnos) -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Quirófano</mat-label>
-            <input matInput 
-                   [value]="form.get('quirofanoNombre')?.value || 'Se autocompleta al elegir turno'"
-                   readonly
-                   [style.color]="form.get('quirofanoNombre')?.value ? 'inherit' : '#999'">
-            <mat-icon matSuffix style="color: #999; font-size: 18px;">info_outline</mat-icon>
-          </mat-form-field>
-
-          <!-- Estado -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Estado</mat-label>
-            <mat-select formControlName="estado">
-              <mat-option value="PROGRAMADA">Programada</mat-option>
-              <mat-option value="EN_CURSO">En curso</mat-option>
-              <mat-option value="FINALIZADA">Finalizada</mat-option>
-              <mat-option value="CANCELADA">Cancelada</mat-option>
-              <!-- <mat-option value="PENDIENTE">Pendiente</mat-option> -->
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Prioridad -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Prioridad</mat-label>
-            <mat-select formControlName="prioridad">
-              <mat-option value="ALTA">Alta</mat-option>
-              <mat-option value="MEDIA">Media</mat-option>
-              <mat-option value="BAJA">Baja</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Anestesia -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Anestesia</mat-label>
-            <mat-select formControlName="anestesia">
-              <mat-option value="GENERAL">General</mat-option>
-              <mat-option value="LOCAL">Local</mat-option>
-              <mat-option value="REGIONAL">Regional</mat-option>
-              <mat-option value="SEDACION">Sedación</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Tipo -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Tipo</mat-label>
-            <mat-select formControlName="tipo">
-              <mat-option value="ELECTIVA">Electiva</mat-option>
-              <mat-option value="URGENTE">Urgente</mat-option>
-              <mat-option value="PROGRAMADA">Programada</mat-option>
-              <mat-option value="AMBULATORIA">Ambulatoria</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </form>
+        <!-- Botón externo para seleccionar turno (deshabilitado si no hay servicio) -->
+        <button mat-icon-button
+                class="turno-button"
+                type="button"
+                (click)="openSeleccionTurnos()"
+                [disabled]="!form.get('servicioId')?.value"
+                [matTooltip]="!form.get('servicioId')?.value ? 'Seleccioná un servicio primero' : 'Seleccionar turno'"
+                aria-label="Seleccionar turno">
+          <mat-icon>calendar_today</mat-icon>
+        </button>
       </div>
-    </mat-tab>
 
-    <!-- TAB 2: Equipo Médico -->
-    <mat-tab [disabled]="!isEditMode">
-      <ng-template mat-tab-label>
-        <span [class.tab-disabled]="!isEditMode">Equipo Médico</span>
-        <mat-icon *ngIf="!isEditMode" class="tab-lock-icon" matTooltip="Guardá la cirugía primero">lock</mat-icon>
-      </ng-template>
-      
-      <div class="tab-content equipo-content">
-        <div class="equipo-header">
-          <div class="equipo-header-info">
-            <mat-icon class="equipo-header-icon">groups</mat-icon>
-            <div>
-              <h3 class="equipo-title">Equipo Médico</h3>
-              <p class="equipo-subtitle">Asigná los profesionales que participarán en esta cirugía</p>
-            </div>
-          </div>
-          <button mat-flat-button color="primary" class="btn-agregar" (click)="openPersonalListDialog()">
-            <mat-icon>person_add</mat-icon>
-            Agregar integrante
-          </button>
-        </div>
+      <!-- Quirofano (solo lectura, se selecciona desde el selector de turnos) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Quirófano</mat-label>
+        <input matInput
+               [value]="form.get('quirofanoNombre')?.value || 'Se autocompleta al elegir turno'"
+               readonly
+               [style.color]="form.get('quirofanoNombre')?.value ? 'inherit' : '#999'">
+        <mat-icon matSuffix style="color: #999; font-size: 18px;">info_outline</mat-icon>
+      </mat-form-field>
 
-        <!-- Lista vacía -->
-        <div *ngIf="equipoMedico.length === 0" class="equipo-empty">
-          <div class="equipo-empty-icon">
-            <mat-icon>group_add</mat-icon>
-          </div>
-          <h4>Sin integrantes asignados</h4>
-          <p>Agregá médicos, enfermeros y otros profesionales al equipo</p>
-        </div>
+      <!-- Estado -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="estado">
+          <mat-option value="PROGRAMADA">Programada</mat-option>
+          <mat-option value="EN_CURSO">En curso</mat-option>
+          <mat-option value="FINALIZADA">Finalizada</mat-option>
+          <mat-option value="CANCELADA">Cancelada</mat-option>
+          <!-- <mat-option value="PENDIENTE">Pendiente</mat-option> -->
+        </mat-select>
+      </mat-form-field>
 
-        <!-- Lista de integrantes como tarjetas -->
-        <div class="equipo-list" *ngIf="equipoMedico.length > 0">
-          <div class="equipo-card" *ngFor="let member of dataSourceEquipo.data; let i = index">
-            <div class="equipo-card-avatar">
-              <mat-icon>person</mat-icon>
-            </div>
-            <div class="equipo-card-info">
-              <span class="equipo-card-name">{{ member.nombre }}</span>
-              <span class="equipo-card-legajo">Legajo: {{ member.legajo }}</span>
-            </div>
-            <div class="equipo-card-rol" [formGroup]="$any(equipoMedico.at(i))">
-              <mat-form-field appearance="outline" class="rol-field">
-                <mat-label>Rol en cirugía</mat-label>
-                <input matInput formControlName="rol" placeholder="Ej: Cirujano principal">
-              </mat-form-field>
-            </div>
-            <button mat-icon-button class="equipo-card-delete" (click)="removeIntegrante(i)" matTooltip="Quitar del equipo">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        </div>
+      <!-- Prioridad -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="prioridad">
+          <mat-option value="ALTA">Alta</mat-option>
+          <mat-option value="MEDIA">Media</mat-option>
+          <mat-option value="BAJA">Baja</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <!-- Contador de integrantes -->
-        <div class="equipo-footer" *ngIf="equipoMedico.length > 0">
-          <span class="equipo-count">
-            <mat-icon>check_circle</mat-icon>
-            {{ equipoMedico.length }} integrante{{ equipoMedico.length !== 1 ? 's' : '' }} en el equipo
-          </span>
-        </div>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
+      <!-- Anestesia -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Anestesia</mat-label>
+        <mat-select formControlName="anestesia">
+          <mat-option value="GENERAL">General</mat-option>
+          <mat-option value="LOCAL">Local</mat-option>
+          <mat-option value="REGIONAL">Regional</mat-option>
+          <mat-option value="SEDACION">Sedación</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Tipo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="ELECTIVA">Electiva</mat-option>
+          <mat-option value="URGENTE">Urgente</mat-option>
+          <mat-option value="PROGRAMADA">Programada</mat-option>
+          <mat-option value="AMBULATORIA">Ambulatoria</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog-actions">

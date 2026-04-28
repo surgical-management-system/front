@@ -17,6 +17,7 @@ export interface IUrgencia {
   dni: string;
   servicioId: number | null;
   servicioNombre: string;
+  servicio?: any;
   quirofanoId: number | null;
   quirofanoNombre: string;
 }

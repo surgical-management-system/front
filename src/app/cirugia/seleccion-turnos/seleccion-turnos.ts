@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CirugiaService } from '../../core/services/cirugia.service';
 
-type Slot = { label: string; time: string; date: Date };
+type Slot = { label: string; time: string; date: Date; disponible: boolean; turnoId?: number; estado?: string };
 type DayColumn = { date: Date; title: string; slots: Slot[] };
 
 @Component({
@@ -17,6 +17,7 @@ export class SeleccionTurnos {
   columns: DayColumn[] = [];
   selectedIndex = 0;
   servicioId = 0;
+  allowOccupiedTurns = false;
   fechaHoy: Date = (() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -38,6 +39,7 @@ export class SeleccionTurnos {
       intervalMinutes?: number;
       servicioId?: number;
       quirofanos?: any[];
+      allowOccupiedTurns?: boolean;
     } | null,
   ) {
     const days = data?.days ?? 7;
@@ -45,6 +47,7 @@ export class SeleccionTurnos {
     const endHour = data?.endHour ?? '17:30';
     const interval = data?.intervalMinutes ?? 30;
     this.servicioId = data?.servicioId ?? 0;
+    this.allowOccupiedTurns = data?.allowOccupiedTurns ?? false;
     // Prebuild a local skeleton while the backend responde
     this.columns = this.buildColumns(days, startHour, endHour, interval);
     this.quirofanos = data?.quirofanos ?? [];
@@ -71,10 +74,6 @@ export class SeleccionTurnos {
   private loadTurnos(days: number): void {
     this.selectedDays = days;
     this.selectedIndex = 0;
-    var fechaLimite = new Date();
-    fechaLimite.setDate(this.fechaHoy.getDate() + days);
-    const estado = 'DISPONIBLE';
-    const quirofanoId = this.selectedQuirofanoId ?? 0;
     const now = new Date();
     this.fechaHoy.setHours(
       now.getHours(),
@@ -82,6 +81,9 @@ export class SeleccionTurnos {
       now.getSeconds(),
       now.getMilliseconds(),
     );
+    const fechaLimite = new Date(this.fechaHoy);
+    fechaLimite.setDate(fechaLimite.getDate() + days);
+    const quirofanoId = this.selectedQuirofanoId ?? 0;
     this.cirugiaService
       .getTurnosDisponibles(
         quirofanoId,
@@ -89,16 +91,13 @@ export class SeleccionTurnos {
         this.getDateString(fechaLimite),
         0,
         300,
-        estado,
+        this.servicioId,
       )
       .subscribe({
         next: (resp: any) => {
-          // La respuesta viene directamente con contenido (sin data wrapper)
-          const contenido = resp?.contenido ?? resp?.data?.contenido ?? [];
+          const contenido = this.extractTurnos(resp);
           if (Array.isArray(contenido) && contenido.length > 0) {
-            // Extraer fechaHoraInicio de cada turno
-            const horarios = contenido.map((turno: any) => turno.fechaHoraInicio);
-            this.buildColumnsFromBackend(horarios);
+            this.buildColumnsFromBackend(contenido);
           } else {
             console.warn('No turnos available or invalid response format');
             this.columns = [];
@@ -110,31 +109,30 @@ export class SeleccionTurnos {
       });
   }
 
-  private buildColumnsFromBackend(horarios: string[]): void {
-    // horarios es un array de ISO strings: ["2025-12-16T08:00:00", "2025-12-16T08:30:00", ...]
-    if (!Array.isArray(horarios) || horarios.length === 0) {
+  private buildColumnsFromBackend(turnos: any[]): void {
+    if (!Array.isArray(turnos) || turnos.length === 0) {
       console.warn('No hay turnos disponibles o formato inválido');
       return;
     }
 
     const columnMap = new Map<string, DayColumn>();
 
-    horarios.forEach((isoString: string) => {
-      const fecha = new Date(isoString);
+    turnos.forEach((turno: any) => {
+      const fecha = new Date(turno.fechaHoraInicio);
+      if (Number.isNaN(fecha.getTime())) {
+        return;
+      }
 
-      // Extraer fecha en formato YYYY-MM-DD para agrupar
       const yyyy = fecha.getFullYear();
       const mm = (fecha.getMonth() + 1).toString().padStart(2, '0');
       const dd = fecha.getDate().toString().padStart(2, '0');
       const fechaKey = `${yyyy}-${mm}-${dd}`;
 
-      // Crear columna si no existe
       if (!columnMap.has(fechaKey)) {
         const title = this.formatDayTitle(fecha);
         columnMap.set(fechaKey, { date: fecha, title, slots: [] });
       }
 
-      // Extraer hora en formato HH:MM
       const hh = fecha.getHours().toString().padStart(2, '0');
       const min = fecha.getMinutes().toString().padStart(2, '0');
       const timeStr = `${hh}:${min}`;
@@ -143,12 +141,35 @@ export class SeleccionTurnos {
         label: timeStr,
         time: timeStr,
         date: fecha,
+        disponible: this.isDisponible(turno.disponible),
+        turnoId: turno.id,
+        estado: turno.estado,
       };
 
       columnMap.get(fechaKey)!.slots.push(slot);
     });
 
-    this.columns = Array.from(columnMap.values());
+    this.columns = Array.from(columnMap.values()).map((column) => ({
+      ...column,
+      slots: column.slots.sort((a, b) => a.time.localeCompare(b.time)),
+    }));
+  }
+
+  private extractTurnos(resp: any): any[] {
+    const contenido = resp?.data?.contenido ?? resp?.contenido ?? resp?.data ?? [];
+    return Array.isArray(contenido) ? contenido : [];
+  }
+
+  private isDisponible(value: any): boolean {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      return value.toLowerCase() === 'true' || value.toLowerCase() === 'disponible';
+    }
+
+    return Boolean(value);
   }
 
   private buildColumns(
@@ -181,12 +202,16 @@ export class SeleccionTurnos {
     for (let t = new Date(start); t <= end; t = new Date(t.getTime() + interval * 60000)) {
       const hh = t.getHours().toString().padStart(2, '0');
       const mm = t.getMinutes().toString().padStart(2, '0');
-      slots.push({ label: `${hh}:${mm}`, time: `${hh}:${mm}`, date: new Date(t) });
+      slots.push({ label: `${hh}:${mm}`, time: `${hh}:${mm}`, date: new Date(t), disponible: true });
     }
     return slots;
   }
 
   select(slot: Slot) {
+    if (!slot.disponible && !this.allowOccupiedTurns) {
+      return;
+    }
+
     const quirofano = this.quirofanos.find((q) => q.id === this.selectedQuirofanoId);
     this.dialogRef.close({
       date: slot.date,
