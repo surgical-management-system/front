@@ -75,6 +75,10 @@
   margin-right: 4px;
 }
 
+.table-wrapper {
+  margin: 0 14px 0;
+}
+
 /* Loading Overlay */
 .loading-overlay {
   position: absolute;

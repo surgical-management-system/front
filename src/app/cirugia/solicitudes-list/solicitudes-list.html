@@ -40,7 +40,7 @@
         </button>
       </div>
     </div>
-    <div class="cirugia-list-shell">
+    <div class="cirugia-list-shell" [class.cards-mode]="viewMode === 'cards'">
 
     <div class="table-wrapper" [class.loading]="isLoading">
       @if (isLoading) {

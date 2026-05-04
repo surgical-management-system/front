@@ -193,7 +193,7 @@ export class UrgenciasListComponent implements OnInit {
 
   openUrgencia(urgencia?: IUrgencia) {
     this.dialog
-      .open(UrgenciaDialog, { data: urgencia, width: '760px', maxHeight: '90vh' })
+      .open(UrgenciaDialog, { data: urgencia, width: '520px', maxHeight: '90vh' })
       .afterClosed()
       .subscribe((result) => {
         if (result) {

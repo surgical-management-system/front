@@ -17,10 +17,14 @@
 .cirugia-list-shell {
   margin: 0 14px 0px; /* remove bottom gap */
   padding: 0px;
-  border: 1px solid #e5e9f2;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+
+  /* border-radius: 18px; */
+  /* background: #ffffff; */
+  /* box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06); */
+}
+
+.cirugia-list-shell.cards-mode {
+  border: none;
 }
 
 .table-list-container .mat-mdc-cell {
@@ -198,6 +202,8 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
 .table-wrapper {
   position: relative;
   overflow-x: auto;
+  border: none;
+  box-shadow: none;
 }
 
 /* Ensure paginator and list don't create extra bottom spacing */
@@ -211,7 +217,7 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 14px;
-  padding: 0px 14px;
+  padding: 0px 0px;
 }
 
 .cirugia-card {

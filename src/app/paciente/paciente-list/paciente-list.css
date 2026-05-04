@@ -1,7 +1,7 @@
 .table-list-container {
   min-height: auto;
-  max-width: 4000px;
-  padding: 16px 0 0 0;
+  max-width: 5000px;
+  padding: 16px 0px 0px 0px;
   font-family:
     'Inter',
     -apple-system,
@@ -10,7 +10,7 @@
     Roboto,
     sans-serif;
   border-radius: 0px;
-  box-shadow: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.171);
   background: white;
 }
 
@@ -75,6 +75,8 @@
 .table-wrapper {
   position: relative;
   overflow-x: auto;
+  margin: 0 14px 0;
+  
 }
 .table-wrapper.loading {
   opacity: 0.6;

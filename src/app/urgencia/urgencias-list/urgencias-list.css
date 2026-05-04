@@ -184,11 +184,21 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
   overflow-x: auto;
 }
 
+.urgencia-list-shell {
+  margin: 0 14px 0px;
+  padding: 0px;
+  /* border: 1px solid #e5e9f2; */
+}
+
+.urgencia-list-shell.cards-mode {
+  border: none;
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 14px;
-  padding: 0px 14px;
+  padding: 0px 0px;
 }
 
 .cirugia-card {

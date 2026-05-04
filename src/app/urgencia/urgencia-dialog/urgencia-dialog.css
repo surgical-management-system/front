@@ -70,8 +70,8 @@ margin-top: 10px;
 .turno-button {
   flex: 0 0 48px;
   align-self: end;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border: 1px solid #d1d5db;
   border-radius: 12px;
   color: #374151;

@@ -47,7 +47,8 @@
     </div>
   </div>
 
-  <div class="table-wrapper" [class.loading]="isLoading">
+  <div class="urgencia-list-shell" [class.cards-mode]="viewMode === 'cards'">
+    <div class="table-wrapper" [class.loading]="isLoading">
     @if (isLoading) {
       <div class="loading-overlay">
         <mat-icon class="spinner">sync</mat-icon>
