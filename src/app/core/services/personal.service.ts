@@ -30,7 +30,17 @@ export class PersonalService extends BaseApiService {
   //   return this.get<IApiResponse<IPersonal>>('/personal', { search: q });
   // }
 
-  searchPersonalLite(page=0, pageSize=10, q: string) {
-    return this.get<IPaginatedResponse<IPersonalLite[]>>('/personal/resumen', { page: Number(page), size: Number(pageSize), search: q });
+  searchPersonalLite(page = 0, pageSize = 10, q: string, role?: string) {
+    const params: Record<string, string> = {
+      page: String(page),
+      size: String(pageSize),
+      search: q,
+    };
+
+    if (role) {
+      params['role'] = role;
+    }
+
+    return this.get<IPaginatedResponse<IPersonalLite[]>>('/personal/resumen', params);
   }
 }

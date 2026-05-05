@@ -24,6 +24,12 @@ import { QuirofanoService } from '../../core/services/quirofano.service';
 import { UrgenciaService } from '../../core/services/urgencia.service';
 import { SeleccionTurnos } from '../../cirugia/seleccion-turnos/seleccion-turnos';
 
+const PRIORITY_OPTIONS = [
+  { value: 1, label: 'Alta', icon: 'priority_high' },
+  { value: 2, label: 'Media', icon: 'low_priority' },
+  { value: 3, label: 'Baja', icon: 'arrow_downward' },
+];
+
 @Component({
   standalone: true,
   selector: 'app-urgencia-dialog',
@@ -50,6 +56,7 @@ export class UrgenciaDialog {
   public horaCtrl = new FormControl<string>('');
   public quirofanos: IQuirofano[] = [];
   public servicios: any[] = [];
+  public priorities = PRIORITY_OPTIONS;
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +68,7 @@ export class UrgenciaDialog {
   ) {
     this.form = this.fb.group({
       id: [null],
-      prioridad: ['ALTA', Validators.required],
+      prioridad: [1, Validators.required],
       nivelUrgencia: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
       fechaHoraInicio: ['', Validators.required],
       fechaInicio: [''],
@@ -316,5 +323,45 @@ export class UrgenciaDialog {
     const nombre = paciente?.nombre ?? '';
     const apellido = (paciente as any)?.apellido ?? '';
     return [nombre, apellido].filter(Boolean).join(' ').trim();
+  }
+  get selectedPriority() {
+    return this.priorities.find((priority) => priority.value === this.normalizePriorityValue(this.form.get('prioridad')?.value));
+  }
+
+  getPriorityLabel(priority: string | number | null | undefined): string {
+    const normalized = this.normalizePriorityValue(priority);
+    const match = this.priorities.find((item) => item.value === normalized);
+    return match?.label ?? '-';
+  }
+
+  getPriorityClass(priority: string | number | null | undefined): string {
+    const normalized = this.normalizePriorityValue(priority);
+    if (normalized === 1) return 'chip-alta';
+    if (normalized === 2) return 'chip-media';
+    if (normalized === 3) return 'chip-baja';
+
+    const priorityText = String(priority || '').toLowerCase();
+    if (priorityText.includes('alta') || priorityText.includes('urgente') || priorityText.includes('critica')) {
+      return 'chip-alta';
+    }
+    if (priorityText.includes('media') || priorityText.includes('moderada')) return 'chip-media';
+    if (priorityText.includes('baja') || priorityText.includes('normal')) return 'chip-baja';
+    return '';
+  }
+
+  private normalizePriorityValue(priority: string | number | null | undefined): number | null {
+    if (priority === null || priority === undefined || priority === '') {
+      return null;
+    }
+
+    if (typeof priority === 'number') {
+      return priority;
+    }
+
+    const normalized = String(priority).trim().toLowerCase();
+    if (normalized === '1' || normalized === 'alta') return 1;
+    if (normalized === '2' || normalized === 'media' || normalized === 'moderada') return 2;
+    if (normalized === '3' || normalized === 'baja' || normalized === 'normal') return 3;
+    return null;
   }
 }

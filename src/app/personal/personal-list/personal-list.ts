@@ -106,8 +106,8 @@ export class PersonalList {
 
   getEstadoClass(estado: string): string {
     const estadoLower = estado?.toLowerCase() || '';
-    if (estadoLower === 'activo' || estadoLower === 'disponible') return 'estado-activo';
-    if (estadoLower === 'inactivo' || estadoLower === 'no disponible') return 'estado-inactivo';
+    if (estadoLower === 'activo' || estadoLower === 'disponible' || estadoLower === 'alta') return 'estado-activo';
+    if (estadoLower === 'inactivo' || estadoLower === 'no disponible' || estadoLower === 'baja') return 'estado-inactivo';
     if (estadoLower === 'licencia' || estadoLower === 'vacaciones') return 'estado-licencia';
     return 'estado-default';
   }
@@ -119,6 +119,13 @@ export class PersonalList {
     if (rolLower.includes('anestesista') || rolLower.includes('anestesiólogo')) return 'rol-anestesista';
     if (rolLower.includes('instrumentista') || rolLower.includes('instrumentador')) return 'rol-instrumentista';
     return 'rol-default';
+  }
+
+  getRolLabel(rol: string): string {
+    const rolValue = rol?.toLowerCase() || '';
+    if (rolValue === 'personal_medico') return 'Personal Médico';
+    if (rolValue === 'admin') return 'Administrador';
+    return rol || '-';
   }
 
   deletePersonal(id: number) {

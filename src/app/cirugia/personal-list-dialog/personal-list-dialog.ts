@@ -39,6 +39,7 @@ export class PersonalListDialog implements OnInit {
   pageSize = 16;
   page = 0;
   searchControl = new FormControl('');
+  roleFilter = 'personal_medico';
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -56,7 +57,7 @@ export class PersonalListDialog implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((q) => this.personalService.searchPersonalLite(this.page, this.pageSize, (q ?? '').trim()).pipe(
+      switchMap((q) => this.personalService.searchPersonalLite(this.page, this.pageSize, (q ?? '').trim(), this.roleFilter).pipe(
         map((r: any) => r ?? {}),
         catchError(() => of({ data: { contenido: [], totalElementos: 0 } }))
       ))
@@ -74,7 +75,7 @@ export class PersonalListDialog implements OnInit {
   }
 
   loadPage(page: number, pageSize: number, q: string) {
-    this.personalService.searchPersonalLite(page, pageSize, q ?? '').subscribe((resp: any) => {
+    this.personalService.searchPersonalLite(page, pageSize, q ?? '', this.roleFilter).subscribe((resp: any) => {
       // Adaptar a la estructura paginada del backend (contenido, totalElementos, pagina, tamaño)
       const data = resp?.data;
       const content = Array.isArray(data?.contenido) ? data.contenido : (Array.isArray(data?.content) ? data.content : []);

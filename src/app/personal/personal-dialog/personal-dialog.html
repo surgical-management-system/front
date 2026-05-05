@@ -42,15 +42,53 @@
     <!-- Rol -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Rol</mat-label>
-      <input matInput formControlName="rol" required />
-      <mat-error *ngIf="form.get('rol')?.hasError('required')"> </mat-error>
+      <mat-select formControlName="rol" required>
+        <mat-select-trigger>
+          <span class="role-trigger" *ngIf="selectedRole; else emptyRoleTrigger">
+            <mat-icon class="role-option-icon">{{ selectedRole.icon }}</mat-icon>
+            <span>{{ selectedRole.label }}</span>
+          </span>
+          <ng-template #emptyRoleTrigger>
+            <span class="role-trigger-placeholder">Select a role</span>
+          </ng-template>
+        </mat-select-trigger>
+        <mat-option *ngFor="let rol of roles" [value]="rol.value">
+          <span class="role-option">
+            <mat-icon class="role-option-icon">{{ rol.icon }}</mat-icon>
+            <span>{{ rol.label }}</span>
+          </span>
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('rol')?.hasError('required')">El rol es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('rol')?.hasError('invalidRole')">
+        Solo se permite Admin o Personal Médico
+      </mat-error>
     </mat-form-field>
 
     <!-- Estado -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Estado</mat-label>
-      <input matInput formControlName="estado" required />
-      <mat-error *ngIf="form.get('estado')?.hasError('required')"> </mat-error>
+      <mat-select formControlName="estado" required>
+        <mat-select-trigger>
+          <span class="state-trigger" *ngIf="selectedState; else emptyStateTrigger">
+            <mat-icon class="role-option-icon">{{ selectedState.icon }}</mat-icon>
+            <span>{{ selectedState.label }}</span>
+          </span>
+          <ng-template #emptyStateTrigger>
+            <span class="state-trigger-placeholder">Select a state</span>
+          </ng-template>
+        </mat-select-trigger>
+        <mat-option *ngFor="let state of states" [value]="state.value">
+          <span class="state-option">
+            <mat-icon class="role-option-icon">{{ state.icon }}</mat-icon>
+            <span>{{ state.label }}</span>
+          </span>
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('estado')?.hasError('required')">El estado es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('estado')?.hasError('invalidState')">
+        Solo se permite Alta o Baja
+      </mat-error>
     </mat-form-field>
 
     <!-- Telefono -->

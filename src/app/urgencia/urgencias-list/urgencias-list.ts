@@ -55,7 +55,6 @@ export class UrgenciasListComponent implements OnInit {
     'servicioNombre',
     'estado',
     'tipo',
-    'prioridad',
     'nivelUrgencia',
     'quirofanoNombre',
     'acciones',
@@ -72,7 +71,6 @@ export class UrgenciasListComponent implements OnInit {
     servicioNombre: 'servicio',
     estado: 'estado',
     tipo: 'tipo',
-    prioridad: 'prioridad',
     nivelUrgencia: 'nivelUrgencia',
     quirofanoNombre: 'quirofano',
   };
@@ -312,16 +310,6 @@ export class UrgenciasListComponent implements OnInit {
     if (estadoUpper === 'EN_CURSO' || estadoUpper === 'PENDIENTE') return 'chip-pendiente';
     if (estadoUpper === 'FINALIZADA') return 'chip-realizada';
     if (estadoUpper === 'CANCELADA') return 'chip-cancelada';
-    return '';
-  }
-
-  getPrioridadClass(prioridad: string): string {
-    const prioridadLower = prioridad?.toLowerCase() || '';
-    if (prioridadLower.includes('alta') || prioridadLower.includes('urgente') || prioridadLower.includes('critica')) {
-      return 'chip-alta';
-    }
-    if (prioridadLower.includes('media') || prioridadLower.includes('moderada')) return 'chip-media';
-    if (prioridadLower.includes('baja') || prioridadLower.includes('normal')) return 'chip-baja';
     return '';
   }
 
