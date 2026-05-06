@@ -157,6 +157,34 @@ margin-top: 10px;
   border-color: #9ca3af;
 }
 
+/* Nivel de Urgencia Badge */
+.nivel-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-right: 8px;
+}
+
+.urgencia-nivel-1 {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.urgencia-nivel-2 {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.urgencia-nivel-3 {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
 @media (max-width: 700px) {
   .dialog-content {
     padding: 4px 16px 12px;

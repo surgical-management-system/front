@@ -109,17 +109,21 @@ export class UrgenciaDialog {
   }
 
   guardar() {
-    if (this.form.invalid) {
+    const isEdit = !!this.form.get('id')?.value;
+
+    if (!isEdit && this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    const urgenciaData = this.form.value as IUrgencia;
-    if (urgenciaData.id) {
+    if (isEdit) {
+      const urgenciaData = this.buildUpdatePayload();
       this.updateUrgencia(urgenciaData);
-    } else {
-      this.createUrgencia(urgenciaData);
+      return;
     }
+
+    const urgenciaData = this.form.value as IUrgencia;
+    this.createUrgencia(urgenciaData);
   }
 
   cancelar() {
@@ -254,6 +258,21 @@ export class UrgenciaDialog {
       });
   }
 
+  private buildUpdatePayload(): IUrgencia {
+    const formValue = this.form.getRawValue() as IUrgencia;
+    const original = this.data ?? ({} as IUrgencia);
+
+    return {
+      ...original,
+      ...formValue,
+      id: formValue.id ?? original.id,
+      pacienteId: this.toNumericId(formValue.pacienteId) ?? this.toNumericId((original as any)?.pacienteId ?? (original as any)?.paciente?.id),
+      servicioId: this.toNumericId(formValue.servicioId) ?? this.toNumericId((original as any)?.servicioId ?? (original as any)?.servicio?.id),
+      quirofanoId: this.toNumericId(formValue.quirofanoId) ?? this.toNumericId((original as any)?.quirofanoId ?? (original as any)?.quirofano?.id),
+      fechaHoraInicio: formValue.fechaHoraInicio || original.fechaHoraInicio,
+    } as IUrgencia;
+  }
+
   private formatDateDisplay(date: Date): string {
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -363,5 +382,12 @@ export class UrgenciaDialog {
     if (normalized === '2' || normalized === 'media' || normalized === 'moderada') return 2;
     if (normalized === '3' || normalized === 'baja' || normalized === 'normal') return 3;
     return null;
+  }
+
+  getNivelUrgenciaClass(nivel: number | null | undefined): string {
+    if (nivel === 1) return 'urgencia-nivel-1';
+    if (nivel === 2) return 'urgencia-nivel-2';
+    if (nivel === 3) return 'urgencia-nivel-3';
+    return '';
   }
 }

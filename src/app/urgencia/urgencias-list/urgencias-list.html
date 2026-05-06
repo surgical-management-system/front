@@ -110,7 +110,13 @@
 
         <ng-container matColumnDef="nivelUrgencia">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel de urgencia</th>
-          <td mat-cell *matCellDef="let s">{{ s.nivelUrgencia ?? '-' }}</td>
+          <td mat-cell *matCellDef="let s">
+            @if (s.nivelUrgencia) {
+              <span class="nivel-urgencia-badge" [ngClass]="getNivelUrgenciaClass(s.nivelUrgencia)">{{ s.nivelUrgencia }}</span>
+            } @else {
+              <span>-</span>
+            }
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="quirofanoNombre">
@@ -267,7 +273,11 @@
               </div>
               <div class="meta-item">
                 <span class="meta-label">Nivel de urgencia</span>
-                <span class="meta-value">{{ s.nivelUrgencia ?? '-' }}</span>
+                @if (s.nivelUrgencia) {
+                  <span class="meta-value nivel-urgencia-badge" [ngClass]="getNivelUrgenciaClass(s.nivelUrgencia)">{{ s.nivelUrgencia }}</span>
+                } @else {
+                  <span class="meta-value">-</span>
+                }
               </div>
             </div>
 

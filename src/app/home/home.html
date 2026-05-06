@@ -58,7 +58,7 @@
                 <div class="metric-card pretty-card">
                   <mat-icon class="metric-icon">pending_actions</mat-icon>
                   <div class="metric-value pretty-value">{{ estadisticas?.cirugiasPendientes ?? '-' }}</div>
-                  <div class="metric-label">Cirugías Pendientes</div>
+                  <div class="metric-label">Cirugías Programadas</div>
                 </div>
                 <div class="metric-card pretty-card">
                   <mat-icon class="metric-icon">today</mat-icon>
@@ -70,29 +70,14 @@
                   <div class="metric-value pretty-value">{{ estadisticas?.cirugiasEstaSemana ?? '-' }}</div>
                   <div class="metric-label">Cirugías Esta Semana</div>
                 </div>
-                <div class="metric-card wide pretty-card">
+                <div class="metric-card pretty-card">
                   <mat-icon class="metric-icon">meeting_room</mat-icon>
-                  <div class="metric-label metric-label-main">Quirófanos Activos</div>
-                  <div class="metric-subtitle">Disponibles y en uso</div>
                   @if (estadisticas; as stats) {
-                    <div class="quirofano-summary">
-                      <span class="quirofano-count">{{ stats.quirofanosDisponibles.length + stats.quirofanosEnUso.length }}</span>
-                      <span class="quirofano-count-label">Activos</span>
-                    </div>
-                    <ul class="quirofano-list">
-                      @for (q of stats.quirofanosDisponibles.concat(stats.quirofanosEnUso); track q.nombre) {
-                        <li>
-                          <span class="quirofano-chip" [ngClass]="(q.estado && q.estado.toLowerCase().includes('disponible')) ? 'quirofano-chip-available' : 'quirofano-chip-busy'">
-                            <span class="quirofano-dot"></span>
-                            <span class="quirofano-nombre">{{ q.nombre }}</span>
-                            <span class="quirofano-estado">{{ q.estado || 'Sin estado' }}</span>
-                          </span>
-                        </li>
-                      }
-                    </ul>
+                    <div class="metric-value pretty-value">{{ stats.quirofanosDisponibles.length + stats.quirofanosEnUso.length }}</div>
                   } @else {
-                    <span class="no-data">Ninguno</span>
+                    <div class="metric-value pretty-value">-</div>
                   }
+                  <div class="metric-label">Quirófanos Activos</div>
                 </div>
               </div>
               <div *ngIf="!estadisticas" class="metrics-note">Cargando métricas...</div>

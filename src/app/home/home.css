@@ -350,7 +350,7 @@
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 20px;
   margin-bottom: 20px;
 }
@@ -400,12 +400,7 @@
 }
 
 .metric-card.wide {
-  grid-column: 1 / -1;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
+  display: none;
 }
 
 .quirofano-summary {

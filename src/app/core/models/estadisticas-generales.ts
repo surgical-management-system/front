@@ -5,6 +5,8 @@ export interface IEstadisticasGenerales {
   cirugiasPendientes: number;
   cirugiasHoy: number;
   cirugiasEstaSemana: number;
+  urgenciasHoy?: number;
+  urgenciasEstaSemana?: number;
   quirofanosDisponibles: IQuirofano[];
   quirofanosEnUso: IQuirofano[];
 }

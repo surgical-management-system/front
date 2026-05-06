@@ -313,6 +313,13 @@ export class UrgenciasListComponent implements OnInit {
     return '';
   }
 
+  getNivelUrgenciaClass(nivel: number | null | undefined): string {
+    if (nivel === 1) return 'urgencia-nivel-1';
+    if (nivel === 2) return 'urgencia-nivel-2';
+    if (nivel === 3) return 'urgencia-nivel-3';
+    return '';
+  }
+
   formatFechaHora(fechaHoraInicio: string): string {
     if (!fechaHoraInicio) return '-';
     const date = new Date(fechaHoraInicio);

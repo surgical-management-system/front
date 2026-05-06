@@ -428,3 +428,31 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
   width: 40px;
   height: 40px;
 }
+
+/* Nivel de Urgencia Badges */
+.nivel-urgencia-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 4px;
+}
+
+.urgencia-nivel-1 {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.urgencia-nivel-2 {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.urgencia-nivel-3 {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
