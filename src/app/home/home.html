@@ -56,9 +56,14 @@
                   <div class="metric-label">Total Pacientes</div>
                 </div>
                 <div class="metric-card pretty-card">
-                  <mat-icon class="metric-icon">pending_actions</mat-icon>
-                  <div class="metric-value pretty-value">{{ estadisticas?.cirugiasPendientes ?? '-' }}</div>
-                  <div class="metric-label">Cirugías Programadas</div>
+                  <mat-icon class="metric-icon">local_hospital</mat-icon>
+                  <div class="metric-value pretty-value">{{ estadisticas?.urgenciasHoy ?? 0 }}</div>
+                  <div class="metric-label">Urgencias Hoy</div>
+                </div>
+                <div class="metric-card pretty-card">
+                  <mat-icon class="metric-icon">warning</mat-icon>
+                  <div class="metric-value pretty-value">{{ estadisticas?.urgenciasEstaSemana ?? 0 }}</div>
+                  <div class="metric-label">Urgencias Esta Semana</div>
                 </div>
                 <div class="metric-card pretty-card">
                   <mat-icon class="metric-icon">today</mat-icon>
