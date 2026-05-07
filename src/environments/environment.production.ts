@@ -1,7 +1,7 @@
 export const environment = {
     production: true,
     keycloak: {
-        url:  '/auth' ,//https://dacs2025/secure
+        url:  'https://keycloack-f2hbhud8bxdgb2hs.southafricanorth-01.azurewebsites.net' ,
         realm: 'dacs',
         clientId: 'dacs-app'
     },

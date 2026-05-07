@@ -20,7 +20,8 @@ export const keycloakInitOptions = {
     onLoad: 'login-required' as KeycloakOnLoad,
     pkceMethod: 'S256' as KeycloakPkceMethod,
     checkLoginIframe: false,
-    enableLogging: true
+    enableLogging: true,
+    redirectUri: window.location.origin + '/'
   },
   enableBearerInterceptor: true,
   bearerExcludedUrls: [
