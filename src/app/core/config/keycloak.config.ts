@@ -18,8 +18,8 @@ export const keycloakInitOptions = {
   config: keycloakConfig,
   initOptions: {
     onLoad: 'login-required' as KeycloakOnLoad,
-    pkceMethod: 'S256' as KeycloakPkceMethod,
     checkLoginIframe: false,
+    pkceMethod: 'S256' as KeycloakPkceMethod,
     enableLogging: true,
   },
   enableBearerInterceptor: true,
