@@ -16,4 +16,6 @@ export interface IPaciente{
   telefono: string;
   peso?: number;
   altura?: number;
+  activo?: boolean; // indicates if the paciente is active (true) or deactivated (false)
+  active?: boolean; // some backends return `active` in English
 }

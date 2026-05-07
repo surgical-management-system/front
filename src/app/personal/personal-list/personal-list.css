@@ -154,7 +154,7 @@
 .rol-enfermero { background-color: #f3e5f5 !important; color: #7b1fa2 !important; padding: 2px 8px !important; font-size: 12px !important; }
 .rol-anestesista { background-color: #fff3e0 !important; color: #e65100 !important; padding: 2px 8px !important; font-size: 12px !important; }
 .rol-instrumentista { background-color: #e8f5e9 !important; color: #2e7d32 !important; padding: 2px 8px !important; font-size: 12px !important; }
-.rol-default { background-color: #f5f5f5 !important; color: #616161 !important; padding: 2px 8px !important; font-size: 12px !important; }
+.rol-default { background-color: #e0e0e0 !important; color: #424242 !important; padding: 2px 8px !important; font-size: 12px !important; margin-right: 0px; }
 
 /* Chips de Estado */
 .estado-activo { background-color: #e8f5e9 !important; color: #2e7d32 !important; padding: 2px 8px !important; font-size: 12px !important; }

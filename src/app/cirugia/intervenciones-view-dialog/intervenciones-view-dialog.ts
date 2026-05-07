@@ -76,15 +76,50 @@ export class IntervencionesViewDialog implements OnInit {
     return new Promise((resolve) => {
       this.cirugiaService.getEquipoMedicoByCirugiaId(this.cirugia.id!).subscribe({
         next: (response) => {
-          this.equipoMedico = response?.data || [];
+          const data = response?.data || [];
+          this.equipoMedico = this.mapEquipoData(data);
+          // If equipo is empty and cirugía is finalized, try to recover from localStorage
+          if (this.equipoMedico.length === 0 && this.isFinalized()) {
+            const cached = this.getCachedEquipoMedico();
+            this.equipoMedico = cached;
+          }
           resolve();
         },
         error: (err) => {
           console.error('Error loading medical team', err);
+          // Try to recover from cache if endpoint fails
+          if (this.isFinalized()) {
+            const cached = this.getCachedEquipoMedico();
+            this.equipoMedico = cached;
+          }
           resolve();
         }
       });
     });
+  }
+
+  private mapEquipoData(data: any[]): IMiembroEquipoMedico[] {
+    return data.map(item => ({
+      ...item,
+      personalNombre: item.personalNombre || item.nombre,
+      rolNombre: item.rolNombre || item.rol,
+    }));
+  }
+
+  private isFinalized(): boolean {
+    const estado = (this.cirugia?.estado || '').toUpperCase();
+    return estado === 'FINALIZADA' || estado === 'CANCELADA';
+  }
+
+  private getCachedEquipoMedico(): IMiembroEquipoMedico[] {
+    try {
+      const cached = localStorage.getItem(`equipo-medico-${this.cirugia.id}`);
+      const data = cached ? JSON.parse(cached) : [];
+      return this.mapEquipoData(data);
+    } catch (e) {
+      console.error('Error reading cached medical team', e);
+      return [];
+    }
   }
 
   closeDialog(): void {

@@ -11,6 +11,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { FormatEstadoPipe } from '../../core/pipes/format-estado.pipe';
 import { IUrgencia } from '../../core/models/urgencia';
 import { UrgenciaService } from '../../core/services/urgencia.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
@@ -40,6 +41,7 @@ import { UrgenciaDialog } from '../urgencia-dialog/urgencia-dialog';
     MatChipsModule,
     MatTooltipModule,
     MatMenuModule,
+    FormatEstadoPipe,
   ],
 })
 export class UrgenciasListComponent implements OnInit {

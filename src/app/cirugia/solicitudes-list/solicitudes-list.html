@@ -87,7 +87,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
         <td mat-cell *matCellDef="let s">
           <mat-chip class="chip-estado" [ngClass]="getEstadoClass(s.estado)">
-            {{ s.estado || '-' }}
+            {{ s.estado | formatEstado }}
           </mat-chip>
         </td>
       </ng-container>
@@ -128,14 +128,16 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu" panelClass="dark-menu-panel">
-              <button mat-menu-item (click)="openCirugia(s)">
-                <mat-icon>edit</mat-icon>
-                <span>Editar</span>
-              </button>
-              <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
-                <mat-icon>people</mat-icon>
-                <span>Equipo médico</span>
-              </button>
+              <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
+                <button mat-menu-item (click)="openCirugia(s)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
+                  <mat-icon>people</mat-icon>
+                  <span>Equipo médico</span>
+                </button>
+              </ng-container>
               <ng-container *ngIf="s.estado === 'PROGRAMADA'">
                 <button mat-menu-item (click)="inicializarCirugia(s)" class="iniciar-option">
                   <mat-icon>play_circle_filled</mat-icon>
@@ -154,13 +156,13 @@
                   <span>Finalizar cirugía</span>
                 </button>
               </ng-container>
-              <ng-container *ngIf="s.estado === 'FINALIZADA'">
+              <ng-container *ngIf="s.estado === 'FINALIZADA' || s.estado === 'CANCELADA'">
                 <button mat-menu-item (click)="verIntervenciones(s)" class="intervenciones-option">
                   <mat-icon>visibility</mat-icon>
                   <span>Ver info</span>
                 </button>
               </ng-container>
-              <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+              <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                 <button mat-menu-item (click)="deleteCirugia(s.id)" class="delete-option">
                   <mat-icon>delete</mat-icon>
                   <span>Cancelar</span>
@@ -187,10 +189,12 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menuCard="matMenu" panelClass="dark-menu-panel">
-                  <button mat-menu-item (click)="openCirugia(s)">
-                    <mat-icon>edit</mat-icon>
-                    <span>Editar</span>
-                  </button>
+                  <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
+                    <button mat-menu-item (click)="openCirugia(s)">
+                      <mat-icon>edit</mat-icon>
+                      <span>Editar</span>
+                    </button>
+                  </ng-container>
                   <ng-container *ngIf="s.estado === 'PROGRAMADA'">
                     <button mat-menu-item (click)="inicializarCirugia(s)" class="iniciar-option">
                       <mat-icon>play_circle_filled</mat-icon>
@@ -209,13 +213,13 @@
                       <span>Finalizar cirugía</span>
                     </button>
                   </ng-container>
-                  <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                  <ng-container *ngIf="s.estado === 'FINALIZADA' || s.estado === 'CANCELADA'">
                     <button mat-menu-item (click)="verIntervenciones(s)" class="intervenciones-option">
                       <mat-icon>visibility</mat-icon>
                       <span>Ver info</span>
                     </button>
                   </ng-container>
-                  <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                  <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                     <button mat-menu-item (click)="s.id != null && deleteCirugia(s.id)" class="delete-option">
                       <mat-icon>delete</mat-icon>
                       <span>Cancelar</span>

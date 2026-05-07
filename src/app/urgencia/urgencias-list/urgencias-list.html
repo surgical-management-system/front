@@ -21,9 +21,9 @@
       }
 
       <div class="estado-filtros">
-        <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'PENDIENTE'}" (click)="filtrarPorEstado('PENDIENTE')">
+        <!-- <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'PENDIENTE'}" (click)="filtrarPorEstado('PENDIENTE')">
           <mat-icon>schedule</mat-icon> Pendiente
-        </button>
+        </button> -->
         <button mat-button class="estado-btn" [ngClass]="{'selected': selectedEstado === 'PROGRAMADA'}" (click)="filtrarPorEstado('PROGRAMADA')">
           <mat-icon>event_available</mat-icon> Programada
         </button>
@@ -98,7 +98,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
           <td mat-cell *matCellDef="let s">
             <mat-chip class="chip-estado" [ngClass]="getEstadoClass(s.estado)">
-              {{ s.estado || '-' }}
+              {{ s.estado | formatEstado }}
             </mat-chip>
           </td>
         </ng-container>
@@ -137,13 +137,13 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu" panelClass="dark-menu-panel">
-                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                   <button mat-menu-item (click)="openUrgencia(s)">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                   <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
                     <mat-icon>people</mat-icon>
                     <span>Equipo médico</span>
@@ -167,14 +167,14 @@
                     <span>Finalizar urgencia</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                <ng-container *ngIf="s.estado === 'FINALIZADA' || s.estado === 'CANCELADA'">
                   <button mat-menu-item (click)="verInfo(s)" class="info-option">
                     <mat-icon>visibility</mat-icon>
                     <span>Ver info</span>
                   </button>
                 </ng-container>
                 <button
-                  *ngIf="s.id != null && s.estado !== 'FINALIZADA'"
+                  *ngIf="s.id != null && s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'"
                   mat-menu-item
                   (click)="deleteUrgencia(s.id)"
                   class="delete-option"
@@ -203,13 +203,13 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menuCard="matMenu" panelClass="dark-menu-panel">
-                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                   <button mat-menu-item (click)="openUrgencia(s)">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado !== 'FINALIZADA'">
+                <ng-container *ngIf="s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'">
                   <button mat-menu-item (click)="openEquipoMedico(s.id!)" class="equipo-option">
                     <mat-icon>people</mat-icon>
                     <span>Equipo médico</span>
@@ -233,14 +233,14 @@
                     <span>Finalizar urgencia</span>
                   </button>
                 </ng-container>
-                <ng-container *ngIf="s.estado === 'FINALIZADA'">
+                <ng-container *ngIf="s.estado === 'FINALIZADA' || s.estado === 'CANCELADA'">
                   <button mat-menu-item (click)="verInfo(s)" class="info-option">
                     <mat-icon>visibility</mat-icon>
                     <span>Ver info</span>
                   </button>
                 </ng-container>
                 <button
-                  *ngIf="s.id != null && s.estado !== 'FINALIZADA'"
+                  *ngIf="s.id != null && s.estado !== 'FINALIZADA' && s.estado !== 'CANCELADA'"
                   mat-menu-item
                   (click)="deleteUrgencia(s.id)"
                   class="delete-option"

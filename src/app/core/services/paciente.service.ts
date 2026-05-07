@@ -38,4 +38,14 @@ export class PacienteService extends BaseApiService {
   deletePaciente(id: number) {
     return this.delete<HttpStatusCode>(`${API_ENDPOINTS.BFF.PACIENTE}/${id}`);
   }
+
+  deactivatePaciente(id: number) {
+    // PUT /bff/paciente/{id}/deactivate
+    return this.put<any>(`${API_ENDPOINTS.BFF.PACIENTE}/${id}/deactivate`, {});
+  }
+
+  activatePaciente(id: number) {
+    // PUT /bff/paciente/{id}/activate
+    return this.put<any>(`${API_ENDPOINTS.BFF.PACIENTE}/${id}/activate`, {});
+  }
 }

@@ -12,6 +12,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { FormatEstadoPipe } from '../../core/pipes/format-estado.pipe';
 import { CirugiaService } from '../../core/services/cirugia.service';
 import { ICirugia } from '../../core/models/cirugia';
 import { IPaginatedResponse } from '../../core/models/api-response';
@@ -40,6 +41,7 @@ import { KeycloakService } from '../../core/services/keycloak.service';
     MatChipsModule,
     MatTooltipModule,
     MatMenuModule,
+    FormatEstadoPipe,
   ],
 })
 export class SolicitudesListComponent implements OnInit {
@@ -248,25 +250,46 @@ export class SolicitudesListComponent implements OnInit {
           return;
         }
 
-        this.cirugiaService.getIntervencionesByCirugiaId(cirugia.id!).subscribe({
-          next: (resp: any) => {
-            const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
-
-            this.cirugiaService.finalizarCirugia(cirugia.id!, intervenciones).subscribe({
-              next: () => {
-                this.pageCache.clear();
-                this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-              },
-              error: (err) => {
-                console.error('Error finalizing surgery', err);
-              },
-            });
+        // Cache the medical team before finalizing
+        this.cirugiaService.getEquipoMedicoByCirugiaId(cirugia.id!).subscribe({
+          next: (response) => {
+            const equipoMedico = response?.data || [];
+            if (equipoMedico.length > 0) {
+              try {
+                localStorage.setItem(`equipo-medico-${cirugia.id}`, JSON.stringify(equipoMedico));
+              } catch (e) {
+                console.error('Error caching medical team', e);
+              }
+            }
+            this.proceedWithFinalization(cirugia);
           },
           error: (err) => {
-            console.error('Error loading interventions before finalizing surgery', err);
-          },
+            console.error('Error loading team before finalizing', err);
+            this.proceedWithFinalization(cirugia);
+          }
         });
       });
+  }
+
+  private proceedWithFinalization(cirugia: ICirugia): void {
+    this.cirugiaService.getIntervencionesByCirugiaId(cirugia.id!).subscribe({
+      next: (resp: any) => {
+        const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
+
+        this.cirugiaService.finalizarCirugia(cirugia.id!, intervenciones).subscribe({
+          next: () => {
+            this.pageCache.clear();
+            this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+          },
+          error: (err) => {
+            console.error('Error finalizing surgery', err);
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error loading interventions before finalizing surgery', err);
+      },
+    });
   }
 
   gestionarIntervenciones(cirugia: ICirugia) {
@@ -321,12 +344,33 @@ export class SolicitudesListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.cirugiaService.deleteCirugia(cirugiaId).subscribe(() => {
-            this.pageCache.clear(); // limpiar caché cuando se elimina
-            this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+          // Cache the medical team before deleting
+          this.cirugiaService.getEquipoMedicoByCirugiaId(cirugiaId).subscribe({
+            next: (response) => {
+              const equipoMedico = response?.data || [];
+              if (equipoMedico.length > 0) {
+                try {
+                  localStorage.setItem(`equipo-medico-${cirugiaId}`, JSON.stringify(equipoMedico));
+                } catch (e) {
+                  console.error('Error caching medical team', e);
+                }
+              }
+              this.proceedWithDelete(cirugiaId);
+            },
+            error: (err) => {
+              console.error('Error loading team before deleting', err);
+              this.proceedWithDelete(cirugiaId);
+            }
           });
         }
       });
+  }
+
+  private proceedWithDelete(cirugiaId: number): void {
+    this.cirugiaService.deleteCirugia(cirugiaId).subscribe(() => {
+      this.pageCache.clear(); // limpiar caché cuando se elimina
+      this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+    });
   }
 
   getEstadoClass(estado: string): string {

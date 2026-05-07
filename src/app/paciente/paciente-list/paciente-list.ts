@@ -58,6 +58,7 @@ export class PacienteList {
     'fechaNacimiento',
     'datosFisicos',
     'contacto',
+    'estado',
     'acciones',
   ];
 
@@ -134,6 +135,28 @@ export class PacienteList {
           this.loadPage(this.page, this.pageSize);
         });
       }
+    });
+  }
+
+  togglePacienteActivo(id: number, active: boolean) {
+    const title = active ? 'Dar de baja paciente' : 'Dar de alta paciente';
+    const message = active ? '¿Confirma dar de baja este paciente?' : '¿Confirma dar de alta este paciente?';
+
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      data: { title, message },
+    });
+
+    ref.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      const obs = active
+        ? this.pacienteService.deactivatePaciente(id)
+        : this.pacienteService.activatePaciente(id);
+
+      obs.subscribe(() => {
+        this.loadPage(this.page, this.pageSize);
+      });
     });
   }
 
