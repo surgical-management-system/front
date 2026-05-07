@@ -46,6 +46,9 @@ jobs:
           name: node-app
           # No especificamos path aquí para que descargue en la raíz del runner
       
+      - name: List downloaded artifact
+        run: ls -R node-app || true
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
