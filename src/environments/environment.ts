@@ -3,8 +3,7 @@ export const environment = {
     keycloak: {
         url:  'http://localhost:8080' ,
         realm: 'dacs',
-        clientId: 'dacs-fe',
-        redirectUri: 'http://localhost:4200/'
+        clientId: 'dacs-fe'
     },
       backendForFrontendUrl: 'http://localhost:9001/bff'
 };

@@ -3,8 +3,7 @@ export const environment = {
     keycloak: {
         url:  'https://keycloack-f2hbhud8bxdgb2hs.southafricanorth-01.azurewebsites.net/auth' ,
         realm: 'dacs',
-        clientId: 'dacs-app',
-        redirectUri: 'https://front-ddh6drc6cgahemdg.southafricanorth-01.azurewebsites.net/'
+        clientId: 'dacs-app'
     },
       backendForFrontendUrl: '/api'
 };
