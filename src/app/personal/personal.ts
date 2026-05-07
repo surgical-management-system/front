@@ -4,6 +4,7 @@ import { PersonalList } from "./personal-list/personal-list";
 
 @Component({
   selector: 'app-personal',
+  standalone: true,
   imports: [PageHeader, PersonalList],
   templateUrl: './personal.html',
   styleUrl: './personal.css'

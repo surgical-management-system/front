@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SlideMenu } from './slide-menu';
+import { SlideMenuComponent } from './slide-menu.component';
 
 describe('SlideMenu', () => {
-  let component: SlideMenu;
-  let fixture: ComponentFixture<SlideMenu>;
+  let component: SlideMenuComponent;
+  let fixture: ComponentFixture<SlideMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SlideMenu]
+      imports: [SlideMenuComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SlideMenu);
+    fixture = TestBed.createComponent(SlideMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
