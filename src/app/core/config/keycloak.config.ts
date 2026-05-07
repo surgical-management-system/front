@@ -21,7 +21,7 @@ export const keycloakInitOptions = {
     pkceMethod: 'S256' as KeycloakPkceMethod,
     checkLoginIframe: false,
     enableLogging: true,
-    redirectUri: window.location.origin + '/'
+    redirectUri: environment.keycloak.redirectUri
   },
   enableBearerInterceptor: true,
   bearerExcludedUrls: [
