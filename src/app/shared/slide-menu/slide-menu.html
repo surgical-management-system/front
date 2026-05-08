@@ -37,10 +37,12 @@
       </a>
     }
 
-    <a routerLink="/insumos" routerLinkActive="active" class="nav-link">
-      <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">inventory_2</mat-icon>
-      Insumos
-    </a>
+    @if (!hasRole('personal_medico')) {
+      <a routerLink="/insumos" routerLinkActive="active" class="nav-link">
+        <mat-icon fontSet="material-symbols-outlined" style="color: #2563eb">inventory_2</mat-icon>
+        Insumos
+      </a>
+    }
 
     @if (!hasRole('personal_medico')) {
       <a routerLink="/paciente" routerLinkActive="active" class="nav-link">

@@ -5,10 +5,26 @@
 
 <mat-dialog-content class="dialog-content">
   <form [formGroup]="form" class="form-grid">
+    @if (!isEditMode) {
+      <div class="picker-button-row">
+        <button mat-stroked-button color="primary" type="button" (click)="seleccionarPersonal()">
+          <mat-icon>search</mat-icon>
+          Buscar personal
+        </button>
+
+        @if (selectedPersonal) {
+          <button mat-button type="button" (click)="limpiarSeleccionPersonal()">
+            <mat-icon>close</mat-icon>
+            Limpiar
+          </button>
+        }
+      </div>
+    }
+
     <!-- Legajo -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Legajo</mat-label>
-      <input matInput formControlName="legajo" placeholder="ej: 12345" />
+      <input matInput formControlName="legajo" placeholder="ej: 12345" [readonly]="!isEditMode && !!selectedPersonal" />
       <mat-icon matPrefix>account_circle</mat-icon>
       @if (form.get('legajo')?.hasError('required') && form.get('legajo')?.touched) {
         <mat-error>El legajo es requerido</mat-error>
@@ -35,7 +51,7 @@
     <div class="row">
       <mat-form-field appearance="outline">
         <mat-label>Nombre</mat-label>
-        <input matInput formControlName="firstName" placeholder="ej: Juan" />
+        <input matInput formControlName="firstName" placeholder="ej: Juan" [readonly]="!isEditMode && !!selectedPersonal" />
         @if (form.get('firstName')?.hasError('required') && form.get('firstName')?.touched) {
           <mat-error>El nombre es requerido</mat-error>
         }
@@ -43,7 +59,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Apellido</mat-label>
-        <input matInput formControlName="lastName" placeholder="ej: Pérez" />
+        <input matInput formControlName="lastName" placeholder="ej: Pérez" [readonly]="!isEditMode && !!selectedPersonal" />
         @if (form.get('lastName')?.hasError('required') && form.get('lastName')?.touched) {
           <mat-error>El apellido es requerido</mat-error>
         }

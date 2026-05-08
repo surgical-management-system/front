@@ -42,6 +42,13 @@ h2[mat-dialog-title] {
   gap: 4px;
 }
 
+.picker-button-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .full-width {
   width: 100%;
 }

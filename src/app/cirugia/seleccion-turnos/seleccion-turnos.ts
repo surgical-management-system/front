@@ -149,10 +149,12 @@ export class SeleccionTurnos {
       columnMap.get(fechaKey)!.slots.push(slot);
     });
 
-    this.columns = Array.from(columnMap.values()).map((column) => ({
-      ...column,
-      slots: column.slots.sort((a, b) => a.time.localeCompare(b.time)),
-    }));
+    this.columns = Array.from(columnMap.values())
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .map((column) => ({
+        ...column,
+        slots: column.slots.sort((a, b) => a.time.localeCompare(b.time)),
+      }));
   }
 
   private extractTurnos(resp: any): any[] {

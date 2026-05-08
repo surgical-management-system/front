@@ -57,10 +57,14 @@ export class PersonalListDialog implements OnInit {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((q) => this.personalService.searchPersonalLite(this.page, this.pageSize, (q ?? '').trim(), this.roleFilter).pipe(
-        map((r: any) => r ?? {}),
-        catchError(() => of({ data: { contenido: [], totalElementos: 0 } }))
-      ))
+      switchMap((q) => {
+        // Reset to page 0 when search changes
+        this.page = 0;
+        return this.personalService.searchPersonalLite(0, this.pageSize, (q ?? '').trim(), this.roleFilter).pipe(
+          map((r: any) => r ?? {}),
+          catchError(() => of({ data: { contenido: [], totalElementos: 0 } }))
+        );
+      })
     ).subscribe((resp: any) => {
       const data = resp?.data;
       const content = Array.isArray(data?.contenido) ? data.contenido : (Array.isArray(data?.content) ? data.content : []);
@@ -68,7 +72,7 @@ export class PersonalListDialog implements OnInit {
       this.dataSource.data = content;
       this.totalItems = totalItems;
       if (this.paginator) {
-        this.paginator.pageIndex = this.page;
+        this.paginator.pageIndex = 0;
         this.paginator.pageSize = this.pageSize;
       }
     });
@@ -82,14 +86,11 @@ export class PersonalListDialog implements OnInit {
       const totalItems = typeof data?.totalElementos === 'number' ? data.totalElementos : (typeof data?.totalElements === 'number' ? data.totalElements : content.length);
       this.dataSource.data = content;
       this.totalItems = totalItems;
-      if (this.paginator) {
-        this.paginator.pageIndex = typeof data?.pagina === 'number' ? data.pagina : (typeof data?.number === 'number' ? data.number : page);
-        this.paginator.pageSize = typeof data?.tamaño === 'number' ? data.tamaño : (typeof data?.size === 'number' ? data.size : pageSize);
-      }
     });
   }
 
   onPage(event: PageEvent) {
+    // When pageSize changes, reset to page 0
     this.page = event.pageIndex ?? 0;
     this.pageSize = event.pageSize ?? this.pageSize;
     this.loadPage(this.page, this.pageSize, this.searchControl.value ?? '');
@@ -101,5 +102,11 @@ export class PersonalListDialog implements OnInit {
 
   cancel() {
     this.dialogRef.close(null);
+  }
+
+  getPersonalName(personal: IMiembroEquipoMedico): string {
+    const nombre = personal?.nombre?.trim() ?? '';
+    const apellido = personal?.apellido?.trim() ?? '';
+    return [nombre, apellido].filter(Boolean).join(' ') || nombre || '-';
   }
 }

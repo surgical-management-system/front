@@ -13,6 +13,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UsuarioService, IKeycloakUserCreate } from '../../core/services/usuario.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { APP_CONSTANTS } from '../../core/constants/app-constants';
+import { PersonalListDialog } from '../../cirugia/personal-list-dialog/personal-list-dialog';
+import { IMiembroEquipoMedico } from '../../core/models/miembro-equipo';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -39,6 +41,7 @@ export class UsuarioDialogComponent {
   hidePassword = true;
   hideConfirmPassword = true;
   isEditMode = false;
+  selectedPersonal: IMiembroEquipoMedico | null = null;
 
   roles = [
     { value: 'admin', label: 'Administrador', icon: 'admin_panel_settings' },
@@ -82,6 +85,85 @@ export class UsuarioDialogComponent {
       // Deshabilitar legajo en edición
       this.form.get('legajo')?.disable();
     }
+  }
+
+  seleccionarPersonal(): void {
+    if (this.isEditMode) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PersonalListDialog, {
+      width: '860px',
+      maxWidth: '95vw',
+      data: { q: this.form.get('legajo')?.value ?? '' },
+    });
+
+    dialogRef.afterClosed().subscribe((selected: IMiembroEquipoMedico | null) => {
+      if (!selected) {
+        return;
+      }
+
+      this.selectedPersonal = selected;
+      
+      // If apellido is provided, use it directly. Otherwise, split nombre into firstName and lastName.
+      const { firstName, lastName } = this.splitPersonalName(selected.nombre ?? '', selected.apellido ?? '');
+      
+      this.form.patchValue({
+        legajo: selected.legajo ?? '',
+        firstName,
+        lastName,
+        role: selected.rol ?? 'personal_medico',
+      });
+      this.form.markAsDirty();
+    });
+  }
+
+  limpiarSeleccionPersonal(): void {
+    if (this.isEditMode) {
+      return;
+    }
+
+    this.selectedPersonal = null;
+    this.form.patchValue({
+      legajo: '',
+      firstName: '',
+      lastName: '',
+      role: '',
+    });
+  }
+
+  getSelectedPersonalName(): string {
+    const nombre = this.selectedPersonal?.nombre?.trim() ?? '';
+    const apellido = this.selectedPersonal?.apellido?.trim() ?? '';
+    return [nombre, apellido].filter(Boolean).join(' ') || nombre || 'Personal';
+  }
+
+  private splitPersonalName(nombre: string, apellido: string): { firstName: string; lastName: string } {
+    // If apellido is already provided and not empty, use it
+    if (apellido && apellido.trim()) {
+      return {
+        firstName: nombre.trim(),
+        lastName: apellido.trim(),
+      };
+    }
+
+    // If apellido is empty, split nombre by spaces
+    const parts = nombre.trim().split(/\s+/);
+    if (parts.length === 1) {
+      // Single word: all goes to firstName
+      return {
+        firstName: parts[0],
+        lastName: '',
+      };
+    }
+
+    // Multiple words: last word is lastName, rest is firstName
+    const lastPart = parts[parts.length - 1];
+    const firstParts = parts.slice(0, -1).join(' ');
+    return {
+      firstName: firstParts,
+      lastName: lastPart,
+    };
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -146,7 +228,7 @@ export class UsuarioDialogComponent {
         this.dialogRef.close(response);
       },
       error: (error) => {
-        this.showError(error, 'Unable to create user.');
+        this.showError(error, 'Error al crear el usuario, legajo ya registrado.');
         this.isLoading = false;
       }
     });
@@ -183,7 +265,7 @@ export class UsuarioDialogComponent {
         this.dialogRef.close(response);
       },
       error: (error) => {
-        this.showError(error, 'Unable to update user.');
+        this.showError(error, 'Error al actualizar el usuario.');
         this.isLoading = false;
       }
     });
@@ -194,14 +276,62 @@ export class UsuarioDialogComponent {
   }
 
   private showError(error: any, fallbackMessage: string) {
-    const message =
-      error?.errorDescription ||
-      error?.description ||
-      error?.error?.description ||
-      error?.error?.message ||
-      fallbackMessage;
+    let message = fallbackMessage;
 
-    this.snackBar.open(message, 'Close', {
+    // Log error structure for debugging
+    console.error('Error detalles:', error);
+
+    // Check for HTTP error status
+    const status = error?.status || error?.statusCode;
+    const errorBody = error?.error || error;
+    let errorMsg = '';
+
+    // Extract error message from various possible structures
+    if (typeof errorBody === 'string') {
+      try {
+        const parsed = JSON.parse(errorBody);
+        errorMsg = parsed.errorMessage || parsed.message || '';
+      } catch {
+        errorMsg = errorBody;
+      }
+    } else if (typeof errorBody === 'object') {
+      errorMsg = errorBody.errorMessage || errorBody.message || errorBody.description || '';
+    }
+
+    // Handle 409 Conflict (User exists with same username)
+    if (status === 409) {
+      if (errorMsg.includes('User exists') || errorMsg.includes('username')) {
+        message = `El legajo "${this.form.get('legajo')?.value}" ya está registrado. Elija otro legajo.`;
+      } else if (errorMsg.includes('email')) {
+        message = 'El correo electrónico ya está registrado.';
+      } else {
+        message = 'El usuario ya existe. Intente con otro legajo o correo electrónico.';
+      }
+    }
+    // Handle 400 Bad Request
+    else if (status === 400) {
+      if (errorMsg.includes('email')) {
+        message = 'El correo electrónico ya está en uso.';
+      } else if (errorMsg.includes('password')) {
+        message = 'La contraseña no cumple con los requisitos mínimos.';
+      } else {
+        message = 'Datos inválidos. Verifique el formulario.';
+      }
+    }
+    // Handle 401 Unauthorized
+    else if (status === 401) {
+      message = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
+    }
+    // Handle 403 Forbidden
+    else if (status === 403) {
+      message = 'No tiene permisos para realizar esta acción.';
+    }
+    // Use extracted error message if available
+    else if (errorMsg) {
+      message = errorMsg;
+    }
+
+    this.snackBar.open(message, 'Cerrar', {
       duration: APP_CONSTANTS.TIMEOUTS.TOAST_DURATION,
       horizontalPosition: 'center',
       verticalPosition: 'top',
