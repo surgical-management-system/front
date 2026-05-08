@@ -20,7 +20,7 @@ import { DashboardService } from '../core/services/dashboard.service';
 export class HomeComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  title = 'DACS Frontend - Pantalla Principal';
+  title = 'Agenda de Quirófanos';
   isLoggedIn = false;
   hasRoleA = false;
   hasRoleB = false;

@@ -338,4 +338,11 @@ export class UrgenciasListComponent implements OnInit {
       hour12: false,
     });
   }
+
+  formatTipo(tipo: string | null | undefined): string {
+    if (!tipo) return '-';
+    const trimmed = tipo.trim();
+    if (!trimmed) return '-';
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+  }
 }

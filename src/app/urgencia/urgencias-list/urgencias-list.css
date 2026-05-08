@@ -457,12 +457,24 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
   color: #2e7d32;
 }
 
-
-.mat-mdc-cell .mdc-data-table__cell .cdk-cell .cdk-column-nivelUrgencia .mat-column-nivelUrgencia {
-  margin-left: 100px;
+/* Padding for nivel de urgencia column cells only (not headers) */
+.table-list-container .mat-mdc-cell.mat-column-nivelUrgencia {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 115px;
 }
 
+/* Move estado column header to the right */
+.table-list-container .mat-mdc-header-cell.mat-column-estado {
+  padding-left: 22px !important;
+}
 
-.mat-column-nivel_urgencia.mat-cell {
-  text-align: center ;
+.table-list-container .mat-mdc-cell.mat-column-acciones{
+  display: flex;
+  margin-left: 15px;
+}
+
+.table-list-container .mat-mdc-header-cell.mat-column-fechaHoraInicio {
+  padding-left: 26px !important;
 }

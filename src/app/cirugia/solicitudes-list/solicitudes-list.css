@@ -499,3 +499,16 @@ mat-form-field.search .mat-mdc-select-trigger .mat-mdc-select-value {
     grid-template-columns: 1fr;
   }
 }
+
+.table-list-container .mat-mdc-header-cell.mat-column-estado {
+  padding-left: 14px !important;
+}
+
+.table-list-container .mat-mdc-cell.mat-column-estado {
+  padding-left: 0px !important;
+}
+
+.table-list-container .mat-mdc-cell.mat-column-acciones{
+  display: flex;
+  margin-left: 15px;
+}
