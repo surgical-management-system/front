@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -11,9 +11,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
-import { UsuarioService, IKeycloakUser } from '../../core/services/usuario.service';
+import { IKeycloakUser } from '../../core/services/usuario.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { UsuarioDialogComponent } from '../usuario-dialog/usuario-dialog';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { UsuariosFacade } from '../state/usuarios.facade';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -35,10 +37,11 @@ import { UsuarioDialogComponent } from '../usuario-dialog/usuario-dialog';
   styleUrl: './usuarios-list.css'
 })
 export class UsuariosList implements OnInit {
-  totalItems: number = 0;
-  pageSize: number = 16;
-  page: number = 0;
-  isLoading: boolean = false;
+  totalItems = 0;
+  pageSize = 16;
+  page = 0;
+  searchTerm = '';
+  isLoading = false;
   viewMode: 'table' | 'cards' = 'table';
 
   dataSource = new MatTableDataSource<IKeycloakUser>([]);
@@ -54,12 +57,37 @@ export class UsuariosList implements OnInit {
   ];
 
   constructor(
-    private usuarioService: UsuarioService,
-    private dialog: MatDialog
+    private readonly usuariosFacade: UsuariosFacade,
+    private readonly dialog: MatDialog,
+    private readonly destroyRef: DestroyRef
   ) {}
 
   ngOnInit() {
-    this.loadPage(this.page, this.pageSize);
+    this.usuariosFacade.items$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((items) => {
+      this.dataSource.data = items;
+    });
+
+    this.usuariosFacade.totalItems$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((totalItems) => {
+      this.totalItems = totalItems;
+    });
+
+    this.usuariosFacade.page$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((page) => {
+      this.page = page;
+    });
+
+    this.usuariosFacade.pageSize$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pageSize) => {
+      this.pageSize = pageSize;
+    });
+
+    this.usuariosFacade.search$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((search) => {
+      this.searchTerm = search;
+    });
+
+    this.usuariosFacade.isLoading$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+
+    this.loadPage(this.page, this.pageSize, this.searchTerm);
   }
 
   onPage(event: PageEvent) {
@@ -69,38 +97,17 @@ export class UsuariosList implements OnInit {
     this.page = nextPage;
     this.pageSize = nextSize;
 
-    this.loadPage(nextPage, nextSize);
+    this.loadPage(nextPage, nextSize, this.searchTerm);
   }
 
-  loadPage(page: number, pageSize: number) {
-    this.isLoading = true;
-    this.usuarioService.getUsuarios(page, pageSize).subscribe({
-      next: (response) => {
-        this.dataSource.data = response.contenido || [];
-        this.totalItems = response.totalElementos || 0;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar usuarios:', error);
-        this.isLoading = false;
-      }
-    });
+  loadPage(page: number, pageSize: number, search = '') {
+    this.usuariosFacade.loadPage(page, pageSize, search);
   }
 
   applyFilter(filterValue: string) {
-    if (filterValue.trim()) {
-      this.usuarioService.searchUsuarios(0, this.pageSize, filterValue).subscribe({
-        next: (response) => {
-          this.dataSource.data = response.contenido || [];
-          this.totalItems = response.totalElementos || 0;
-        },
-        error: (error) => {
-          console.error('Error al buscar usuarios:', error);
-        }
-      });
-    } else {
-      this.loadPage(this.page, this.pageSize);
-    }
+    this.page = 0;
+    this.searchTerm = filterValue.trim();
+    this.loadPage(this.page, this.pageSize, this.searchTerm);
   }
 
   toggleViewMode() {
@@ -157,12 +164,8 @@ export class UsuariosList implements OnInit {
       panelClass: 'usuario-dialog-panel',
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Recargar la lista después de crear
-        this.loadPage(0, this.pageSize);
-        this.page = 0;
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      // Refresh is handled by the store success effects.
     });
   }
 
@@ -177,10 +180,8 @@ export class UsuariosList implements OnInit {
       data: user,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadPage(this.page, this.pageSize);
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      // Refresh is handled by the store success effects.
     });
   }
 
@@ -195,14 +196,7 @@ export class UsuariosList implements OnInit {
 
     confirmDialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.usuarioService.toggleUsuarioStatus(user.id, !user.enabled).subscribe({
-          next: () => {
-            this.loadPage(this.page, this.pageSize);
-          },
-          error: (error) => {
-            console.error('Error al cambiar estado del usuario:', error);
-          }
-        });
+        this.usuariosFacade.toggleStatus(user.id, !user.enabled);
       }
     });
   }

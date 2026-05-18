@@ -1,5 +1,5 @@
 <div mat-dialog-content class="dialog-content" [formGroup]="form">
-  <h2 mat-dialog-title>Agregar paciente</h2>
+  <h2 mat-dialog-title>{{ data?.id ? 'Editar paciente' : 'Agregar paciente' }}</h2>
   <div class="content-dialog">
     
     <!-- nombre -->
@@ -61,5 +61,5 @@
 
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">Guardar</button>
+  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid || isLoading">Guardar</button>
 </div>

@@ -31,6 +31,8 @@
     "@angular/material": "^20.2.11",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@ngrx/effects": "^20.1.0",
+    "@ngrx/store": "^20.1.0",
     "keycloak-angular": "^20.0.0",
     "keycloak-js": "^26.2.1",
     "rxjs": "~7.8.0",

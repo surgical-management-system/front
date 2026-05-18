@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -12,16 +12,16 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormatEstadoPipe } from '../../core/pipes/format-estado.pipe';
-import { CirugiaService } from '../../core/services/cirugia.service';
 import { ICirugia } from '../../core/models/cirugia';
-import { IPaginatedResponse } from '../../core/models/api-response';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { CirugiaDialog } from '../cirugia-dialog/cirugia-dialog';
 import { EquipoMedicoDialog } from '../equipo-medico-dialog/equipo-medico-dialog';
 import { FinalizarCirugiaDialog } from '../finalizar-cirugia-dialog/finalizar-cirugia-dialog';
 import { IntervencionesViewDialog } from '../intervenciones-view-dialog/intervenciones-view-dialog';
 import { KeycloakService } from '../../core/services/keycloak.service';
+import { CirugiaFacade } from '../state/cirugia.facade';
 
 @Component({
   selector: 'app-solicitudes-list',
@@ -46,8 +46,6 @@ import { KeycloakService } from '../../core/services/keycloak.service';
 })
 export class SolicitudesListComponent implements OnInit {
   selectedEstado: string | null = null;
-  private estadoApiParam: string | undefined;
-  private searchApiParam: string | undefined;
   sortActive = 'fechaInicio';
   sortDirection: SortDirection = 'asc';
   viewMode: 'table' | 'cards' = 'table';
@@ -62,11 +60,7 @@ export class SolicitudesListComponent implements OnInit {
     'acciones',
   ];
   dataSource = new MatTableDataSource<ICirugia>([]);
-  page = 0;
-  pageSize = 18;
-  totalItems = 0;
-  isLoading = false;
-  private pageCache = new Map<string, { data: ICirugia[]; total: number }>();
+
   private readonly sortFieldMap: Record<string, string> = {
     fechaInicio: 'fechaHoraInicio',
     pacienteNombre: 'paciente',
@@ -79,93 +73,97 @@ export class SolicitudesListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  private cirugiaService = inject(CirugiaService);
+  private cirugiaFacade = inject(CirugiaFacade);
   private dialog = inject(MatDialog);
   private keycloakService = inject(KeycloakService);
+  private destroyRef = inject(DestroyRef);
 
-  constructor() {}
+  // Template-bound properties for compatibility with existing HTML
+  isLoading = false;
+  totalItems = 0;
+  pageSize = 18;
+  page = 0;
 
-  ngOnInit(): void {
-    this.loadPage(this.page, this.pageSize);
+  // Facade selectors
+  cirugias$ = this.cirugiaFacade.cirugias$;
+  totalCirugias$ = this.cirugiaFacade.totalCirugias$;
+  currentPage$ = this.cirugiaFacade.currentPage$;
+  currentPageSize$ = this.cirugiaFacade.currentPageSize$;
+  estadoFilter$ = this.cirugiaFacade.estadoFilter$;
+  searchFilter$ = this.cirugiaFacade.searchFilter$;
+  sortField$ = this.cirugiaFacade.sortField$;
+  sortOrder$ = this.cirugiaFacade.sortOrder$;
+  isLoading$ = this.cirugiaFacade.isLoading$;
+
+  constructor() {
+    // Subscribe to cirugias to update dataSource
+    this.cirugias$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cirugias) => {
+        this.dataSource.data = cirugias;
+      });
+
+    // Subscribe to isLoading
+    this.isLoading$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((loading) => {
+        this.isLoading = loading;
+      });
+
+    // Subscribe to totals and pagination
+    this.totalCirugias$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((total) => {
+        this.totalItems = total;
+      });
+
+    this.currentPageSize$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((size) => {
+        this.pageSize = size;
+      });
+
+    this.currentPage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((p) => {
+        this.page = p;
+      });
   }
 
-  loadPage(
-    page: number,
-    pageSize: number,
-    estado: string | undefined = this.estadoApiParam,
-    search: string | undefined = this.searchApiParam
-  ) {
-    const sortKey = this.getBackendSortKey();
-    const orderKey = this.sortDirection || 'asc';
-    const cacheKey = `${page}-${pageSize}-${estado || ''}-${search || ''}-${sortKey}-${orderKey}`;
+  ngOnInit(): void {
+    this.cirugiaFacade.loadPage(0, 18);
+  }
 
-    // verificar si la página está en caché
-    if (this.pageCache.has(cacheKey)) {
-      const cached = this.pageCache.get(cacheKey)!;
-      this.dataSource.data = cached.data;
-      this.totalItems = cached.total;
-      this.page = page;
-      this.pageSize = pageSize;
-
-      if (this.paginator) {
-        this.paginator.pageIndex = this.page;
-        this.paginator.pageSize = this.pageSize;
-      }
-      return;
-    }
-
-    // si no está en caché, llamar al servidor
-    this.isLoading = true;
-    this.cirugiaService.getCirugias(page, pageSize, estado, search, sortKey, orderKey).subscribe({
-      next: (resp: any) => {
-        // Adaptar a la estructura real de la respuesta del backend
-        const content = resp?.data?.contenido || [];
-        const totalItems = resp?.data?.totalElementos || 0;
-        const totalPages = resp?.data?.totalPaginas || 1;
-        const pageNumber = resp?.data?.pagina || page;
-        const pageSizeResp = resp?.data?.tamaño || pageSize;
-
-        this.dataSource.data = content;
-        this.totalItems = totalItems;
-        this.page = pageNumber;
-        this.pageSize = pageSizeResp;
-        this.isLoading = false;
-
-        // guardar en caché
-        this.pageCache.set(cacheKey, {
-          data: content,
-          total: totalItems,
-        });
-
-        if (this.paginator) {
-          this.paginator.pageIndex = this.page;
-          this.paginator.pageSize = this.pageSize;
-        }
-      },
-      error: (err) => {
-        console.error('Error loading cirugias', err);
-        this.isLoading = false;
-      }
-    });
+  loadPage(page: number, pageSize: number) {
+    this.cirugiaFacade.loadPage(
+      page,
+      pageSize,
+      this.selectedEstado || undefined,
+      this.getSearchValue()
+    );
   }
 
   onSortChange(sort: Sort) {
     this.sortActive = sort.active;
     this.sortDirection = sort.direction || 'asc';
-    this.pageCache.clear();
-    this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
+    const sortKey = this.getBackendSortKey();
+    this.cirugiaFacade.loadPage(
+      0,
+      18,
+      this.selectedEstado || undefined,
+      this.getSearchValue(),
+      sortKey,
+      this.sortDirection
+    );
   }
 
   private getBackendSortKey(): string {
     return this.sortFieldMap[this.sortActive] ?? 'fechaHoraInicio';
   }
 
-
   applyFilter(filterValue: string) {
     const normalizedValue = filterValue.trim();
-    this.searchApiParam = normalizedValue || undefined;
-    this.pageCache.clear();
-    this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
+    this.loadPage(0, 18);
   }
 
   toggleViewMode() {
@@ -181,49 +179,30 @@ export class SolicitudesListComponent implements OnInit {
   }
 
   filtrarPorEstado(estado: string) {
-    // Si el botón ya está seleccionado, deselecciona y quita el filtro
     if (this.selectedEstado === estado) {
       this.selectedEstado = null;
-      this.estadoApiParam = undefined;
-      this.pageCache.clear();
-      this.loadPage(0, this.pageSize, undefined, this.searchApiParam);
-      return;
+    } else {
+      this.selectedEstado = estado;
     }
-    this.selectedEstado = estado;
-    let estadoParam: string | undefined;
-    switch (estado) {
-      case 'FINALIZADA':
-        estadoParam = 'FINALIZADA';
-        break;
-      case 'CANCELADA':
-        estadoParam = 'CANCELADA';
-        break;
-      case 'PROGRAMADA':
-        estadoParam = 'PROGRAMADA';
-        break;
-      case 'EN_TRANS':
-        estadoParam = 'EN_CURSO';
-        break;
-      default:
-        estadoParam = undefined;
-    }
-    this.estadoApiParam = estadoParam;
-    this.pageCache.clear();
-    this.loadPage(0, this.pageSize, estadoParam, this.searchApiParam);
+    this.loadPage(0, 18);
+  }
+
+  private getSearchValue(): string | undefined {
+    // This will be implemented via a search input in the template
+    return undefined;
   }
 
   onPage(event: PageEvent) {
-    this.loadPage(event.pageIndex, event.pageSize, this.estadoApiParam, this.searchApiParam);
+    this.loadPage(event.pageIndex, event.pageSize);
   }
 
   openCirugia(cirugia?: ICirugia) {
     this.dialog
-      .open(CirugiaDialog, {data: cirugia })
+      .open(CirugiaDialog, { data: cirugia })
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.pageCache.clear(); // limpiar caché cuando se modifica data
-          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
+          // The store effect will automatically refresh the page
         }
       });
   }
@@ -246,50 +225,10 @@ export class SolicitudesListComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((confirmed) => {
-        if (!confirmed) {
-          return;
+        if (confirmed) {
+          this.cirugiaFacade.finalizarCirugia(cirugia.id!);
         }
-
-        // Cache the medical team before finalizing
-        this.cirugiaService.getEquipoMedicoByCirugiaId(cirugia.id!).subscribe({
-          next: (response) => {
-            const equipoMedico = response?.data || [];
-            if (equipoMedico.length > 0) {
-              try {
-                localStorage.setItem(`equipo-medico-${cirugia.id}`, JSON.stringify(equipoMedico));
-              } catch (e) {
-                console.error('Error caching medical team', e);
-              }
-            }
-            this.proceedWithFinalization(cirugia);
-          },
-          error: (err) => {
-            console.error('Error loading team before finalizing', err);
-            this.proceedWithFinalization(cirugia);
-          }
-        });
       });
-  }
-
-  private proceedWithFinalization(cirugia: ICirugia): void {
-    this.cirugiaService.getIntervencionesByCirugiaId(cirugia.id!).subscribe({
-      next: (resp: any) => {
-        const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
-
-        this.cirugiaService.finalizarCirugia(cirugia.id!, intervenciones).subscribe({
-          next: () => {
-            this.pageCache.clear();
-            this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-          },
-          error: (err) => {
-            console.error('Error finalizing surgery', err);
-          },
-        });
-      },
-      error: (err) => {
-        console.error('Error loading interventions before finalizing surgery', err);
-      },
-    });
   }
 
   gestionarIntervenciones(cirugia: ICirugia) {
@@ -312,15 +251,7 @@ export class SolicitudesListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed && cirugia.id) {
-          this.cirugiaService.inicializarCirugia(cirugia.id).subscribe({
-            next: () => {
-              this.pageCache.clear();
-              this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-            },
-            error: (err) => {
-              console.error('Error initializing surgery', err);
-            }
-          });
+          this.cirugiaFacade.initializarCirugia(cirugia.id);
         }
       });
   }
@@ -344,33 +275,9 @@ export class SolicitudesListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          // Cache the medical team before deleting
-          this.cirugiaService.getEquipoMedicoByCirugiaId(cirugiaId).subscribe({
-            next: (response) => {
-              const equipoMedico = response?.data || [];
-              if (equipoMedico.length > 0) {
-                try {
-                  localStorage.setItem(`equipo-medico-${cirugiaId}`, JSON.stringify(equipoMedico));
-                } catch (e) {
-                  console.error('Error caching medical team', e);
-                }
-              }
-              this.proceedWithDelete(cirugiaId);
-            },
-            error: (err) => {
-              console.error('Error loading team before deleting', err);
-              this.proceedWithDelete(cirugiaId);
-            }
-          });
+          this.cirugiaFacade.deleteCirugia(cirugiaId);
         }
       });
-  }
-
-  private proceedWithDelete(cirugiaId: number): void {
-    this.cirugiaService.deleteCirugia(cirugiaId).subscribe(() => {
-      this.pageCache.clear(); // limpiar caché cuando se elimina
-      this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-    });
   }
 
   getEstadoClass(estado: string): string {

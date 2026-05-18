@@ -35,6 +35,10 @@ export class PacienteService extends BaseApiService {
     return this.post<IPacienteExterno>(API_ENDPOINTS.BFF.PACIENTE, paciente);
   }
 
+  updatePaciente(id: number, paciente: Partial<IPacienteExterno>): Observable<IPacienteExterno> {
+    return this.put<IPacienteExterno>(`${API_ENDPOINTS.BFF.PACIENTE}/${id}`, paciente);
+  }
+
   deletePaciente(id: number) {
     return this.delete<HttpStatusCode>(`${API_ENDPOINTS.BFF.PACIENTE}/${id}`);
   }

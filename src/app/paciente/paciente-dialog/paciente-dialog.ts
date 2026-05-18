@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,7 +6,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { IPacienteExterno } from '../../core/models/paciente-externo';
-import { PacienteService } from '../../core/services/paciente.service';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
+import {
+  createPacienteFailure,
+  createPacienteSuccess,
+  updatePacienteFailure,
+  updatePacienteSuccess,
+} from '../state/paciente.actions';
+import { PacienteFacade } from '../state/paciente.facade';
 
 @Component({
   selector: 'app-paciente-dialog',
@@ -23,13 +32,16 @@ import { PacienteService } from '../../core/services/paciente.service';
   styleUrls: ['./paciente-dialog.css'],
 })
 export class PacienteDialog implements OnInit {
+  private readonly actions$ = inject(Actions);
   form!: FormGroup;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<PacienteDialog>,
-    private pacienteService: PacienteService,
-    @Inject(MAT_DIALOG_DATA) public data: IPacienteExterno | null
+    private pacienteFacade: PacienteFacade,
+    @Inject(MAT_DIALOG_DATA) public data: IPacienteExterno | null,
+    private destroyRef: DestroyRef
   ) {
     this.form = this.fb.group({
       id: [null],
@@ -52,11 +64,28 @@ export class PacienteDialog implements OnInit {
 
   guardar(): void {
     if (this.form.valid) {
-      this.pacienteService.createPaciente(this.form.value).subscribe({
-        next: (nuevoPaciente) => {
-          this.dialogRef.close(nuevoPaciente);
-        },
-      });
+      this.isLoading = true;
+      this.actions$
+        .pipe(
+          ofType(createPacienteSuccess, createPacienteFailure, updatePacienteSuccess, updatePacienteFailure),
+          take(1),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe((action) => {
+          this.isLoading = false;
+
+          if (action.type === createPacienteSuccess.type || action.type === updatePacienteSuccess.type) {
+            this.dialogRef.close(action.paciente);
+            return;
+          }
+        });
+
+      const payload = this.form.getRawValue() as IPacienteExterno;
+      if (this.data?.id) {
+        this.pacienteFacade.updatePaciente(this.data.id, payload);
+      } else {
+        this.pacienteFacade.createPaciente(payload);
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -10,7 +10,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { PersonalService } from '../../core/services/personal.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PersonalDialogComponent } from '../personal-dialog/personal-dialog';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -18,6 +17,9 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IPersonal } from '../../core/models/personal';
+import { PersonalFacade } from '../state/personal.facade';
 
 @Component({
   selector: 'app-personal-list',
@@ -42,14 +44,15 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrls: ['./personal-list.css'],
 })
 export class PersonalList {
-  totalItems: number = 0;
-  pageSize: number = 16;
-  page: number = 0;
-  isLoading: boolean = false;
+  private readonly personalFacade = inject(PersonalFacade);
+  totalItems = 0;
+  pageSize = 16;
+  page = 0;
+  isLoading = false;
 
-  constructor(private personalService: PersonalService, private dialog: MatDialog) {}
+  constructor(private readonly dialog: MatDialog, private readonly destroyRef: DestroyRef) {}
 
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<IPersonal>([]);
   displayedColumns: string[] = [
     'legajo',
     'nombreCompleto',
@@ -62,7 +65,27 @@ export class PersonalList {
   ];
 
   ngOnInit() {
-    this.loadPage(this.page, this.pageSize);
+    this.personalFacade.items$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((items) => {
+      this.dataSource.data = items;
+    });
+
+    this.personalFacade.totalItems$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((totalItems) => {
+      this.totalItems = totalItems;
+    });
+
+    this.personalFacade.page$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((page) => {
+      this.page = page;
+    });
+
+    this.personalFacade.pageSize$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pageSize) => {
+      this.pageSize = pageSize;
+    });
+
+    this.personalFacade.isLoading$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+
+    this.personalFacade.loadPage(this.page, this.pageSize);
   }
 
   // llamado desde (page) del mat-paginator
@@ -79,24 +102,7 @@ export class PersonalList {
   }
 
   loadPage(page: number, pageSize: number) {
-    this.isLoading = true;
-    this.personalService.getPersonal(page, pageSize).subscribe({
-      next: (response: any) => {
-        const content = response?.data?.contenido || [];
-        const totalItems = response?.data?.totalElementos || 0;
-        const pageNumber = response?.data?.pagina || page;
-        const pageSizeResp = response?.data?.tamaño || pageSize;
-
-        this.dataSource.data = content;
-        this.totalItems = totalItems;
-        this.pageSize = pageSizeResp;
-        this.page = pageNumber;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
+    this.personalFacade.loadPage(page, pageSize);
   }
 
   applyFilter(event: Event) {
@@ -136,9 +142,7 @@ export class PersonalList {
 
     ref.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.personalService.deletePersonal(id).subscribe(() => {
-          this.loadPage(this.page, this.pageSize);
-        });
+        this.personalFacade.deleteById(id);
       }
     });
   }
@@ -147,11 +151,6 @@ export class PersonalList {
     // pasar el componente como primer parámetro y los datos en `data`
     const dialogRef = this.dialog.open(PersonalDialogComponent, {
       data: IPersonal || {},
-    });
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result) {
-        this.loadPage(this.page, this.pageSize);
-      }
     });
   }
 }

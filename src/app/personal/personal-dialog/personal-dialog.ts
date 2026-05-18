@@ -1,10 +1,9 @@
-import { Component, Inject } from '@angular/core';
+import { Component, DestroyRef, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AbstractControl, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PersonalService } from '../../core/services/personal.service';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -17,6 +16,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
+import { savePersonalFailure, savePersonalSuccess } from '../../personal/state/personal.actions';
+import { PersonalFacade } from '../../personal/state/personal.facade';
 
 const ALLOWED_ROLES = [
   { value: 'admin', label: 'Administrador', icon: 'admin_panel_settings' },
@@ -44,19 +48,20 @@ const ALLOWED_STATES = [
     MatTabsModule,
     MatDialogModule,
   ],
-  providers: [PersonalService],
 })
 export class PersonalDialogComponent {
+  private readonly actions$ = inject(Actions);
   public form: FormGroup;
   public roles = ALLOWED_ROLES;
   public states = ALLOWED_STATES;
 
   constructor(
     private fb: FormBuilder,
-    @Inject(PersonalService) private personalService: PersonalService,
+    private personalFacade: PersonalFacade,
     private dialogRef: MatDialogRef<PersonalDialogComponent>,
     private dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: IPersonal
+    @Inject(MAT_DIALOG_DATA) public data: IPersonal,
+    private destroyRef: DestroyRef
   ) {
     this.form = this.fb.group({
       id: [null],
@@ -122,9 +127,7 @@ export class PersonalDialogComponent {
 
       confirmDialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.personalService.updatePersonal(personalData).subscribe((response) => {
-            this.dialogRef.close(response);
-          });
+          this.savePersonal(personalData);
         }
       });
     } else {
@@ -137,12 +140,22 @@ export class PersonalDialogComponent {
 
       confirmDialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.personalService.createPersonal(personalData).subscribe((response) => {
-            this.dialogRef.close(response);
-          });
+          this.savePersonal(personalData);
         }
       });
     }
+  }
+
+  private savePersonal(personalData: IPersonal) {
+    this.actions$
+      .pipe(ofType(savePersonalSuccess, savePersonalFailure), take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe((action) => {
+        if (action.type === savePersonalSuccess.type) {
+          this.dialogRef.close(action.personal);
+        }
+      });
+
+    this.personalFacade.save(personalData);
   }
   cancelar() {
     this.dialogRef.close();

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -7,11 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { PacienteService } from '../../core/services/paciente.service';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { PacienteDialog } from '../paciente-dialog/paciente-dialog';
 import { IPacienteExterno } from '../../core/models/paciente-externo';
-import { IApiResponse } from '../../core/models/api-response';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PacienteFacade } from '../state/paciente.facade';
 
 @Component({
   selector: 'app-paciente-hospital-list',
@@ -45,27 +45,44 @@ export class PacienteHospitalListComponent implements OnInit {
   page = 0;
   pageSize = 10;
   totalItems = 0;
+  isLoading = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private pacienteService: PacienteService,
-    private dialog: MatDialog,
+    private readonly pacienteFacade: PacienteFacade,
+    private readonly dialog: MatDialog,
+    private readonly destroyRef: DestroyRef,
     public dialogRef: MatDialogRef<PacienteHospitalListComponent>
   ) {}
 
   ngOnInit(): void {
+    this.pacienteFacade.hospitalItems$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((items) => {
+      this.dataSource.data = items;
+    });
+
+    this.pacienteFacade.hospitalTotalItems$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((totalItems) => {
+      this.totalItems = totalItems;
+    });
+
+    this.pacienteFacade.hospitalPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((page) => {
+      this.page = page;
+    });
+
+    this.pacienteFacade.hospitalPageSize$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pageSize) => {
+      this.pageSize = pageSize;
+    });
+
+    this.pacienteFacade.isHospitalLoading$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+
     this.loadPage(this.page, this.pageSize);
   }
 
   loadPage(page: number, pageSize: number) {
-    this.pacienteService.getPacientesExternos(pageSize).subscribe((data) => {
-      this.dataSource.data = data.data;
-      this.totalItems = data.data.length;
-      this.page = page;
-      this.pageSize = pageSize;
-    });
+    this.pacienteFacade.loadHospitalPage(page, pageSize);
     
     if (this.paginator) {
       this.paginator.pageIndex = this.page;

@@ -1,4 +1,4 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild, inject, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
@@ -13,7 +13,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
 import { ICirugia } from '../../core/models/cirugia';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-import { CirugiaService } from '../../core/services/cirugia.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -25,7 +24,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { FormControl } from '@angular/forms';
-import { IPacienteLite } from '../../core/models/paciente'; // ajusta la ruta si hace falta
+import { IPacienteLite } from '../../core/models/paciente';
 import { Helpers } from '../../core/utils/helpers';
 import { PacienteListLite } from '../../shared/paciente-list-lite/paciente-list-lite';
 import { QuirofanoService } from '../../core/services/quirofano.service';
@@ -34,6 +33,12 @@ import { SeleccionTurnos } from '../seleccion-turnos/seleccion-turnos';
 import { IMiembroEquipoMedico } from '../../core/models/miembro-equipo';
 import { PersonalService } from '../../core/services/personal.service';
 import { PersonalListDialog } from '../personal-list-dialog/personal-list-dialog';
+import { CirugiaService } from '../../core/services/cirugia.service';
+import { CirugiaFacade } from '../state/cirugia.facade';
+import { CirugiaActions } from '../state/cirugia.actions';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -66,25 +71,30 @@ export class CirugiaDialog {
   public pacienteCtrl = new FormControl<string>('');
   public quirofanos: IQuirofano[] = [];
   public servicios: any[] = [];
-  
+  public isLoading = false;
+
   // Equipo médico
   public searchControl = new FormControl<string>('');
   public displayedColumnsEquipo: string[] = ['nombre', 'legajo', 'rol', 'accionEliminar'];
   public dataSourceEquipo = new MatTableDataSource<any>([]);
-  
+
   // Estado inicial para detectar cambios
   private initialCirugiaData: string = '';
   private initialEquipoMedico: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private cirugiaService: CirugiaService,
-    private quirofanoService: QuirofanoService,
-    private personalService: PersonalService,
-    private dialogRef: MatDialogRef<CirugiaDialog>,
-    private dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: ICirugia
-  ) {
+  private fb = inject(FormBuilder);
+  private cirugiaFacade = inject(CirugiaFacade);
+  private actions$ = inject(Actions);
+  private cirugiaService = inject(CirugiaService);
+  private quirofanoService = inject(QuirofanoService);
+  private personalService = inject(PersonalService);
+  private dialogRef = inject(MatDialogRef<CirugiaDialog>);
+  private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
+
+  @Inject(MAT_DIALOG_DATA) data: ICirugia | undefined = undefined;
+
+  constructor() {
     this.form = this.fb.group({
       id: [null],
       pacienteId: [null],
@@ -108,7 +118,7 @@ export class CirugiaDialog {
   ngOnInit() {
     // Cargar quirófanos siempre (necesario para el selector de turnos)
     this.onQuirofanoOpened();
-    
+
     if (this.data) {
       const patchData = this.buildPatch(this.data);
       this.form.patchValue(patchData);
@@ -124,7 +134,7 @@ export class CirugiaDialog {
       // En modo creación, cargar servicios automáticamente
       this.openSeleccionServicios();
     }
-    
+
     // Escuchar cambios en servicioId para limpiar fecha, hora y quirófano
     this.form.get('servicioId')?.valueChanges.subscribe(() => {
       this.form.patchValue({
@@ -202,15 +212,23 @@ export class CirugiaDialog {
       if (!result) return;
       const payload = Helpers.buildCirugiaPayload(cirugiaData);
       console.log('Payload a enviar para crear cirugía:', payload);
-      this.cirugiaService.createCirugia(payload).subscribe(
-        (resp: any) => {
-          const payload = resp && resp.data ? resp.data : resp;
-          this.dialogRef.close(payload);
-        },
-        (err) => {
-          console.error('Error creando cirugía', err);
-        }
-      );
+
+      this.isLoading = true;
+      this.actions$
+        .pipe(
+          ofType(CirugiaActions.createCirugiaSuccess, CirugiaActions.createCirugiaFailure),
+          take(1),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe((action) => {
+          this.isLoading = false;
+          if (action.type === CirugiaActions.createCirugiaSuccess.type) {
+            this.dialogRef.close(action.cirugia);
+            return;
+          }
+        });
+
+      this.cirugiaFacade.createCirugia(payload as ICirugia);
     });
   }
 
@@ -234,18 +252,24 @@ export class CirugiaDialog {
     confirmDialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
 
-      // Solo actualizar cirugía si cambió
-      if (cirugiaChanged) {
-        const payload = Helpers.buildCirugiaPayload(cirugiaData);
-        this.cirugiaService.updateCirugia(payload).subscribe(
-          (resp: any) => {
-            const cirugiaResp = resp && resp.data ? resp.data : resp;
-            this.dialogRef.close(cirugiaResp);
-          },
-          (err) => {
-            console.error('Error actualizando cirugía', err);
+      const payload = Helpers.buildCirugiaPayload(cirugiaData);
+      this.isLoading = true;
+      this.actions$
+        .pipe(
+          ofType(CirugiaActions.updateCirugiaSuccess, CirugiaActions.updateCirugiaFailure),
+          take(1),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe((action) => {
+          this.isLoading = false;
+          if (action.type === CirugiaActions.updateCirugiaSuccess.type) {
+            this.dialogRef.close(action.cirugia);
+            return;
           }
-        );
+        });
+
+      if (cirugiaData.id) {
+        this.cirugiaFacade.updateCirugia(cirugiaData.id, payload as Partial<ICirugia>);
       }
     });
   }

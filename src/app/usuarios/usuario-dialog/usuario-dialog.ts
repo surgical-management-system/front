@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, DestroyRef, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,12 +9,20 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { UsuarioService, IKeycloakUserCreate } from '../../core/services/usuario.service';
+import { IKeycloakUserCreate } from '../../core/services/usuario.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
-import { APP_CONSTANTS } from '../../core/constants/app-constants';
 import { PersonalListDialog } from '../../cirugia/personal-list-dialog/personal-list-dialog';
 import { IMiembroEquipoMedico } from '../../core/models/miembro-equipo';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
+import {
+  createUsuarioFailure,
+  createUsuarioSuccess,
+  updateUsuarioFailure,
+  updateUsuarioSuccess,
+} from '../state/usuarios.actions';
+import { UsuariosFacade } from '../state/usuarios.facade';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -30,12 +38,12 @@ import { IMiembroEquipoMedico } from '../../core/models/miembro-equipo';
     MatSelectModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
   ],
   templateUrl: './usuario-dialog.html',
   styleUrl: './usuario-dialog.css'
 })
 export class UsuarioDialogComponent {
+  private readonly actions$ = inject(Actions);
   form: FormGroup;
   isLoading = false;
   hidePassword = true;
@@ -50,11 +58,11 @@ export class UsuarioDialogComponent {
 
   constructor(
     private fb: FormBuilder,
-    private usuarioService: UsuarioService,
+    private usuariosFacade: UsuariosFacade,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private destroyRef: DestroyRef
   ) {
     this.isEditMode = !!data?.id;
     
@@ -203,7 +211,6 @@ export class UsuarioDialogComponent {
   }
 
   private crearUsuario() {
-    this.isLoading = true;
     const formValue = this.form.value;
 
     const userData: IKeycloakUserCreate = {
@@ -222,24 +229,14 @@ export class UsuarioDialogComponent {
       roles: [formValue.role],
     };
 
-    this.usuarioService.createUsuario(userData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.dialogRef.close(response);
-      },
-      error: (error) => {
-        this.showError(error, 'Error al crear el usuario, legajo ya registrado.');
-        this.isLoading = false;
-      }
-    });
+    this.awaitSaveResult('crear');
+    this.usuariosFacade.create(userData);
   }
 
   private actualizarUsuario() {
-    this.isLoading = true;
     const formValue = this.form.getRawValue(); // getRawValue incluye campos disabled
 
-    const userData: any = {
-      id: this.data.id,
+    const userData: Partial<IKeycloakUserCreate> = {
       legajo: formValue.legajo,
       username: formValue.legajo,
       email: formValue.email,
@@ -259,83 +256,40 @@ export class UsuarioDialogComponent {
       }];
     }
 
-    this.usuarioService.updateUsuario(this.data.id, userData).subscribe({
-      next: (response) => {
+    this.awaitSaveResult('actualizar');
+    this.usuariosFacade.update(this.data.id, userData);
+  }
+
+  private awaitSaveResult(action: 'crear' | 'actualizar') {
+    this.isLoading = true;
+
+    this.actions$
+      .pipe(
+        ofType(createUsuarioSuccess, createUsuarioFailure, updateUsuarioSuccess, updateUsuarioFailure),
+        take(1),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((actionResult) => {
         this.isLoading = false;
-        this.dialogRef.close(response);
-      },
-      error: (error) => {
-        this.showError(error, 'Error al actualizar el usuario.');
-        this.isLoading = false;
-      }
-    });
+
+        const isCreateFlow = action === 'crear';
+        const isCreateSuccess = actionResult.type === createUsuarioSuccess.type;
+        const isCreateFailure = actionResult.type === createUsuarioFailure.type;
+        const isUpdateSuccess = actionResult.type === updateUsuarioSuccess.type;
+        const isUpdateFailure = actionResult.type === updateUsuarioFailure.type;
+
+        if ((isCreateFlow && isCreateSuccess) || (!isCreateFlow && isUpdateSuccess)) {
+          this.dialogRef.close(actionResult.user);
+          return;
+        }
+
+        if ((isCreateFlow && isCreateFailure) || (!isCreateFlow && isUpdateFailure)) {
+          return;
+        }
+      });
   }
 
   cancelar() {
     this.dialogRef.close();
-  }
-
-  private showError(error: any, fallbackMessage: string) {
-    let message = fallbackMessage;
-
-    // Log error structure for debugging
-    console.error('Error detalles:', error);
-
-    // Check for HTTP error status
-    const status = error?.status || error?.statusCode;
-    const errorBody = error?.error || error;
-    let errorMsg = '';
-
-    // Extract error message from various possible structures
-    if (typeof errorBody === 'string') {
-      try {
-        const parsed = JSON.parse(errorBody);
-        errorMsg = parsed.errorMessage || parsed.message || '';
-      } catch {
-        errorMsg = errorBody;
-      }
-    } else if (typeof errorBody === 'object') {
-      errorMsg = errorBody.errorMessage || errorBody.message || errorBody.description || '';
-    }
-
-    // Handle 409 Conflict (User exists with same username)
-    if (status === 409) {
-      if (errorMsg.includes('User exists') || errorMsg.includes('username')) {
-        message = `El legajo "${this.form.get('legajo')?.value}" ya está registrado. Elija otro legajo.`;
-      } else if (errorMsg.includes('email')) {
-        message = 'El correo electrónico ya está registrado.';
-      } else {
-        message = 'El usuario ya existe. Intente con otro legajo o correo electrónico.';
-      }
-    }
-    // Handle 400 Bad Request
-    else if (status === 400) {
-      if (errorMsg.includes('email')) {
-        message = 'El correo electrónico ya está en uso.';
-      } else if (errorMsg.includes('password')) {
-        message = 'La contraseña no cumple con los requisitos mínimos.';
-      } else {
-        message = 'Datos inválidos. Verifique el formulario.';
-      }
-    }
-    // Handle 401 Unauthorized
-    else if (status === 401) {
-      message = 'Sesión expirada. Por favor, inicie sesión nuevamente.';
-    }
-    // Handle 403 Forbidden
-    else if (status === 403) {
-      message = 'No tiene permisos para realizar esta acción.';
-    }
-    // Use extracted error message if available
-    else if (errorMsg) {
-      message = errorMsg;
-    }
-
-    this.snackBar.open(message, 'Cerrar', {
-      duration: APP_CONSTANTS.TIMEOUTS.TOAST_DURATION,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar'],
-    });
   }
 }

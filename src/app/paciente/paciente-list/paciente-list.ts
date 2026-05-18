@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -15,11 +15,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { PacienteHospitalListComponent } from '../paciente-hospital-list/paciente-hospital-list';
-import { PacienteService } from '../../core/services/paciente.service';
 import { IPaciente } from '../../core/models/paciente';
 import { PacienteDialog } from '../paciente-dialog/paciente-dialog';
+import { PacienteFacade } from '../state/paciente.facade';
 
 @Component({
   selector: 'app-paciente-list',
@@ -44,14 +45,18 @@ import { PacienteDialog } from '../paciente-dialog/paciente-dialog';
   styleUrls: ['./paciente-list.css'],
 })
 export class PacienteList {
-  totalItems: number = 0;
-  pageSize: number = 16;
-  page: number = 0;
-  isLoading: boolean = false;
+  totalItems = 0;
+  pageSize = 16;
+  page = 0;
+  isLoading = false;
 
-  constructor(private pacienteService: PacienteService, private dialog: MatDialog) {}
+  constructor(
+    private readonly pacienteFacade: PacienteFacade,
+    private readonly dialog: MatDialog,
+    private readonly destroyRef: DestroyRef
+  ) {}
 
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<IPaciente>([]);
   displayedColumns: string[] = [
     'nombreCompleto',
     'dni',
@@ -63,6 +68,26 @@ export class PacienteList {
   ];
 
   ngOnInit() {
+    this.pacienteFacade.items$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((items) => {
+      this.dataSource.data = items;
+    });
+
+    this.pacienteFacade.totalItems$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((totalItems) => {
+      this.totalItems = totalItems;
+    });
+
+    this.pacienteFacade.page$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((page) => {
+      this.page = page;
+    });
+
+    this.pacienteFacade.pageSize$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pageSize) => {
+      this.pageSize = pageSize;
+    });
+
+    this.pacienteFacade.isLoading$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+
     this.loadPage(this.page, this.pageSize);
   }
 
@@ -80,24 +105,7 @@ export class PacienteList {
   }
 
   loadPage(page: number, pageSize: number) {
-    this.isLoading = true;
-    this.pacienteService.getPacientes(page, pageSize).subscribe({
-      next: (response: any) => {
-        const content = response?.data?.contenido || [];
-        const totalItems = response?.data?.totalElementos || 0;
-        const pageNumber = response?.data?.pagina || page;
-        const pageSizeResp = response?.data?.tamaño || pageSize;
-
-        this.dataSource.data = content;
-        this.totalItems = totalItems;
-        this.pageSize = pageSizeResp;
-        this.page = pageNumber;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
+    this.pacienteFacade.loadPage(page, pageSize);
   }
 
   applyFilter(event: Event) {
@@ -131,9 +139,7 @@ export class PacienteList {
 
     ref.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.pacienteService.deletePaciente(id).subscribe(() => {
-          this.loadPage(this.page, this.pageSize);
-        });
+        this.pacienteFacade.deletePaciente(id);
       }
     });
   }
@@ -150,13 +156,7 @@ export class PacienteList {
     ref.afterClosed().subscribe((confirmed: boolean) => {
       if (!confirmed) return;
 
-      const obs = active
-        ? this.pacienteService.deactivatePaciente(id)
-        : this.pacienteService.activatePaciente(id);
-
-      obs.subscribe(() => {
-        this.loadPage(this.page, this.pageSize);
-      });
+      this.pacienteFacade.toggleActivo(id, active);
     });
   }
 
@@ -165,17 +165,15 @@ export class PacienteList {
       width: '500px',
       data: paciente || {},
     });
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result) {
-        this.loadPage(this.page, this.pageSize);
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      // Refresh is handled by store effects on success actions.
     });
   }
 
   openPersonalHospitalList() {
     const dialogref = this.dialog.open(PacienteHospitalListComponent, {});
     dialogref.afterClosed().subscribe(() => {
-      this.loadPage(this.page, this.pageSize);
+      // Refresh is handled by store effects on success actions.
     });
   }
 }
