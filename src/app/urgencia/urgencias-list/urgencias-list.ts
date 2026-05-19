@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -11,9 +11,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormatEstadoPipe } from '../../core/pipes/format-estado.pipe';
 import { IUrgencia } from '../../core/models/urgencia';
-import { UrgenciaService } from '../../core/services/urgencia.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 import { UrgenciaInfoDialog } from '../urgencia-info-dialog/urgencia-info-dialog';
 import { FinalizarUrgenciaDialog } from '../finalizar-urgencia-dialog/finalizar-urgencia-dialog';
@@ -22,6 +22,7 @@ import { EquipoMedicoUrgenciaDialog } from '../urgencia-equipo-medico-dialog/urg
 
 import { KeycloakService } from '../../core/services/keycloak.service';
 import { UrgenciaDialog } from '../urgencia-dialog/urgencia-dialog';
+import { UrgenciaFacade } from '../state/urgencia.facade';
 
 @Component({
   selector: 'app-urgencias-list',
@@ -79,12 +80,41 @@ export class UrgenciasListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  private urgenciaService = inject(UrgenciaService);
+  private urgenciaFacade = inject(UrgenciaFacade);
   private dialog = inject(MatDialog);
   private keycloakService = inject(KeycloakService);
+  private destroyRef = inject(DestroyRef);
+
+  urgencias$ = this.urgenciaFacade.urgencias$;
+  totalUrgencias$ = this.urgenciaFacade.totalUrgencias$;
+  page$ = this.urgenciaFacade.page$;
+  pageSize$ = this.urgenciaFacade.pageSize$;
+  isLoading$ = this.urgenciaFacade.isLoading$;
+
+  constructor() {
+    this.urgencias$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((items) => {
+      this.dataSource.data = items;
+    });
+
+    this.totalUrgencias$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((total) => {
+      this.totalItems = total;
+    });
+
+    this.page$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((page) => {
+      this.page = page;
+    });
+
+    this.pageSize$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pageSize) => {
+      this.pageSize = pageSize;
+    });
+
+    this.isLoading$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((loading) => {
+      this.isLoading = loading;
+    });
+  }
 
   ngOnInit(): void {
-    this.loadPage(this.page, this.pageSize);
+    this.urgenciaFacade.loadPage(this.page, this.pageSize);
   }
 
   loadPage(
@@ -94,58 +124,12 @@ export class UrgenciasListComponent implements OnInit {
     search: string | undefined = this.searchApiParam
   ) {
     const sortKey = this.getBackendSortKey();
-    const orderKey = this.sortDirection || 'asc';
-    const cacheKey = `${page}-${pageSize}-${estado || ''}-${search || ''}-${sortKey}-${orderKey}`;
-
-    if (this.pageCache.has(cacheKey)) {
-      const cached = this.pageCache.get(cacheKey)!;
-      this.dataSource.data = cached.data;
-      this.totalItems = cached.total;
-      this.page = page;
-      this.pageSize = pageSize;
-
-      if (this.paginator) {
-        this.paginator.pageIndex = this.page;
-        this.paginator.pageSize = this.pageSize;
-      }
-      return;
-    }
-
-    this.isLoading = true;
-    this.urgenciaService.getUrgencias(page, pageSize, estado, search, sortKey, orderKey).subscribe({
-      next: (resp: any) => {
-        const content = resp?.data?.contenido || [];
-        const totalItems = resp?.data?.totalElementos || 0;
-        const pageNumber = resp?.data?.pagina || page;
-        const pageSizeResp = resp?.data?.tamaño || pageSize;
-
-        this.dataSource.data = content;
-        this.totalItems = totalItems;
-        this.page = pageNumber;
-        this.pageSize = pageSizeResp;
-        this.isLoading = false;
-
-        this.pageCache.set(cacheKey, {
-          data: content,
-          total: totalItems,
-        });
-
-        if (this.paginator) {
-          this.paginator.pageIndex = this.page;
-          this.paginator.pageSize = this.pageSize;
-        }
-      },
-      error: (err) => {
-        console.error('Error loading urgencias', err);
-        this.isLoading = false;
-      },
-    });
+    this.urgenciaFacade.loadPage(page, pageSize, estado, search, sortKey, this.sortDirection || 'asc');
   }
 
   onSortChange(sort: Sort) {
     this.sortActive = sort.active;
     this.sortDirection = sort.direction || 'asc';
-    this.pageCache.clear();
     this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
   }
 
@@ -156,7 +140,6 @@ export class UrgenciasListComponent implements OnInit {
   applyFilter(filterValue: string) {
     const normalizedValue = filterValue.trim();
     this.searchApiParam = normalizedValue || undefined;
-    this.pageCache.clear();
     this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
   }
 
@@ -176,14 +159,12 @@ export class UrgenciasListComponent implements OnInit {
     if (this.selectedEstado === estado) {
       this.selectedEstado = null;
       this.estadoApiParam = undefined;
-      this.pageCache.clear();
       this.loadPage(0, this.pageSize, undefined, this.searchApiParam);
       return;
     }
 
     this.selectedEstado = estado;
     this.estadoApiParam = estado;
-    this.pageCache.clear();
     this.loadPage(0, this.pageSize, this.estadoApiParam, this.searchApiParam);
   }
 
@@ -195,12 +176,7 @@ export class UrgenciasListComponent implements OnInit {
     this.dialog
       .open(UrgenciaDialog, { data: urgencia, width: '520px', maxHeight: '90vh' })
       .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.pageCache.clear();
-          this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-        }
-      });
+      .subscribe();
   }
 
   inicializarUrgencia(urgencia: IUrgencia) {
@@ -214,15 +190,7 @@ export class UrgenciasListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed && urgencia.id) {
-          this.urgenciaService.inicializarUrgencia(urgencia.id).subscribe({
-            next: () => {
-              this.pageCache.clear();
-              this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-            },
-            error: (err) => {
-              console.error('Error initializing emergency', err);
-            }
-          });
+          this.urgenciaFacade.inicializarUrgencia(urgencia.id);
         }
       });
   }
@@ -253,24 +221,7 @@ export class UrgenciasListComponent implements OnInit {
           return;
         }
 
-        this.urgenciaService.getIntervencionesbyUrgenciaId(urgencia.id!).subscribe({
-          next: (resp: any) => {
-            const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
-
-            this.urgenciaService.finalizarUrgencia(urgencia.id!, intervenciones).subscribe({
-              next: () => {
-                this.pageCache.clear();
-                this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-              },
-              error: (err) => {
-                console.error('Error finalizing urgency', err);
-              },
-            });
-          },
-          error: (err) => {
-            console.error('Error loading interventions before finalizing urgency', err);
-          },
-        });
+        this.urgenciaFacade.finalizarUrgencia(urgencia.id!);
       });
   }
 
@@ -298,10 +249,7 @@ export class UrgenciasListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.urgenciaService.deleteUrgencia(urgenciaId).subscribe(() => {
-            this.pageCache.clear();
-            this.loadPage(this.page, this.pageSize, this.estadoApiParam, this.searchApiParam);
-          });
+          this.urgenciaFacade.deleteUrgencia(urgenciaId);
         }
       });
   }

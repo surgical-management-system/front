@@ -11,6 +11,10 @@ import { UsuariosEffects } from './usuarios/state/usuarios.effects';
 import { usuariosFeature } from './usuarios/state/usuarios.reducer';
 import { CirugiaEffects } from './cirugia/state/cirugia.effects';
 import { cirugiaFeature } from './cirugia/state/cirugia.reducer';
+import { UrgenciaEffects } from './urgencia/state/urgencia.effects';
+import { urgenciaFeature } from './urgencia/state/urgencia.reducer';
+import { DashboardEffects } from './dashboard-view/state/dashboard.effects';
+import { dashboardFeature } from './dashboard-view/state/dashboard.reducer';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -25,6 +29,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./dashboard-view/dashboard-view').then((m) => m.DashboardViewComponent),
     canActivate: [RoleBGuard],
+    providers: [provideState(dashboardFeature), provideEffects(DashboardEffects)],
   },
   {
     path: 'solicitudes',
@@ -36,6 +41,7 @@ export const routes: Routes = [
     path: 'urgencias',
     loadComponent: () => import('./urgencia/urgencias').then((m) => m.UrgenciasComponent),
     canActivate: [RoleBGuard],
+    providers: [provideState(urgenciaFeature), provideEffects(UrgenciaEffects)],
   },
   {
     path: 'personal',

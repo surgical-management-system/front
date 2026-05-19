@@ -117,7 +117,7 @@
 
 <mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button (click)="cancelar()">Cancelar</button>
-  <button mat-raised-button color="primary" class="save-button" (click)="guardar()">
+  <button mat-raised-button color="primary" class="save-button" (click)="guardar()" [disabled]="isLoading || form.invalid">
     {{ form.value.id ? 'Actualizar' : 'Guardar' }}
   </button>
 </mat-dialog-actions>

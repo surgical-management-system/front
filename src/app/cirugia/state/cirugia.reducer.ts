@@ -1,4 +1,4 @@
-import { createFeature, createReducer, on, createSelector } from '@ngrx/store';
+import { createFeature, createReducer, on } from '@ngrx/store';
 import { ICirugia } from '../../core/models/cirugia';
 import { CirugiaActions } from './cirugia.actions';
 
@@ -146,5 +146,4 @@ const cirugiaReducer = createReducer(
 export const cirugiaFeature = createFeature({
   name: 'cirugia',
   reducer: cirugiaReducer,
-  extraSelectors: () => ({}),
 });

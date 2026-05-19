@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, DestroyRef, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -23,6 +23,11 @@ import { IUrgencia } from '../../core/models/urgencia';
 import { QuirofanoService } from '../../core/services/quirofano.service';
 import { UrgenciaService } from '../../core/services/urgencia.service';
 import { SeleccionTurnos } from '../../cirugia/seleccion-turnos/seleccion-turnos';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs/operators';
+import { UrgenciaFacade } from '../state/urgencia.facade';
+import { UrgenciaActions } from '../state/urgencia.actions';
 
 const PRIORITY_OPTIONS = [
   { value: 1, label: 'Alta', icon: 'priority_high' },
@@ -85,6 +90,11 @@ export class UrgenciaDialog {
       dni: [''],
     });
   }
+  public isLoading = false;
+
+  private actions$ = inject(Actions);
+  private destroyRef = inject(DestroyRef);
+  private urgenciaFacade = inject(UrgenciaFacade);
 
   ngOnInit() {
     this.loadCatalogs();
@@ -223,15 +233,22 @@ export class UrgenciaDialog {
       .afterClosed()
       .subscribe((confirmed) => {
         if (!confirmed) return;
-        this.urgenciaService.createUrgencia(urgenciaData).subscribe(
-          (resp: any) => {
-            const payload = resp && resp.data ? resp.data : resp;
-            this.dialogRef.close(payload);
-          },
-          (err) => {
-            console.error('Error creating urgency', err);
-          }
-        );
+
+        this.isLoading = true;
+        this.actions$
+          .pipe(
+            ofType(UrgenciaActions.createUrgenciaSuccess, UrgenciaActions.createUrgenciaFailure),
+            take(1),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe((action) => {
+            this.isLoading = false;
+            if (action.type === UrgenciaActions.createUrgenciaSuccess.type) {
+              this.dialogRef.close(action.urgencia);
+            }
+          });
+
+        this.urgenciaFacade.createUrgencia(urgenciaData);
       });
   }
 
@@ -246,15 +263,27 @@ export class UrgenciaDialog {
       .afterClosed()
       .subscribe((confirmed) => {
         if (!confirmed) return;
-        this.urgenciaService.updateUrgencia(urgenciaData).subscribe(
-          (resp: any) => {
-            const payload = resp && resp.data ? resp.data : resp;
-            this.dialogRef.close(payload);
-          },
-          (err) => {
-            console.error('Error updating urgency', err);
-          }
-        );
+
+        const id = urgenciaData.id ?? this.data?.id;
+        if (!id) {
+          return;
+        }
+
+        this.isLoading = true;
+        this.actions$
+          .pipe(
+            ofType(UrgenciaActions.updateUrgenciaSuccess, UrgenciaActions.updateUrgenciaFailure),
+            take(1),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe((action) => {
+            this.isLoading = false;
+            if (action.type === UrgenciaActions.updateUrgenciaSuccess.type) {
+              this.dialogRef.close(action.urgencia);
+            }
+          });
+
+        this.urgenciaFacade.updateUrgencia(id, urgenciaData);
       });
   }
 

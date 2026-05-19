@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ApiService } from '../core/services/api-service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ITestResponse } from '../core/models/test-response';
+import { DashboardFacade } from './state/dashboard.facade';
 
 @Component({
   selector: 'app-dashboard-view',
@@ -12,61 +13,41 @@ import { ITestResponse } from '../core/models/test-response';
   styleUrls: ['./dashboard-view.css']
 })
 export class DashboardViewComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly dashboardFacade = inject(DashboardFacade);
 
-  pingResult = '';
-  testResult: ITestResponse | undefined;
+  pingResult: string | null = null;
+  testResult: ITestResponse | null = null;
   isLoading = true;
 
-  constructor(private apiService: ApiService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    // Llamamos a los servicios cuando el componente se inicializa
-    this.getPingResult();
-    this.getTestResult();
-  }
+    // Subscribe to store selectors with automatic cleanup
+    this.dashboardFacade.ping$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((ping) => {
+        this.pingResult = ping;
+      });
 
-  getPingResult(): void {
-    this.apiService.getPing().subscribe(
-      (response) => {
-        this.pingResult = response;
-        console.log('Resultado del Ping:', this.pingResult);
-        this.checkLoadingComplete();
-      },
-      (error) => {
-        console.error('Error al hacer ping:', error);
-        this.pingResult = 'Error al conectar con el backend.';
-        this.checkLoadingComplete();
-      }
-    );
-  }
+    this.dashboardFacade.testData$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((testData) => {
+        this.testResult = testData;
+      });
 
-  getTestResult(): void {
-    this.apiService.getTest().subscribe(
-      (response) => {
-        this.testResult = response;
-        console.log('Resultado de Test:', this.testResult);
-        this.checkLoadingComplete();
-      },
-      (error) => {
-        console.error('Error al obtener datos de test:', error);
-        this.checkLoadingComplete();
-      }
-    );
-  }
+    this.dashboardFacade.isLoading$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
 
-  private checkLoadingComplete(): void {
-    // Simulamos un pequeño delay para mostrar el loading
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 500);
+    // Load dashboard data on init
+    this.dashboardFacade.loadDashboard();
   }
 
   refreshData(): void {
-    this.isLoading = true;
-    this.pingResult = '';
-    this.testResult = undefined;
-    this.getPingResult();
-    this.getTestResult();
+    this.dashboardFacade.refreshDashboard();
   }
 
   getCurrentTime(): string {
