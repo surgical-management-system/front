@@ -1,8 +1,8 @@
 import { gql } from 'apollo-angular';
 
 export const GET_USUARIOS = gql`
-  query getUsuarios($pagina: Int!, $tamano: Int!, $search: String) {
-    usuarios(pagina: $pagina, tamano: $tamano, search: $search) {
+  query getUsuarios($page: Int!, $limit: Int!, $filter: UsuarioFiltersInput) {
+    usuarios(page: $page, limit: $limit, filter: $filter) {
       content {
         id
         username
@@ -12,9 +12,10 @@ export const GET_USUARIOS = gql`
         enabled
       }
       totalElements
-      pageNumber
-      pageSize
       totalPages
+      currentPage
+      hasNextPage
+      hasPreviousPage
     }
   }
 `;
@@ -33,8 +34,8 @@ export const GET_USUARIO_BY_ID = gql`
 `;
 
 export const SEARCH_USUARIOS = gql`
-  query searchUsuarios($search: String!, $pagina: Int, $tamano: Int) {
-    searchUsuarios(search: $search, pagina: $pagina, tamano: $tamano) {
+  query searchUsuarios($search: String!) {
+    usuarios(page: 0, limit: 16, filter: { search: $search }) {
       content {
         id
         username
@@ -44,9 +45,10 @@ export const SEARCH_USUARIOS = gql`
         enabled
       }
       totalElements
-      pageNumber
-      pageSize
       totalPages
+      currentPage
+      hasNextPage
+      hasPreviousPage
     }
   }
 `;

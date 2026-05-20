@@ -21,7 +21,7 @@ export class PersonalService extends BaseGraphQLService {
   }
 
   getPersonal(page = 0, pageSize = 16) {
-    const variables = { pagina: page, tamano: pageSize };
+    const variables = { page, limit: pageSize };
     return this.query<any>(GET_PERSONALES, variables);
   }
 
@@ -37,13 +37,15 @@ export class PersonalService extends BaseGraphQLService {
 
   searchPersonalLite(page = 0, pageSize = 10, q: string, role?: string) {
     const variables: any = {
-      pagina: page,
-      tamano: pageSize,
-      search: q
+      page,
+      limit: pageSize,
+      filter: {
+        search: q
+      }
     };
 
     if (role) {
-      variables['role'] = role;
+      variables.filter.role = role;
     }
 
     return this.query<any>(GET_PERSONALES, variables);

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,11 +23,11 @@ function normalizePacientePageResponse(
   fallbackPage: number,
   fallbackPageSize: number
 ): PacientePageResponse {
-  const data = response?.data ?? response ?? {};
-  const items = data?.contenido ?? data?.content ?? data?.items ?? [];
-  const totalItems = data?.totalElementos ?? data?.pagination?.totalItems ?? items.length ?? 0;
-  const page = data?.pagina ?? data?.pagination?.page ?? fallbackPage;
-  const pageSize = data?.tamaño ?? data?.pageSize ?? data?.pagination?.pageSize ?? fallbackPageSize;
+  const data = response?.pacientes ?? response?.data?.pacientes ?? response?.data ?? response ?? {};
+  const items = data?.content ?? data?.contenido ?? data?.items ?? [];
+  const totalItems = data?.totalElements ?? data?.totalElementos ?? data?.pagination?.totalItems ?? items.length ?? 0;
+  const page = data?.currentPage ?? data?.pagina ?? data?.pagination?.page ?? fallbackPage;
+  const pageSize = data?.pageSize ?? data?.tamaño ?? data?.pagination?.pageSize ?? fallbackPageSize;
 
   return {
     items,
@@ -56,6 +56,11 @@ function getErrorMessage(error: unknown, fallbackMessage: string): string {
 
 @Injectable()
 export class PacienteEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly pacienteService = inject(PacienteService);
+  private readonly snackBar = inject(MatSnackBar);
+
   loadPacientesPage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PacienteActions.loadPacientesPage),
@@ -108,7 +113,7 @@ export class PacienteEffects {
       ofType(PacienteActions.createPaciente),
       exhaustMap(({ paciente }) =>
         this.pacienteService.createPaciente(paciente).pipe(
-          map((created) => PacienteActions.createPacienteSuccess({ paciente: created as unknown as IPaciente })),
+          map((created: any) => PacienteActions.createPacienteSuccess({ paciente: (created?.createPaciente ?? created?.data?.createPaciente ?? created?.data ?? created) as unknown as IPaciente })),
           catchError((error) =>
             of(
               PacienteActions.createPacienteFailure({
@@ -126,7 +131,7 @@ export class PacienteEffects {
       ofType(PacienteActions.updatePaciente),
       exhaustMap(({ id, paciente }) =>
         this.pacienteService.updatePaciente(id, paciente).pipe(
-          map((updated) => PacienteActions.updatePacienteSuccess({ paciente: updated as unknown as IPaciente })),
+          map((updated: any) => PacienteActions.updatePacienteSuccess({ paciente: (updated?.updatePaciente ?? updated?.data?.updatePaciente ?? updated?.data ?? updated) as unknown as IPaciente })),
           catchError((error) =>
             of(
               PacienteActions.updatePacienteFailure({
@@ -250,11 +255,4 @@ export class PacienteEffects {
       ),
     { dispatch: false }
   );
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly pacienteService: PacienteService,
-    private readonly store: Store,
-    private readonly snackBar: MatSnackBar
-  ) {}
 }

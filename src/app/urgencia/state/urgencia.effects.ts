@@ -16,7 +16,9 @@ function getErrorMessage(error: unknown, fallbackMessage: string): string {
 }
 
 function normalizeUrgenciaPageResponse(response: any): any[] {
-  return response?.data?.contenido || response?.data || response?.contenido || response || [];
+  const connection = response?.urgencias ?? response?.data?.urgencias ?? response?.data ?? response;
+  const items = connection?.content ?? connection?.contenido ?? connection?.items ?? [];
+  return Array.isArray(items) ? items : [];
 }
 
 @Injectable()
@@ -32,10 +34,11 @@ export class UrgenciaEffects {
       switchMap(({ page, pageSize, estado, search, sort, order }) =>
         this.urgenciaService.getUrgencias(page, pageSize, estado, search, sort, order).pipe(
           map((response: any) => {
+            const connection = response?.urgencias ?? response?.data?.urgencias ?? response?.data ?? response;
             const items = normalizeUrgenciaPageResponse(response);
-            const totalItems = response?.data?.totalElementos ?? response?.totalElementos ?? items.length;
-            const normalizedPage = response?.data?.pagina ?? page;
-            const normalizedPageSize = response?.data?.tamaño ?? response?.data?.tamano ?? pageSize;
+            const totalItems = connection?.totalElements ?? connection?.totalElementos ?? items.length;
+            const normalizedPage = connection?.currentPage ?? connection?.pagina ?? page;
+            const normalizedPageSize = connection?.pageSize ?? connection?.tamaño ?? connection?.tamano ?? pageSize;
 
             return UrgenciaActions.loadUrgenciasPageSuccess({
               items,
@@ -55,7 +58,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.createUrgencia),
       exhaustMap(({ urgencia }) =>
         this.urgenciaService.createUrgencia(urgencia).pipe(
-          map((response: any) => UrgenciaActions.createUrgenciaSuccess({ urgencia: response?.data ?? response })),
+          map((response: any) => UrgenciaActions.createUrgenciaSuccess({ urgencia: response?.createUrgencia ?? response?.data?.createUrgencia ?? response?.data ?? response })),
           catchError((error) => of(UrgenciaActions.createUrgenciaFailure({ error: getErrorMessage(error, 'Unable to create urgencia.') })))
         )
       )
@@ -67,7 +70,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.updateUrgencia),
       exhaustMap(({ id, urgencia }) =>
         this.urgenciaService.updateUrgencia({ id, ...(urgencia as IUrgencia) } as any).pipe(
-          map((response: any) => UrgenciaActions.updateUrgenciaSuccess({ urgencia: response?.data ?? response })),
+          map((response: any) => UrgenciaActions.updateUrgenciaSuccess({ urgencia: response?.updateUrgencia ?? response?.data?.updateUrgencia ?? response?.data ?? response })),
           catchError((error) => of(UrgenciaActions.updateUrgenciaFailure({ error: getErrorMessage(error, 'Unable to update urgencia.') })))
         )
       )
@@ -91,7 +94,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.inicializarUrgencia),
       exhaustMap(({ id }) =>
         this.urgenciaService.inicializarUrgencia(id).pipe(
-          map((response: any) => UrgenciaActions.inicializarUrgenciaSuccess({ urgencia: response?.data ?? response })),
+          map((response: any) => UrgenciaActions.inicializarUrgenciaSuccess({ urgencia: response?.inicializarUrgencia ?? response?.data?.inicializarUrgencia ?? response?.data ?? response })),
           catchError((error) => of(UrgenciaActions.inicializarUrgenciaFailure({ error: getErrorMessage(error, 'Unable to initialize urgencia.') })))
         )
       )
@@ -104,10 +107,11 @@ export class UrgenciaEffects {
       exhaustMap(({ id }) =>
         this.urgenciaService.getIntervencionesbyUrgenciaId(id).pipe(
           switchMap((response: any) => {
-            const intervenciones = Array.isArray(response?.data ?? response) ? (response?.data ?? response) : [];
+            const intervencionesSource = response?.intervencionesUrgencia ?? response?.data?.intervencionesUrgencia ?? response?.data ?? response;
+            const intervenciones = Array.isArray(intervencionesSource) ? intervencionesSource : [];
             return this.urgenciaService.finalizarUrgencia(id, intervenciones);
           }),
-          map((response: any) => UrgenciaActions.finalizarUrgenciaSuccess({ urgencia: response?.data ?? response })),
+          map((response: any) => UrgenciaActions.finalizarUrgenciaSuccess({ urgencia: response?.finalizarUrgencia ?? response?.data?.finalizarUrgencia ?? response?.data ?? response })),
           catchError((error) => of(UrgenciaActions.finalizarUrgenciaFailure({ error: getErrorMessage(error, 'Unable to finalize urgencia.') })))
         )
       )

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of, withLatestFrom } from 'rxjs';
@@ -56,6 +56,10 @@ function getErrorMessage(error: unknown, fallbackMessage: string): string {
 
 @Injectable()
 export class UsuariosEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly usuarioService = inject(UsuarioService);
+  private readonly store = inject(Store);
+  private readonly snackBar = inject(MatSnackBar);
   loadUsuariosPage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UsuariosActions.loadUsuariosPage),
@@ -236,10 +240,6 @@ export class UsuariosEffects {
     { dispatch: false }
   );
 
-  constructor(
-    private readonly actions$: Actions,
-    private readonly usuarioService: UsuarioService,
-    private readonly store: Store,
-    private readonly snackBar: MatSnackBar
-  ) {}
+  // constructor removed: using in-class `inject(...)` to ensure injections
+  // are available during effect initialization.
 }

@@ -34,12 +34,12 @@ export class PacienteService extends BaseGraphQLService {
   }
 
   getPacientes(page = 0, pageSize = 16) {
-    const variables = { pagina: page, tamano: pageSize };
+    const variables = { page, limit: pageSize };
     return this.query<any>(GET_PACIENTES, variables);
   }
 
   getPacientesLite(page = 0, pageSize = 16, filter: string = '') {
-    const variables: any = { pagina: page, tamano: pageSize };
+    const variables: any = { page, limit: pageSize };
     if (filter) variables['search'] = filter;
     return this.query<any>(GET_PACIENTES, variables);
   }

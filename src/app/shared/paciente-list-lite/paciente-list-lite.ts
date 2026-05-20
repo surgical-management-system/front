@@ -43,6 +43,17 @@ export class PacienteListLite implements OnInit, AfterViewInit {
   page = 0;
   private filterText = '';
 
+  private extractPageItems(resp: any): any[] {
+    const data = resp?.pacientes ?? resp?.data?.pacientes ?? resp?.data ?? resp;
+    const items = data?.content ?? data?.contenido ?? data?.items ?? [];
+    return Array.isArray(items) ? items : [];
+  }
+
+  private extractTotalItems(resp: any, items: any[]): number {
+    const data = resp?.pacientes ?? resp?.data?.pacientes ?? resp?.data ?? resp;
+    return data?.totalElements ?? data?.totalElementos ?? data?.pagination?.totalItems ?? items.length;
+  }
+
   constructor(
     private pacienteService: PacienteService,
     @Optional() private dialogRef?: MatDialogRef<PacienteListLite>
@@ -87,9 +98,9 @@ export class PacienteListLite implements OnInit, AfterViewInit {
     }
 
     this.pacienteService.getPacientesLite(0, this.pageSize, this.filterText).subscribe((resp) => {
-      const content = (resp?.data?.contenido || []);
+      const content = this.extractPageItems(resp);
       this.dataSource.data = content;
-      this.totalItems = resp?.data?.totalElementos || content.length;
+      this.totalItems = this.extractTotalItems(resp, content);
       if (this.paginator) {
         this.paginator.pageIndex = 0;
       }
@@ -103,9 +114,9 @@ export class PacienteListLite implements OnInit, AfterViewInit {
 
   private loadPage(page: number, pageSize: number) {
     this.pacienteService.getPacientesLite(page, pageSize, this.filterText).subscribe((resp) => {
-      const content = (resp?.data?.contenido || []);
+      const content = this.extractPageItems(resp);
       this.dataSource.data = content;
-      this.totalItems = resp?.data?.totalElementos || content.length;
+      this.totalItems = this.extractTotalItems(resp, content);
       // Sincronizar paginator después de cargar
       if (this.paginator) {
         this.paginator.pageIndex = this.page;

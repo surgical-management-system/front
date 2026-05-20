@@ -158,7 +158,8 @@ export class SeleccionTurnos {
   }
 
   private extractTurnos(resp: any): any[] {
-    const contenido = resp?.data?.contenido ?? resp?.contenido ?? resp?.data ?? [];
+    const connection = resp?.data?.turnos ?? resp?.turnos ?? resp?.data ?? resp;
+    const contenido = connection?.content ?? connection?.contenido ?? connection?.items ?? [];
     return Array.isArray(contenido) ? contenido : [];
   }
 

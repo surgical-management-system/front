@@ -377,7 +377,8 @@ export class Agenda {
   }
 
   private extractItems(response: any): any[] {
-    const items = response?.data?.contenido || response?.data || [];
+    const connection = response?.data?.turnos ?? response?.turnos ?? response?.data ?? response;
+    const items = connection?.content || connection?.contenido || connection?.items || [];
     return Array.isArray(items) ? items : [];
   }
 

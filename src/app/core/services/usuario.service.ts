@@ -67,7 +67,7 @@ export class UsuarioService extends BaseGraphQLService {
    * Obtiene la lista de usuarios de Keycloak
    */
   getUsuarios(page = 0, pageSize = 16) {
-    const variables = { pagina: page, tamano: pageSize };
+    const variables = { page, limit: pageSize };
     return this.query<any>(GET_USUARIOS, variables);
   }
 
@@ -82,7 +82,7 @@ export class UsuarioService extends BaseGraphQLService {
    * Busca usuarios por término
    */
   searchUsuarios(page = 0, pageSize = 16, search: string) {
-    const variables = { search, pagina: page, tamano: pageSize };
+    const variables = { search, page, limit: pageSize };
     return this.query<any>(SEARCH_USUARIOS, variables);
   }
 

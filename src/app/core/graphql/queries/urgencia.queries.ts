@@ -8,17 +8,20 @@ export const GET_URGENCIAS = gql`
         pacienteId
         pacienteNombre
         dni
+        servicioId
+        servicioNombre
+        nivelUrgencia
+        fechaHoraInicio
+        tipo
         estado
-        fechaInicio
-        horaInicio
-        horaFin
+        quirofanoId
+        quirofanoNombre
       }
       totalElements
       totalPages
       currentPage
       hasNextPage
       hasPreviousPage
-      totalPages
     }
   }
 `;
@@ -30,10 +33,14 @@ export const GET_URGENCIA_BY_ID = gql`
       pacienteId
       pacienteNombre
       dni
+      servicioId
+      servicioNombre
+      nivelUrgencia
+      fechaHoraInicio
+      tipo
       estado
-      fechaInicio
-      horaInicio
-      horaFin
+      quirofanoId
+      quirofanoNombre
     }
   }
 `;

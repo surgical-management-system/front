@@ -1,55 +1,61 @@
 import { gql } from 'apollo-angular';
 
 export const GET_PACIENTES = gql`
-  query getPacientes($pagina: Int!, $tamano: Int!, $search: String) {
-    pacientes(pagina: $pagina, tamano: $tamano, search: $search) {
+  query getPacientes($page: Int!, $limit: Int!, $filter: PacienteFiltersInput) {
+    pacientes(page: $page, limit: $limit, filter: $filter) {
       content {
         id
-        nombres
-        apellidos
+        nombre
+        apellido
         dni
-        email
+        fechaNacimiento
+        direccion
         telefono
-        domicilio
-        ciudad
-        provincia
-        codigoPostal
-        activo
+        altura
+        peso
+        active
       }
       totalElements
-      pageNumber
-      pageSize
       totalPages
+      currentPage
+      hasNextPage
+      hasPreviousPage
     }
   }
 `;
 
 export const GET_PACIENTE_BY_ID = gql`
-  query getPacienteById($id: Long!) {
-    pacienteById(id: $id) {
+  query getPacienteById($id: ID!) {
+    paciente(id: $id) {
       id
-      nombres
-      apellidos
+      nombre
+      apellido
       dni
-      email
+      fechaNacimiento
+      direccion
       telefono
-      domicilio
-      ciudad
-      provincia
-      codigoPostal
-      activo
+      altura
+      peso
+      active
     }
   }
 `;
 
 export const SEARCH_PACIENTES = gql`
   query searchPacientes($search: String!) {
-    searchPacientes(search: $search) {
+    pacientes(page: 0, limit: 16, filter: { search: $search }) {
+      content {
       id
-      nombres
-      apellidos
+      nombre
+      apellido
       dni
-      email
+      fechaNacimiento
+      direccion
+      telefono
+      altura
+      peso
+      active
+      }
     }
   }
 `;
