@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
-import { BaseApiService } from './base-api.service';
+import { Apollo } from 'apollo-angular';
+import { BaseGraphQLService } from './base-graphql.service';
 import { IUser } from '../models/user';
 import { IApiResponse, IPaginatedResponseES } from '../models/api-response';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
+import {
+  GET_USUARIOS,
+  GET_USUARIO_BY_ID,
+  SEARCH_USUARIOS
+} from '../graphql/queries/usuario.queries';
+import {
+  CREATE_USUARIO,
+  UPDATE_USUARIO,
+  DELETE_USUARIO,
+  TOGGLE_USUARIO_STATUS,
+  RESET_PASSWORD
+} from '../graphql/mutations/usuario.mutations';
 
 /**
  * Interfaz para usuario de Keycloak
@@ -50,50 +61,63 @@ export interface IKeycloakUserCreate {
 @Injectable({
   providedIn: 'root',
 })
-export class UsuarioService extends BaseApiService {
+export class UsuarioService extends BaseGraphQLService {
+
   /**
    * Obtiene la lista de usuarios de Keycloak
    */
   getUsuarios(page = 0, pageSize = 16) {
-    const params = { page: String(page), size: String(pageSize) };
-    return this.get<IPaginatedResponseES<IKeycloakUser>>(API_ENDPOINTS.BFF.USER, params);
+    const variables = { pagina: page, tamano: pageSize };
+    return this.query<any>(GET_USUARIOS, variables);
   }
 
   /**
    * Obtiene un usuario por ID
    */
   getUsuarioById(id: string) {
-    return this.get<IApiResponse<IKeycloakUser>>(`${API_ENDPOINTS.BFF.USER}/${id}`);
+    return this.query<IApiResponse<IKeycloakUser>>(GET_USUARIO_BY_ID, { id });
   }
 
   /**
    * Busca usuarios por término
    */
   searchUsuarios(page = 0, pageSize = 16, search: string) {
-    const params = { page: String(page), size: String(pageSize), search };
-    return this.get<IPaginatedResponseES<IKeycloakUser>>(API_ENDPOINTS.BFF.USER, params);
+    const variables = { search, pagina: page, tamano: pageSize };
+    return this.query<any>(SEARCH_USUARIOS, variables);
   }
 
   /**
    * Activa o desactiva un usuario
    */
   toggleUsuarioStatus(id: string, enabled: boolean) {
-    const url = `${this.baseUrl}${API_ENDPOINTS.BFF.USER}/${id}/status`;
-    const params = new HttpParams().set('enabled', String(enabled));
-    return this.http.put<IApiResponse<IKeycloakUser>>(url, null, { params });
+    return this.mutation<IApiResponse<IKeycloakUser>>(TOGGLE_USUARIO_STATUS, { id, enabled });
   }
 
   /**
    * Crea un nuevo usuario en Keycloak
    */
   createUsuario(userData: IKeycloakUserCreate) {
-    return this.post<IApiResponse<IKeycloakUser>>(API_ENDPOINTS.BFF.USER, userData);
+    return this.mutation<IApiResponse<IKeycloakUser>>(CREATE_USUARIO, { input: userData });
   }
 
   /**
    * Actualiza un usuario en Keycloak
    */
   updateUsuario(id: string, userData: Partial<IKeycloakUserCreate>) {
-    return this.put<IApiResponse<IKeycloakUser>>(`${API_ENDPOINTS.BFF.USER}/${id}`, userData);
+    return this.mutation<IApiResponse<IKeycloakUser>>(UPDATE_USUARIO, { id, input: userData });
+  }
+
+  /**
+   * Elimina un usuario
+   */
+  deleteUsuario(id: string) {
+    return this.mutation<void>(DELETE_USUARIO, { id });
+  }
+
+  /**
+   * Reinicia la contraseña de un usuario
+   */
+  resetPassword(usuarioId: string) {
+    return this.mutation<boolean>(RESET_PASSWORD, { usuarioId });
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -9,11 +9,12 @@ import { KeycloakService } from '../services/keycloak.service';
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private keycloakService: KeycloakService) {
-  }
+  constructor(private injector: Injector) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return from(this.keycloakService.getValidToken()).pipe(
+    const keycloakService = this.injector.get(KeycloakService);
+
+    return from(keycloakService.getValidToken()).pipe(
       switchMap(token => {
         if (token && !this.isAssetRequest(request.url)) {
           const authRequest = request.clone({

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { APP_CONSTANTS } from '../constants/app-constants';
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(
-    private keycloakService: KeycloakService,
+    private injector: Injector,
     private snackBar: MatSnackBar
   ) {}
 
@@ -48,7 +48,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         case 401:
           errorMessage = backendMessage || 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
           errorTitle = 'Sesión Expirada';
-          void this.keycloakService.logout();
+          void this.injector.get(KeycloakService).logout();
           break;
         case 403:
           errorMessage = backendMessage || 'No tiene permisos para realizar esta acción.';

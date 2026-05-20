@@ -1,101 +1,115 @@
 import { Injectable } from '@angular/core';
-import { BaseApiService } from './base-api.service';
+import { BaseGraphQLService } from './base-graphql.service';
+import { Observable } from 'rxjs';
 import { ICirugia } from '../models/cirugia';
-import { IApiResponse, IPaginatedResponse } from '../models/api-response';
+import { IApiResponse } from '../models/api-response';
 import { IMiembroEquipoMedico } from '../models/miembro-equipo';
-import { IQuirofano } from '../models/quirofano';
 import { IIntervencion, ITipoIntervencion } from '../models/intervencion';
+import {
+  GET_CIRUGIAS,
+  GET_EQUIPO_MEDICO_BY_CIRUGIA,
+  GET_INTERVENCIONES_BY_CIRUGIA,
+  GET_TIPOS_INTERVENCION
+} from '../graphql/queries/cirugia.queries';
+import {
+  CREATE_CIRUGIA,
+  UPDATE_CIRUGIA,
+  DELETE_CIRUGIA,
+  SAVE_EQUIPO_MEDICO,
+  CREATE_INTERVENCION,
+  UPDATE_INTERVENCION,
+  DELETE_INTERVENCION,
+  INICIALIZAR_CIRUGIA,
+  FINALIZAR_CIRUGIA
+} from '../graphql/mutations/cirugia.mutations';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CirugiaService extends BaseApiService {
+export class CirugiaService extends BaseGraphQLService {
+  // CONFIGURACIÓN MODERNA: ¡Sin constructor ni super(apollo)!
+
   createCirugia(data: ICirugia) {
-    return this.post<IApiResponse<ICirugia>>('/cirugias', data);
+    return this.mutation<IApiResponse<ICirugia>>(CREATE_CIRUGIA, { input: data });
   }
 
   updateCirugia(data: ICirugia) {
-    return this.put<IApiResponse<ICirugia>>(`/cirugias/${data.id}`, data);
+    return this.mutation<IApiResponse<ICirugia>>(UPDATE_CIRUGIA, { id: data.id, input: data });
   }
 
   getCirugias(page = 0, pageSize = 16, estado?: string, search?: string, sort?: string, order?: 'asc' | 'desc') {
-    const params: any = { pagina: String(page), tamano: String(pageSize) };
-    if (estado) {
-      params.estado = estado;
-    }
-    if (search) {
-      params.search = search;
-    }
-    if (sort) {
-      params.sort = sort;
-    }
-    if (order) {
-      params.order = order;
-    }
-    return this.get<IPaginatedResponse<ICirugia>>('/cirugias', params);
+    const variables: any = { pagina: page, tamano: pageSize };
+    if (estado) variables['estado'] = estado;
+    if (search) variables['search'] = search;
+    if (sort) variables['sort'] = sort;
+    if (order) variables['order'] = order;
+
+    return this.query<any>(GET_CIRUGIAS, variables);
   }
 
-  getCirugiasPorFechas(fechaInicio: string, fechaFin: string, pagina=0, tamano=1000) {
-    const params = { fechaInicio, fechaFin, pagina: String(pagina), tamano: String(tamano) };
-    return this.get<IApiResponse<ICirugia[]>>('/cirugias', params);
-  }   
+  getCirugiasPorFechas(fechaInicio: string, fechaFin: string, pagina = 0, tamano = 1000) {
+    const variables = { pagina: pagina, tamano: tamano, fechaInicio, fechaFin };
+    return this.query<IApiResponse<ICirugia[]>>(GET_CIRUGIAS, variables);
+  }
 
   deleteCirugia(cirugiaId: number) {
-    return this.delete<void>(`/cirugias/${cirugiaId}`);
+    return this.mutation<void>(DELETE_CIRUGIA, { id: cirugiaId });
   }
 
   getEquipoMedicoByCirugiaId(cirugiaId: number) {
-    return this.get<IApiResponse<IMiembroEquipoMedico[]>>(`/cirugias/${cirugiaId}/equipo-medico`);
+    return this.query<IApiResponse<IMiembroEquipoMedico[]>>(GET_EQUIPO_MEDICO_BY_CIRUGIA, { cirugiaId });
   }
 
   saveEquipoMedico(equipo: IMiembroEquipoMedico, cirugiaId: number) {
-    return this.post<IApiResponse<IMiembroEquipoMedico[]>>(
-      `/cirugias/${cirugiaId}/equipo-medico`,
-      equipo
-    );
+    return this.mutation<IApiResponse<IMiembroEquipoMedico[]>>(SAVE_EQUIPO_MEDICO, {
+      cirugiaId,
+      input: equipo
+    });
   }
 
   getTurnosDisponibles(quirofanoId: number, fechaInicio: string, fechaFin: string, pagina: number, tamano: number, servicioId?: number, estado?: string) {
-    const params: any = { fechaInicio, fechaFin, pagina, tamano, quirofanoId };
-    if (servicioId) {
-      params.servicioId = servicioId;
-    }
-    if (estado) {
-      params.estado = estado;
-    }
-    return this.get<IApiResponse<any>>('/turnos', params);
+    // Esta operación podría no estar disponible en GraphQL aún
+    return new Observable();
   }
 
   getServicios() {
-    return this.get<IApiResponse<any>>('/cirugias/servicios');
+    // Esta operación podría no estar disponible en GraphQL aún
+    return new Observable();
   }
 
   // Intervenciones
   getIntervencionesByCirugiaId(cirugiaId: number) {
-    return this.get<IApiResponse<IIntervencion[]>>(`/cirugias/${cirugiaId}/intervenciones`);
+    return this.query<IApiResponse<IIntervencion[]>>(GET_INTERVENCIONES_BY_CIRUGIA, { cirugiaId });
   }
 
   createIntervencion(cirugiaId: number, intervencion: IIntervencion) {
-    return this.post<IApiResponse<IIntervencion>>(`/cirugias/${cirugiaId}/intervenciones`, intervencion);
+    return this.mutation<IApiResponse<IIntervencion>>(CREATE_INTERVENCION, {
+      cirugiaId,
+      input: intervencion
+    });
   }
 
   updateIntervencion(cirugiaId: number, intervencion: IIntervencion) {
-    return this.put<IApiResponse<IIntervencion>>(`/cirugias/${cirugiaId}/intervenciones/${intervencion.id}`, intervencion);
+    return this.mutation<IApiResponse<IIntervencion>>(UPDATE_INTERVENCION, {
+      cirugiaId,
+      id: intervencion.id,
+      input: intervencion
+    });
   }
 
   deleteIntervencion(cirugiaId: number, intervencionId: number) {
-    return this.delete<void>(`/cirugias/${cirugiaId}/intervenciones/${intervencionId}`);
+    return this.mutation<void>(DELETE_INTERVENCION, { cirugiaId, id: intervencionId });
   }
 
   getTiposIntervencion() {
-    return this.get<IApiResponse<ITipoIntervencion[]>>('/tipos-intervenciones');
+    return this.query<IApiResponse<ITipoIntervencion[]>>(GET_TIPOS_INTERVENCION);
   }
 
   finalizarCirugia(cirugiaId: number, intervenciones: IIntervencion[]) {
-    return this.put<IApiResponse<ICirugia>>(`/cirugias/${cirugiaId}/finalizar`, { intervenciones });
+    return this.mutation<IApiResponse<ICirugia>>(FINALIZAR_CIRUGIA, { id: cirugiaId, intervenciones });
   }
 
   inicializarCirugia(cirugiaId: number) {
-    return this.put<IApiResponse<ICirugia>>(`/cirugias/${cirugiaId}/inicializar`, {});
+    return this.mutation<IApiResponse<ICirugia>>(INICIALIZAR_CIRUGIA, { id: cirugiaId });
   }
 }

@@ -13,9 +13,7 @@ export class KeycloakService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
   public userProfile$ = this.userProfileSubject.asObservable();
 
-  constructor(private keycloak: KeycloakAngularService) {
-    this.initializeUserProfile();
-  }
+  constructor(private keycloak: KeycloakAngularService) {}
 
   /**
    * Inicializa el perfil del usuario
@@ -157,6 +155,15 @@ export class KeycloakService {
       } catch (error) {
         console.error('Error refrescando perfil de usuario:', error);
       }
+    }
+  }
+
+  /**
+   * Carga el perfil del usuario bajo demanda para evitar trabajo async en constructor.
+   */
+  ensureUserProfileLoaded(): void {
+    if (this.userProfileSubject.value === null && this.isLoggedIn()) {
+      void this.initializeUserProfile();
     }
   }
 }

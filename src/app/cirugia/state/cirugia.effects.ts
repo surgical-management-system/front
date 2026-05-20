@@ -28,8 +28,9 @@ export class CirugiaEffects {
       switchMap(({ page, pageSize, estado, search, sort, order }) =>
         this.cirugiaService.getCirugias(page, pageSize, estado, search, sort, order).pipe(
           map((response: any) => {
-            const items = this.normalizeCirugiaPageResponse(response);
-            const totalItems = response?.data?.totalElementos || 0;
+            const connection = response?.cirugias ?? response?.data?.cirugias ?? response?.data ?? response;
+            const items = this.normalizeCirugiaPageResponse(connection);
+            const totalItems = connection?.totalElements ?? connection?.totalElementos ?? items.length;
             return CirugiaActions.loadCirugiasPageSuccess({
               items,
               totalItems,
@@ -47,7 +48,11 @@ export class CirugiaEffects {
   );
 
   private normalizeCirugiaPageResponse(response: any): any[] {
-    return (response?.data?.contenido || response?.data || response || []);
+    if (Array.isArray(response)) {
+      return response;
+    }
+
+    return response?.content ?? response?.contenido ?? response?.items ?? [];
   }
 
   createCirugia$ = createEffect(() =>
@@ -56,7 +61,7 @@ export class CirugiaEffects {
       exhaustMap(({ cirugia }) =>
         this.cirugiaService.createCirugia(cirugia).pipe(
           map((response: any) => {
-            const created = response?.data || response;
+            const created = response?.createCirugia ?? response?.data?.createCirugia ?? response?.data ?? response;
             return CirugiaActions.createCirugiaSuccess({ cirugia: created });
           }),
           catchError((error) => {
@@ -74,7 +79,7 @@ export class CirugiaEffects {
       exhaustMap(({ id, cirugia }) =>
         this.cirugiaService.updateCirugia({ id, ...cirugia } as any).pipe(
           map((response: any) => {
-            const updated = response?.data || response;
+            const updated = response?.updateCirugia ?? response?.data?.updateCirugia ?? response?.data ?? response;
             return CirugiaActions.updateCirugiaSuccess({ cirugia: updated });
           }),
           catchError((error) => {
@@ -107,7 +112,7 @@ export class CirugiaEffects {
       exhaustMap(({ id }) =>
         this.cirugiaService.inicializarCirugia(id).pipe(
           map((response: any) => {
-            const updated = response?.data || response;
+            const updated = response?.inicializarCirugia ?? response?.data?.inicializarCirugia ?? response?.data ?? response;
             return CirugiaActions.initializarCirugiaSuccess({ cirugia: updated });
           }),
           catchError((error) => {
@@ -125,11 +130,19 @@ export class CirugiaEffects {
       exhaustMap(({ id }) =>
         this.cirugiaService.getIntervencionesByCirugiaId(id).pipe(
           switchMap((resp: any) => {
-            const intervenciones = Array.isArray(resp?.data ?? resp) ? (resp?.data ?? resp) : [];
+            const intervenciones = Array.isArray(resp?.intervencionesByCirugia)
+              ? resp.intervencionesByCirugia
+              : Array.isArray(resp?.data?.intervencionesByCirugia)
+                ? resp.data.intervencionesByCirugia
+                : Array.isArray(resp?.data)
+                  ? resp.data
+                  : Array.isArray(resp)
+                    ? resp
+                    : [];
             return this.cirugiaService.finalizarCirugia(id, intervenciones);
           }),
           map((response: any) => {
-            const updated = response?.data || response;
+            const updated = response?.finalizarCirugia ?? response?.data?.finalizarCirugia ?? response?.data ?? response;
             return CirugiaActions.finalizarCirugiaSuccess({ cirugia: updated });
           }),
           catchError((error) => {
