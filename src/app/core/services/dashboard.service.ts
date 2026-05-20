@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BaseApiService } from './base-api.service';
-import { ICirugia } from '../models/cirugia';
-import { IApiResponse, IPaginatedResponse } from '../models/api-response';
-import { IMiembroEquipoMedico } from '../models/miembro-equipo';
-import { IQuirofano } from '../models/quirofano';
-import { IIntervencion, ITipoIntervencion } from '../models/intervencion';
+import { BaseGraphQLService } from './base-graphql.service';
 import { IEstadisticasGenerales } from '../models/estadisticas-generales';
+import { IApiResponse } from '../models/api-response';
+import { GET_ESTADISTICAS_GENERALES } from '../graphql/queries/dashboard.queries';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DashboardService extends BaseApiService {
+export class DashboardService extends BaseGraphQLService {
   getEstadisticasGenerales() {
-    return this.get<IApiResponse<IEstadisticasGenerales>>('/dashboard/general');    
+    return this.query<any>(GET_ESTADISTICAS_GENERALES).pipe(
+      map(response => ({
+        data: response.estadisticasGenerales
+      } as IApiResponse<IEstadisticasGenerales>))
+    );
   }
 }

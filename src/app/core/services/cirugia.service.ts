@@ -11,6 +11,7 @@ import {
   GET_INTERVENCIONES_BY_CIRUGIA,
   GET_TIPOS_INTERVENCION
 } from '../graphql/queries/cirugia.queries';
+import { GET_TURNOS_DISPONIBLES } from '../graphql/queries/turno.queries';
 import {
   CREATE_CIRUGIA,
   UPDATE_CIRUGIA,
@@ -22,6 +23,7 @@ import {
   INICIALIZAR_CIRUGIA,
   FINALIZAR_CIRUGIA
 } from '../graphql/mutations/cirugia.mutations';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -68,8 +70,20 @@ export class CirugiaService extends BaseGraphQLService {
   }
 
   getTurnosDisponibles(quirofanoId: number, fechaInicio: string, fechaFin: string, pagina: number, tamano: number, servicioId?: number, estado?: string) {
-    // Esta operación podría no estar disponible en GraphQL aún
-    return new Observable();
+    const variables: any = {
+      pagina,
+      tamano,
+      fechaInicio,
+      fechaFin,
+      quirofanoId: quirofanoId || undefined,
+      estado: estado || undefined,
+      servicioId: servicioId || undefined
+    };
+    return this.query<any>(GET_TURNOS_DISPONIBLES, variables).pipe(
+      map(response => ({
+        data: response.turnosDisponibles
+      }))
+    );
   }
 
   getServicios() {
