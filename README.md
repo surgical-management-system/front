@@ -115,37 +115,6 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Manejo de eventos asíncronos
   - Change detection optimization
 
-### 🏗️ Compilación & Build
-- **@angular/build:** v20.2.1 - Builder moderno de Angular
-- **@angular/compiler:** v20.2.0 - Compilador de templates Angular
-- **@angular/compiler-cli:** v20.2.0 - CLI del compilador
-
-### 📦 Gestión de Utilidades
-- **Tslib:** v2.3.0 - Utilidades de runtime para TypeScript
-- **Rxjs:** v7.8.0 - Librería reactiva
-
-### 🧪 Testing & Desarrollo
-- **Jasmine:** v5.9.0 - Framework de testing
-- **Karma:** v6.4.0 - Test runner
-  - `karma-chrome-launcher` - Ejecutor en Chrome
-  - `karma-coverage` - Cobertura de código
-  - `karma-jasmine` - Adaptador de Jasmine
-  - `karma-jasmine-html-reporter` - Reporte HTML
-
-- **TypeScript:** v5.9.2 - Verificación de tipos
-
-### 📋 Dependencies Summary
-```json
-{
-  "Angular Core": "20.2.x",
-  "State Management": "NgRx 20.1.0",
-  "GraphQL": "Apollo 4.1.9 + apollo-angular 14.0.0",
-  "UI Library": "Angular Material 20.2.11",
-  "Autenticación": "Keycloak 20.0 + 26.2.1",
-  "Lenguaje": "TypeScript 5.9.2",
-  "Reactividad": "RxJS 7.8.0"
-}
-```
 
 ### 🔋 Arquitectura Técnica
 ```
@@ -185,7 +154,7 @@ Gestión de usuarios integrada con **Keycloak**, soporte para múltiples roles y
 - Refresh tokens automático
 - Gestión de cuenta de usuario
 
-![Autenticación con Keycloak](assets/login.png)
+![Autenticación con Keycloak](assets/IntegracionKeycloack.psd.png)
 *Pantalla de login integrada con Keycloak - Autenticación SSO segura*
 
 ---
@@ -198,13 +167,13 @@ Paneles informativos con datos en tiempo real sobre operaciones y métricas hosp
 - **Reportes**: Generación de informes descargables
 - **Notificaciones**: Alertas en tiempo real
 
-![Dashboard Principal](assets/dashboard-main.png)
+![Dashboard Principal](assets/DashBoardAgenda.psd.png)
 *Dashboard con vista de calendario de cirugías programadas*
 
-![Panel de Métricas](assets/metrics-panel.png)
+![Panel de Métricas](assets/DashBoardMetricas.psd.png)
 *Visualización de métricas hospitalarias en tiempo real*
 
-![Sección de Reportes](assets/reports-section.png)
+![Sección de Reportes](assets/DashBoardReportes.png)
 *Generación y descarga de reportes operacionales*
 
 ---
@@ -233,20 +202,17 @@ Control completo del ciclo de vida de procedimientos quirúrgicos.
   - Documentar incidentes
   - Marcar como completada
 
-![Lista de Cirugías](assets/surgery-list.png)
+![Lista de Cirugías](assets/GestionCirugias.psd.png)
 *Tabla con filtrado avanzado de cirugías programadas y estados*
 
-![Nueva Cirugía - Paso 1](assets/new-surgery-step1.png)
+![Nueva Cirugía - Paso 1](assets/CirugiaForm.psd.png)
 *Formulario de creación: seleccionar paciente*
 
-![Nueva Cirugía - Paso 2](assets/select-available-slot.png)
+![Nueva Cirugía - Paso 2](assets/SeleccionTurnoForm.psd.png)
 *Seleccionar turno disponible en el quirófano*
 
-![Asignación de Equipo Médico](assets/assign-medical-team.png)
+![Asignación de Equipo Médico](assets/CirugasCardForm.psd.png)
 *Interfaz para asignar roles y personal médico a la cirugía*
-
-![Finalizar Cirugía](assets/finish-surgery.png)
-*Registro de intervenciones y finalización del procedimiento*
 
 ---
 
@@ -262,14 +228,11 @@ Administración integral de datos de pacientes.
 - **Perfil de Paciente**: Ver historial y antecedentes
 - **Búsqueda Avanzada**: Por ID, nombre, documento, etc.
 
-![Listado de Pacientes](assets/patients-list.png)
+![Listado de Pacientes](assets/GestionPacientes.psd.png)
 *Tabla completa de pacientes con búsqueda y filtrado avanzado*
 
-![Registro de Paciente](assets/patient-register.png)
-*Formulario de registro manual de pacientes con validación*
-
-![Importar desde API Externa](assets/import-external-api.png)
-*Interfaz para importar pacientes desde API externa*
+![Importar desde API Externa](assets/CargaPacientesAPIExterna.psd.png)
+*Interfaz para importar pacientes desde API externa e integración con sistemas externos*
 
 ---
 
@@ -281,7 +244,7 @@ Control del equipo médico y administrativo.
 - **Editar Perfil**: Actualizar datos y rol
 - **Asignar Turnos**: Disponibilidad y horarios
 
-![Gestión de Personal](assets/staff-management.png)
+![Gestión de Personal](assets/GestionPersonal.psd.png)
 *Panel de gestión del personal médico y administrativo del hospital*
 
 ---
@@ -294,14 +257,11 @@ Administración de acceso a través de Keycloak.
 - **Gestión de Roles**: Asignar permisos y roles
 - **Configuración de Cuenta**: Cambiar contraseña, perfil
 
-![Listado de Usuarios](assets/users-list.png)
+![Listado de Usuarios](assets/GestionUsuarios.psd.png)
 *Vista de todos los usuarios registrados en el sistema*
 
-![Editar Usuario y Roles](assets/edit-user.png)
+![Editar Usuario y Roles](assets/UsuarioForm.psd.png)
 *Edición de perfil de usuario y asignación de roles*
-
-![Configuración de Cuenta](assets/account-settings.png)
-*Panel de configuración de cuenta de usuario*
 
 ---
 
@@ -312,8 +272,8 @@ Administración de quirófanos y disponibilidad.
 - **Tipos de Intervención**: Catálogo de procedimientos
 - **Urgencias**: Gestión de casos urgentes
 
-![Recursos Hospitalarios](assets/hospital-resources.png)
-*Gestión de quirófanos, turnos disponibles y urgencias*
+![Gestión de Urgencias](assets/GestionUrgencias.psd.png)
+*Gestión de quirófanos, turnos disponibles y casos urgentes*
 
 ---
 
