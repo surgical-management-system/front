@@ -157,6 +157,9 @@ Gestión de usuarios integrada con **Keycloak**, soporte para múltiples roles y
 ![Autenticación con Keycloak](assets/IntegracionKeycloack.psd.png)
 *Pantalla de login integrada con Keycloak - Autenticación SSO segura*
 
+![Login Keycloak](assets/Loginkeycloack.png)
+*Pantalla del flujo de login (versión PNG)*
+
 ---
 
 ### 📅 2. Dashboard y Visualización
@@ -213,6 +216,9 @@ Control completo del ciclo de vida de procedimientos quirúrgicos.
 
 ![Asignación de Equipo Médico](assets/CirugasCardForm.psd.png)
 *Interfaz para asignar roles y personal médico a la cirugía*
+
+![Detalle de Cirugía](assets/cirugiaDetalle.png)
+*Vista detallada de una cirugía con historial, intervenciones y notas.*
 
 ---
 
