@@ -12,7 +12,6 @@ export function createApolloConfig(httpLink: HttpLink, injector: Injector) {
 
   const link = httpLink.create({
     uri: graphqlUrl,
-    withCredentials: true // Soporte de cookies de sesión para BFF
   });
 
   const authLink = setContext(async (_, context) => {

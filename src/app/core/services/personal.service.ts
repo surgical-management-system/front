@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BaseGraphQLService } from './base-graphql.service';
 import { Observable, map } from 'rxjs';
 import { IPersonal, IPersonalLite } from '../models/personal';
 import { IPaginatedResponseES } from '../models/api-response';
+import { BaseGraphQLService } from './base-graphql.service';
 import { GET_PERSONALES } from '../graphql/queries/personal.queries';
 import { CREATE_PERSONAL, UPDATE_PERSONAL, DELETE_PERSONAL } from '../graphql/mutations/personal.mutations';
 
