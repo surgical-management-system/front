@@ -1,41 +1,61 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
 import { BaseGraphQLService } from './base-graphql.service';
+import { Observable, map } from 'rxjs';
 import { IPersonal, IPersonalLite } from '../models/personal';
-import { IResponse } from '../models/iresponse';
-import { IApiResponse, IPaginatedResponse } from '../models/api-response';
-import { IMiembroEquipoMedico } from '../models/miembro-equipo';
+import { IPaginatedResponseES } from '../models/api-response';
 import { GET_PERSONALES } from '../graphql/queries/personal.queries';
 import { CREATE_PERSONAL, UPDATE_PERSONAL, DELETE_PERSONAL } from '../graphql/mutations/personal.mutations';
+
+interface PersonalPageQueryResponse {
+  personales: IPaginatedResponseES<IPersonal>;
+}
+
+interface PersonalLitePageQueryResponse {
+  personales: IPaginatedResponseES<IPersonalLite>;
+}
+
+interface PersonalMutationResponse<T> {
+  createPersonal?: T;
+  updatePersonal?: T;
+  deletePersonal?: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class PersonalService extends BaseGraphQLService {
 
-  updatePersonal(personalData: IPersonal) {
-    return this.mutation<IApiResponse<IPersonal>>(UPDATE_PERSONAL, {
+  updatePersonal(personalData: IPersonal): Observable<IPersonal> {
+    return this.mutation<PersonalMutationResponse<IPersonal>>(UPDATE_PERSONAL, {
       id: personalData.id,
       input: personalData
-    });
+    }).pipe(
+      map((response) => response.updatePersonal as IPersonal)
+    );
   }
 
-  getPersonal(page = 0, pageSize = 16) {
+  getPersonal(page = 0, pageSize = 16): Observable<IPaginatedResponseES<IPersonal>> {
     const variables = { page, limit: pageSize };
-    return this.query<any>(GET_PERSONALES, variables);
+    return this.query<PersonalPageQueryResponse>(GET_PERSONALES, variables).pipe(
+      map((response) => response.personales)
+    );
   }
 
-  createPersonal(personalData: IPersonal) {
-    return this.mutation<IApiResponse<IPersonal>>(CREATE_PERSONAL, {
+  createPersonal(personalData: IPersonal): Observable<IPersonal> {
+    return this.mutation<PersonalMutationResponse<IPersonal>>(CREATE_PERSONAL, {
       input: personalData
-    });
+    }).pipe(
+      map((response) => response.createPersonal as IPersonal)
+    );
   }
 
-  deletePersonal(id: number) {
-    return this.mutation<IApiResponse>(DELETE_PERSONAL, { id });
+  deletePersonal(id: number): Observable<void> {
+    return this.mutation<PersonalMutationResponse<never>>(DELETE_PERSONAL, { id }).pipe(
+      map(() => void 0)
+    );
   }
 
-  searchPersonalLite(page = 0, pageSize = 10, q: string, role?: string) {
+  searchPersonalLite(page = 0, pageSize = 10, q: string, role?: string): Observable<IPaginatedResponseES<IPersonalLite>> {
     const variables: any = {
       page,
       limit: pageSize,
@@ -48,6 +68,8 @@ export class PersonalService extends BaseGraphQLService {
       variables.filter.role = role;
     }
 
-    return this.query<any>(GET_PERSONALES, variables);
+    return this.query<PersonalLitePageQueryResponse>(GET_PERSONALES, variables).pipe(
+      map((response) => response.personales)
+    );
   }
 }

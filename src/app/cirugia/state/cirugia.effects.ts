@@ -27,15 +27,17 @@ export class CirugiaEffects {
       ofType(CirugiaActions.loadCirugiasPage),
       switchMap(({ page, pageSize, estado, search, sort, order }) =>
         this.cirugiaService.getCirugias(page, pageSize, estado, search, sort, order).pipe(
-          map((response: any) => {
-            const connection = response?.cirugias ?? response?.data?.cirugias ?? response?.data ?? response;
+          map((connection) => {
             const items = this.normalizeCirugiaPageResponse(connection);
-            const totalItems = connection?.totalElements ?? connection?.totalElementos ?? items.length;
+            const totalItems = (connection as any)?.totalElements ?? (connection as any)?.totalElementos ?? items.length;
+            const normalizedPage = (connection as any)?.currentPage ?? (connection as any)?.pagina ?? page;
+            const normalizedPageSize = (connection as any)?.pageSize ?? (connection as any)?.tamaño ?? (connection as any)?.tamano ?? pageSize;
+
             return CirugiaActions.loadCirugiasPageSuccess({
               items,
               totalItems,
-              page,
-              pageSize,
+              page: normalizedPage,
+              pageSize: normalizedPageSize,
             });
           }),
           catchError((error) =>{
@@ -60,10 +62,7 @@ export class CirugiaEffects {
       ofType(CirugiaActions.createCirugia),
       exhaustMap(({ cirugia }) =>
         this.cirugiaService.createCirugia(cirugia).pipe(
-          map((response: any) => {
-            const created = response?.createCirugia ?? response?.data?.createCirugia ?? response?.data ?? response;
-            return CirugiaActions.createCirugiaSuccess({ cirugia: created });
-          }),
+          map((created: any) => CirugiaActions.createCirugiaSuccess({ cirugia: created })),
           catchError((error) => {
             const errorMessage = getErrorMessage(error, 'Unable to create cirugia.');
             return of(CirugiaActions.createCirugiaFailure({ error: errorMessage }));
@@ -78,10 +77,7 @@ export class CirugiaEffects {
       ofType(CirugiaActions.updateCirugia),
       exhaustMap(({ id, cirugia }) =>
         this.cirugiaService.updateCirugia({ id, ...cirugia } as any).pipe(
-          map((response: any) => {
-            const updated = response?.updateCirugia ?? response?.data?.updateCirugia ?? response?.data ?? response;
-            return CirugiaActions.updateCirugiaSuccess({ cirugia: updated });
-          }),
+          map((updated: any) => CirugiaActions.updateCirugiaSuccess({ cirugia: updated })),
           catchError((error) => {
             const errorMessage = getErrorMessage(error, 'Unable to update cirugia.');
             return of(CirugiaActions.updateCirugiaFailure({ error: errorMessage }));
@@ -111,10 +107,7 @@ export class CirugiaEffects {
       ofType(CirugiaActions.initializarCirugia),
       exhaustMap(({ id }) =>
         this.cirugiaService.inicializarCirugia(id).pipe(
-          map((response: any) => {
-            const updated = response?.inicializarCirugia ?? response?.data?.inicializarCirugia ?? response?.data ?? response;
-            return CirugiaActions.initializarCirugiaSuccess({ cirugia: updated });
-          }),
+          map((updated: any) => CirugiaActions.initializarCirugiaSuccess({ cirugia: updated })),
           catchError((error) => {
             const errorMessage = getErrorMessage(error, 'Unable to initialize cirugia.');
             return of(CirugiaActions.initializarCirugiaFailure({ error: errorMessage }));
@@ -129,22 +122,8 @@ export class CirugiaEffects {
       ofType(CirugiaActions.finalizarCirugia),
       exhaustMap(({ id }) =>
         this.cirugiaService.getIntervencionesByCirugiaId(id).pipe(
-          switchMap((resp: any) => {
-            const intervenciones = Array.isArray(resp?.intervencionesByCirugia)
-              ? resp.intervencionesByCirugia
-              : Array.isArray(resp?.data?.intervencionesByCirugia)
-                ? resp.data.intervencionesByCirugia
-                : Array.isArray(resp?.data)
-                  ? resp.data
-                  : Array.isArray(resp)
-                    ? resp
-                    : [];
-            return this.cirugiaService.finalizarCirugia(id, intervenciones);
-          }),
-          map((response: any) => {
-            const updated = response?.finalizarCirugia ?? response?.data?.finalizarCirugia ?? response?.data ?? response;
-            return CirugiaActions.finalizarCirugiaSuccess({ cirugia: updated });
-          }),
+          switchMap((intervenciones: any[]) => this.cirugiaService.finalizarCirugia(id, intervenciones)),
+          map((updated: any) => CirugiaActions.finalizarCirugiaSuccess({ cirugia: updated })),
           catchError((error) => {
             const errorMessage = getErrorMessage(error, 'Unable to finalize cirugia.');
             return of(CirugiaActions.finalizarCirugiaFailure({ error: errorMessage }));

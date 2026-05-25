@@ -113,7 +113,7 @@ export class PacienteEffects {
       ofType(PacienteActions.createPaciente),
       exhaustMap(({ paciente }) =>
         this.pacienteService.createPaciente(paciente).pipe(
-          map((created: any) => PacienteActions.createPacienteSuccess({ paciente: (created?.createPaciente ?? created?.data?.createPaciente ?? created?.data ?? created) as unknown as IPaciente })),
+          map((created) => PacienteActions.createPacienteSuccess({ paciente: created })),
           catchError((error) =>
             of(
               PacienteActions.createPacienteFailure({
@@ -131,7 +131,7 @@ export class PacienteEffects {
       ofType(PacienteActions.updatePaciente),
       exhaustMap(({ id, paciente }) =>
         this.pacienteService.updatePaciente(id, paciente).pipe(
-          map((updated: any) => PacienteActions.updatePacienteSuccess({ paciente: (updated?.updatePaciente ?? updated?.data?.updatePaciente ?? updated?.data ?? updated) as unknown as IPaciente })),
+          map((updated) => PacienteActions.updatePacienteSuccess({ paciente: updated })),
           catchError((error) =>
             of(
               PacienteActions.updatePacienteFailure({

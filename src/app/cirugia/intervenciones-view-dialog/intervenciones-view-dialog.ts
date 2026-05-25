@@ -61,7 +61,7 @@ export class IntervencionesViewDialog implements OnInit {
     return new Promise((resolve) => {
       this.cirugiaService.getIntervencionesByCirugiaId(this.cirugia.id!).subscribe({
         next: (response) => {
-          this.intervenciones = response?.data || [];
+          this.intervenciones = response || [];
           resolve();
         },
         error: (err) => {
@@ -76,7 +76,7 @@ export class IntervencionesViewDialog implements OnInit {
     return new Promise((resolve) => {
       this.cirugiaService.getEquipoMedicoByCirugiaId(this.cirugia.id!).subscribe({
         next: (response) => {
-          const data = response?.data || [];
+          const data = response || [];
           this.equipoMedico = this.mapEquipoData(data);
           // If equipo is empty and cirugía is finalized, try to recover from localStorage
           if (this.equipoMedico.length === 0 && this.isFinalized()) {

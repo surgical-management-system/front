@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PersonalService } from '../../core/services/personal.service';
 import { IMiembroEquipoMedico } from '../../core/models/miembro-equipo';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Component({
@@ -61,14 +61,12 @@ export class PersonalListDialog implements OnInit {
         // Reset to page 0 when search changes
         this.page = 0;
         return this.personalService.searchPersonalLite(0, this.pageSize, (q ?? '').trim(), this.roleFilter).pipe(
-          map((r: any) => r ?? {}),
-          catchError(() => of({ data: { contenido: [], totalElementos: 0 } }))
+          catchError(() => of({ contenido: [], totalElementos: 0, pagina: 0, tamaño: this.pageSize, totalPaginas: 0 }))
         );
       })
     ).subscribe((resp: any) => {
-      const data = resp?.data;
-      const content = Array.isArray(data?.contenido) ? data.contenido : (Array.isArray(data?.content) ? data.content : []);
-      const totalItems = typeof data?.totalElementos === 'number' ? data.totalElementos : (typeof data?.totalElements === 'number' ? data.totalElements : content.length);
+      const content = Array.isArray(resp?.contenido) ? resp.contenido : (Array.isArray(resp?.content) ? resp.content : []);
+      const totalItems = typeof resp?.totalElementos === 'number' ? resp.totalElementos : (typeof resp?.totalElements === 'number' ? resp.totalElements : content.length);
       this.dataSource.data = content;
       this.totalItems = totalItems;
       if (this.paginator) {
@@ -81,9 +79,8 @@ export class PersonalListDialog implements OnInit {
   loadPage(page: number, pageSize: number, q: string) {
     this.personalService.searchPersonalLite(page, pageSize, q ?? '', this.roleFilter).subscribe((resp: any) => {
       // Adaptar a la estructura paginada del backend (contenido, totalElementos, pagina, tamaño)
-      const data = resp?.data;
-      const content = Array.isArray(data?.contenido) ? data.contenido : (Array.isArray(data?.content) ? data.content : []);
-      const totalItems = typeof data?.totalElementos === 'number' ? data.totalElementos : (typeof data?.totalElements === 'number' ? data.totalElements : content.length);
+      const content = Array.isArray(resp?.contenido) ? resp.contenido : (Array.isArray(resp?.content) ? resp.content : []);
+      const totalItems = typeof resp?.totalElementos === 'number' ? resp.totalElementos : (typeof resp?.totalElements === 'number' ? resp.totalElements : content.length);
       this.dataSource.data = content;
       this.totalItems = totalItems;
     });

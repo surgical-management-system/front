@@ -61,7 +61,7 @@ export class UrgenciaInfoDialog implements OnInit {
     return new Promise((resolve) => {
       this.urgenciaService.getIntervencionesbyUrgenciaId(this.urgencia.id!).subscribe({
         next: (response) => {
-          this.intervenciones = response?.data || [];
+          this.intervenciones = response || [];
           resolve();
         },
         error: (err) => {
@@ -76,7 +76,7 @@ export class UrgenciaInfoDialog implements OnInit {
     return new Promise((resolve) => {
       this.urgenciaService.getEquipoMedicoByUrgenciaId(this.urgencia.id!).subscribe({
         next: (response) => {
-          this.equipoMedico = response?.data || [];
+          this.equipoMedico = response || [];
           resolve();
         },
         error: (err) => {

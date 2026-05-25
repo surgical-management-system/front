@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
 import { BaseGraphQLService } from './base-graphql.service';
-import { IUser } from '../models/user';
-import { IApiResponse, IPaginatedResponseES } from '../models/api-response';
+import { Observable, map } from 'rxjs';
+import { IPaginatedResponseES } from '../models/api-response';
 import {
   GET_USUARIOS,
   GET_USUARIO_BY_ID,
@@ -58,66 +57,67 @@ export interface IKeycloakUserCreate {
   attributes?: Record<string, string[]>;
 }
 
+interface UsuariosPageQueryResponse {
+  usuarios: IPaginatedResponseES<IKeycloakUser>;
+}
+
+interface UsuarioMutationResponse<T> {
+  createUsuario?: T;
+  updateUsuario?: T;
+  toggleUsuarioStatus?: T;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class UsuarioService extends BaseGraphQLService {
-
-  /**
-   * Obtiene la lista de usuarios de Keycloak
-   */
-  getUsuarios(page = 0, pageSize = 16) {
+  getUsuarios(page = 0, pageSize = 16): Observable<IPaginatedResponseES<IKeycloakUser>> {
     const variables = { page, limit: pageSize };
-    return this.query<any>(GET_USUARIOS, variables);
+    return this.query<UsuariosPageQueryResponse>(GET_USUARIOS, variables).pipe(
+      map((response) => response.usuarios)
+    );
   }
 
-  /**
-   * Obtiene un usuario por ID
-   */
-  getUsuarioById(id: string) {
-    return this.query<IApiResponse<IKeycloakUser>>(GET_USUARIO_BY_ID, { id });
+  getUsuarioById(id: string): Observable<IKeycloakUser> {
+    return this.query<{ usuarioById: IKeycloakUser }>(GET_USUARIO_BY_ID, { id }).pipe(
+      map((response) => response.usuarioById)
+    );
   }
 
-  /**
-   * Busca usuarios por término
-   */
-  searchUsuarios(page = 0, pageSize = 16, search: string) {
+  searchUsuarios(page = 0, pageSize = 16, search: string): Observable<IPaginatedResponseES<IKeycloakUser>> {
     const variables = { search, page, limit: pageSize };
-    return this.query<any>(SEARCH_USUARIOS, variables);
+    return this.query<UsuariosPageQueryResponse>(SEARCH_USUARIOS, variables).pipe(
+      map((response) => response.usuarios)
+    );
   }
 
-  /**
-   * Activa o desactiva un usuario
-   */
-  toggleUsuarioStatus(id: string, enabled: boolean) {
-    return this.mutation<IApiResponse<IKeycloakUser>>(TOGGLE_USUARIO_STATUS, { id, enabled });
+  toggleUsuarioStatus(id: string, enabled: boolean): Observable<IKeycloakUser> {
+    return this.mutation<UsuarioMutationResponse<IKeycloakUser>>(TOGGLE_USUARIO_STATUS, { id, enabled }).pipe(
+      map((response) => response.toggleUsuarioStatus as IKeycloakUser)
+    );
   }
 
-  /**
-   * Crea un nuevo usuario en Keycloak
-   */
-  createUsuario(userData: IKeycloakUserCreate) {
-    return this.mutation<IApiResponse<IKeycloakUser>>(CREATE_USUARIO, { input: userData });
+  createUsuario(userData: IKeycloakUserCreate): Observable<IKeycloakUser> {
+    return this.mutation<UsuarioMutationResponse<IKeycloakUser>>(CREATE_USUARIO, { input: userData }).pipe(
+      map((response) => response.createUsuario as IKeycloakUser)
+    );
   }
 
-  /**
-   * Actualiza un usuario en Keycloak
-   */
-  updateUsuario(id: string, userData: Partial<IKeycloakUserCreate>) {
-    return this.mutation<IApiResponse<IKeycloakUser>>(UPDATE_USUARIO, { id, input: userData });
+  updateUsuario(id: string, userData: Partial<IKeycloakUserCreate>): Observable<IKeycloakUser> {
+    return this.mutation<UsuarioMutationResponse<IKeycloakUser>>(UPDATE_USUARIO, { id, input: userData }).pipe(
+      map((response) => response.updateUsuario as IKeycloakUser)
+    );
   }
 
-  /**
-   * Elimina un usuario
-   */
-  deleteUsuario(id: string) {
-    return this.mutation<void>(DELETE_USUARIO, { id });
+  deleteUsuario(id: string): Observable<void> {
+    return this.mutation<{ deleteUsuario: boolean }>(DELETE_USUARIO, { id }).pipe(
+      map(() => void 0)
+    );
   }
 
-  /**
-   * Reinicia la contraseña de un usuario
-   */
-  resetPassword(usuarioId: string) {
-    return this.mutation<boolean>(RESET_PASSWORD, { usuarioId });
+  resetPassword(usuarioId: string): Observable<boolean> {
+    return this.mutation<{ resetPassword: boolean }>(RESET_PASSWORD, { usuarioId }).pipe(
+      map((response) => Boolean(response.resetPassword))
+    );
   }
 }

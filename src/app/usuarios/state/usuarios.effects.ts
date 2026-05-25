@@ -95,7 +95,7 @@ export class UsuariosEffects {
       ofType(UsuariosActions.createUsuario),
       exhaustMap(({ userData }) =>
         this.usuarioService.createUsuario(userData).pipe(
-          map((response: any) => UsuariosActions.createUsuarioSuccess({ user: response?.data ?? userData })),
+          map((user) => UsuariosActions.createUsuarioSuccess({ user })),
           catchError((error) =>
             of(
               UsuariosActions.createUsuarioFailure({
@@ -113,7 +113,7 @@ export class UsuariosEffects {
       ofType(UsuariosActions.updateUsuario),
       exhaustMap(({ id, userData }) =>
         this.usuarioService.updateUsuario(id, userData).pipe(
-          map((response: any) => UsuariosActions.updateUsuarioSuccess({ user: response?.data ?? { id, ...userData } })),
+          map((user) => UsuariosActions.updateUsuarioSuccess({ user })),
           catchError((error) =>
             of(
               UsuariosActions.updateUsuarioFailure({
@@ -131,9 +131,9 @@ export class UsuariosEffects {
       ofType(UsuariosActions.toggleUsuarioStatus),
       exhaustMap(({ id, enabled }) =>
         this.usuarioService.toggleUsuarioStatus(id, enabled).pipe(
-          map((response: any) =>
+          map((user) =>
             UsuariosActions.toggleUsuarioStatusSuccess({
-              user: response?.data ?? { id, enabled },
+              user,
             })
           ),
           catchError((error) =>

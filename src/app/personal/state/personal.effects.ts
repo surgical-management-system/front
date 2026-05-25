@@ -107,11 +107,7 @@ export class PersonalEffects {
           : this.personalService.createPersonal(personal);
 
         return request$.pipe(
-          map((response: any) => {
-            const savedPersonal = response?.createPersonal ?? response?.updatePersonal ?? response?.data?.createPersonal ?? response?.data?.updatePersonal ?? response?.data ?? personal;
-
-            return PersonalActions.savePersonalSuccess({ personal: savedPersonal });
-          }),
+          map((savedPersonal) => PersonalActions.savePersonalSuccess({ personal: savedPersonal })),
           catchError((error) =>
             of(
               PersonalActions.savePersonalFailure({

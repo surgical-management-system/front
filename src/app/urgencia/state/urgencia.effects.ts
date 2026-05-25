@@ -33,9 +33,8 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.loadUrgenciasPage),
       switchMap(({ page, pageSize, estado, search, sort, order }) =>
         this.urgenciaService.getUrgencias(page, pageSize, estado, search, sort, order).pipe(
-          map((response: any) => {
-            const connection = response?.urgencias ?? response?.data?.urgencias ?? response?.data ?? response;
-            const items = normalizeUrgenciaPageResponse(response);
+          map((connection: any) => {
+            const items = normalizeUrgenciaPageResponse(connection);
             const totalItems = connection?.totalElements ?? connection?.totalElementos ?? items.length;
             const normalizedPage = connection?.currentPage ?? connection?.pagina ?? page;
             const normalizedPageSize = connection?.pageSize ?? connection?.tamaño ?? connection?.tamano ?? pageSize;
@@ -58,7 +57,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.createUrgencia),
       exhaustMap(({ urgencia }) =>
         this.urgenciaService.createUrgencia(urgencia).pipe(
-          map((response: any) => UrgenciaActions.createUrgenciaSuccess({ urgencia: response?.createUrgencia ?? response?.data?.createUrgencia ?? response?.data ?? response })),
+          map((created: any) => UrgenciaActions.createUrgenciaSuccess({ urgencia: created })),
           catchError((error) => of(UrgenciaActions.createUrgenciaFailure({ error: getErrorMessage(error, 'Unable to create urgencia.') })))
         )
       )
@@ -70,7 +69,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.updateUrgencia),
       exhaustMap(({ id, urgencia }) =>
         this.urgenciaService.updateUrgencia({ id, ...(urgencia as IUrgencia) } as any).pipe(
-          map((response: any) => UrgenciaActions.updateUrgenciaSuccess({ urgencia: response?.updateUrgencia ?? response?.data?.updateUrgencia ?? response?.data ?? response })),
+          map((updated: any) => UrgenciaActions.updateUrgenciaSuccess({ urgencia: updated })),
           catchError((error) => of(UrgenciaActions.updateUrgenciaFailure({ error: getErrorMessage(error, 'Unable to update urgencia.') })))
         )
       )
@@ -94,7 +93,7 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.inicializarUrgencia),
       exhaustMap(({ id }) =>
         this.urgenciaService.inicializarUrgencia(id).pipe(
-          map((response: any) => UrgenciaActions.inicializarUrgenciaSuccess({ urgencia: response?.inicializarUrgencia ?? response?.data?.inicializarUrgencia ?? response?.data ?? response })),
+          map((updated: any) => UrgenciaActions.inicializarUrgenciaSuccess({ urgencia: updated })),
           catchError((error) => of(UrgenciaActions.inicializarUrgenciaFailure({ error: getErrorMessage(error, 'Unable to initialize urgencia.') })))
         )
       )
@@ -106,12 +105,8 @@ export class UrgenciaEffects {
       ofType(UrgenciaActions.finalizarUrgencia),
       exhaustMap(({ id }) =>
         this.urgenciaService.getIntervencionesbyUrgenciaId(id).pipe(
-          switchMap((response: any) => {
-            const intervencionesSource = response?.intervencionesUrgencia ?? response?.data?.intervencionesUrgencia ?? response?.data ?? response;
-            const intervenciones = Array.isArray(intervencionesSource) ? intervencionesSource : [];
-            return this.urgenciaService.finalizarUrgencia(id, intervenciones);
-          }),
-          map((response: any) => UrgenciaActions.finalizarUrgenciaSuccess({ urgencia: response?.finalizarUrgencia ?? response?.data?.finalizarUrgencia ?? response?.data ?? response })),
+          switchMap((intervenciones: any[]) => this.urgenciaService.finalizarUrgencia(id, intervenciones)),
+          map((updated: any) => UrgenciaActions.finalizarUrgenciaSuccess({ urgencia: updated })),
           catchError((error) => of(UrgenciaActions.finalizarUrgenciaFailure({ error: getErrorMessage(error, 'Unable to finalize urgencia.') })))
         )
       )

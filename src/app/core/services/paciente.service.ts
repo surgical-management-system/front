@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BaseGraphQLService } from './base-graphql.service';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { IPaciente, IPacienteLite } from '../models/paciente';
 import { IPacienteExterno } from '../models/paciente-externo';
-import { IApiResponse, IPaginatedResponse } from '../models/api-response';
+import { IApiResponse, IPaginatedResponseES } from '../models/api-response';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { environment } from '../../../environments/environment';
 import { 
   GET_PACIENTES, 
   GET_PACIENTE_BY_ID, 
@@ -18,49 +20,120 @@ import {
   DEACTIVATE_PACIENTE
 } from '../graphql/mutations/paciente.mutations';
 
+interface PacientesQueryResponse {
+  pacientes: IPaginatedResponseES<IPaciente>;
+}
+
+interface PacientesLiteQueryResponse {
+  pacientes: {
+    contenido?: IPacienteLite[];
+    content?: IPacienteLite[];
+    totalElementos?: number;
+    totalElements?: number;
+    totalPaginas?: number;
+    totalPages?: number;
+    pagina?: number;
+    currentPage?: number;
+    tamaño?: number;
+    pageSize?: number;
+  };
+}
+
+interface PacienteMutationResponse<T> {
+  createPaciente?: T;
+  updatePaciente?: T;
+  deletePaciente?: boolean;
+  activatePaciente?: T;
+  deactivatePaciente?: T;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class PacienteService extends BaseGraphQLService {
+  private readonly http = inject(HttpClient);
+  private readonly restBaseUrl = environment.backendForFrontendUrl.startsWith('http')
+    ? environment.backendForFrontendUrl
+    : `http://${environment.backendForFrontendUrl}`;
 
-  searchPacientes(q: string) {
-    return this.query<IPacienteLite[]>(SEARCH_PACIENTES, { search: q });
+  private buildRestUrl(endpoint: string): string {
+    return endpoint.startsWith('http') ? endpoint : `${this.restBaseUrl}${endpoint}`;
+  }
+
+  searchPacientes(q: string): Observable<IPacienteLite[]> {
+    return this.query<PacientesLiteQueryResponse>(SEARCH_PACIENTES, { search: q }).pipe(
+      map((response) => response.pacientes?.content ?? response.pacientes?.contenido ?? [])
+    );
   }
 
   getPacientesExternos(cantidad: number): Observable<IApiResponse<IPacienteExterno[]>> {
-    // Esta operación sigue siendo REST si no está disponible en GraphQL
-    // Por ahora la dejaremos comentada o implementarla después
-    return new Observable();
+    return this.http.get<IApiResponse<IPacienteExterno[]>>(
+      this.buildRestUrl(API_ENDPOINTS.BFF.PACIENTES_EXTERNOS),
+      {
+        params: { cantidad: String(cantidad) },
+      }
+    );
   }
 
-  getPacientes(page = 0, pageSize = 16) {
+  getPacientes(page = 0, pageSize = 16): Observable<IPaginatedResponseES<IPaciente>> {
     const variables = { page, limit: pageSize };
-    return this.query<any>(GET_PACIENTES, variables);
+    return this.query<PacientesQueryResponse>(GET_PACIENTES, variables).pipe(
+      map((response) => response.pacientes)
+    );
   }
 
-  getPacientesLite(page = 0, pageSize = 16, filter: string = '') {
+  getPacientesLite(page = 0, pageSize = 16, filter: string = ''): Observable<IPaginatedResponseES<IPacienteLite>> {
     const variables: any = { page, limit: pageSize };
-    if (filter) variables['search'] = filter;
-    return this.query<any>(GET_PACIENTES, variables);
+
+    if (filter) {
+      variables.filter = { search: filter };
+    }
+
+    return this.query<PacientesLiteQueryResponse>(GET_PACIENTES, variables).pipe(
+      map((response) => {
+        const pacientes = response.pacientes;
+        const contenido = pacientes?.content ?? pacientes?.contenido ?? [];
+        const totalElementos = pacientes?.totalElements ?? pacientes?.totalElementos ?? contenido.length;
+        const tamaño = pacientes?.pageSize ?? pacientes?.tamaño ?? pageSize;
+
+        return {
+          pagina: pacientes?.currentPage ?? pacientes?.pagina ?? page,
+          tamaño,
+          totalElementos,
+          totalPaginas: pacientes?.totalPages ?? pacientes?.totalPaginas ?? Math.max(1, Math.ceil(totalElementos / Math.max(tamaño, 1))),
+          contenido,
+        };
+      })
+    );
   }
 
-  createPaciente(paciente: IPacienteExterno): Observable<IPacienteExterno> {
-    return this.mutation<IPacienteExterno>(CREATE_PACIENTE, { input: paciente });
+  createPaciente(paciente: IPacienteExterno): Observable<IPaciente> {
+    return this.mutation<PacienteMutationResponse<IPaciente>>(CREATE_PACIENTE, { input: paciente }).pipe(
+      map((response) => response.createPaciente as IPaciente)
+    );
   }
 
-  updatePaciente(id: number, paciente: Partial<IPacienteExterno>): Observable<IPacienteExterno> {
-    return this.mutation<IPacienteExterno>(UPDATE_PACIENTE, { id, input: paciente });
+  updatePaciente(id: number, paciente: Partial<IPacienteExterno>): Observable<IPaciente> {
+    return this.mutation<PacienteMutationResponse<IPaciente>>(UPDATE_PACIENTE, { id, input: paciente }).pipe(
+      map((response) => response.updatePaciente as IPaciente)
+    );
   }
 
-  deletePaciente(id: number) {
-    return this.mutation<any>(DELETE_PACIENTE, { id });
+  deletePaciente(id: number): Observable<void> {
+    return this.mutation<PacienteMutationResponse<never>>(DELETE_PACIENTE, { id }).pipe(
+      map(() => void 0)
+    );
   }
 
-  deactivatePaciente(id: number) {
-    return this.mutation<any>(DEACTIVATE_PACIENTE, { id });
+  deactivatePaciente(id: number): Observable<IPaciente> {
+    return this.mutation<PacienteMutationResponse<IPaciente>>(DEACTIVATE_PACIENTE, { id }).pipe(
+      map((response) => response.deactivatePaciente as IPaciente)
+    );
   }
 
-  activatePaciente(id: number) {
-    return this.mutation<any>(ACTIVATE_PACIENTE, { id });
+  activatePaciente(id: number): Observable<IPaciente> {
+    return this.mutation<PacienteMutationResponse<IPaciente>>(ACTIVATE_PACIENTE, { id }).pipe(
+      map((response) => response.activatePaciente as IPaciente)
+    );
   }
 }

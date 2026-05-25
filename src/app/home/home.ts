@@ -82,11 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadEstadisticasGenerales(): void {
     this.dashboardService.getEstadisticasGenerales().subscribe({
       next: (resp) => {
-        if (resp && resp.data) {
-          this.estadisticas = resp.data;
-        } else {
-          this.estadisticas = undefined;
-        }
+        this.estadisticas = resp?.data;
       },
       error: (error) => {
         console.error('Error al obtener estadísticas generales:', error);
