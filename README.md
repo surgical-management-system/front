@@ -1,10 +1,10 @@
-# 🏥 Frontend - Sistema de Gestión Quirúrgica DACS 2025
+# Frontend - Sistema de Gestión Quirúrgica DACS 2025
 
 Interfaz Angular moderna para la gestión integral de citas y procedimientos quirúrgicos hospitalarios.
 
 ---
 
-## 📋 Descripción General
+## Descripción General
 
 Este proyecto es la **capa de presentación** de un ecosistema distribuido de gestión hospitalar. Se comunica con el backend a través del patrón **BFF (Backend For Frontend)**, que centraliza la lógica de seguridad, normaliza datos y optimiza las respuestas para el cliente.
 
@@ -35,20 +35,20 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
 
 ---
 
-## 🚀 Stack Tecnológico
+## Stack Tecnológico
 
-### 🎯 Framework Base
+### Framework Base
 - **Angular:** v20.2.0+ - Framework progresivo para Single Page Applications
 - **TypeScript:** v5.9.2 - Lenguaje tipado para JavaScript
 - **Angular CLI:** v20.2.1 - Herramienta de scaffolding y build
 
-### 📊 State Management (Redux Pattern)
+### State Management (Redux Pattern)
 - **NgRx:** v20.1.0 - Implementación de Redux para Angular
   - `@ngrx/store` - Gestión centralizada de estado global
   - `@ngrx/effects` - Orquestación de efectos secundarios y lógica asíncrona
   - `@ngrx/store-devtools` - DevTools para debugging y time-travel debugging
 
-### 🔗 GraphQL & Comunicación
+### GraphQL & Comunicación
 - **Apollo Client:** v4.1.9 - Cliente GraphQL completo
   - `apollo-angular` v14.0.0 - Integración nativa con Angular
   - `graphql` v16.14.0 - Lenguaje y herramientas GraphQL
@@ -56,7 +56,7 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Caché automático y normalización de datos
   - Gestión de errores y retry automático
 
-### 🎨 UI & Componentes
+### UI & Componentes
 - **Angular Material:** v20.2.11
   - Componentes Material Design listos para producción
   - Theming personalizado
@@ -74,7 +74,7 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Animaciones de componentes
   - Interactividad mejorada
 
-### 🔐 Autenticación & Seguridad
+### Autenticación & Seguridad
 - **Keycloak Angular:** v20.0.0
   - Integración SSO (Single Sign-On)
   - Gestión de sesiones
@@ -90,7 +90,7 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Directivas de autorización
   - Integración con NgRx
 
-### 📱 Enrutamiento & Arquitectura
+### Enrutamiento & Arquitectura
 - **Angular Router:** v20.2.0
   - Enrutamiento declarativo
   - Guards para protección de rutas
@@ -103,10 +103,10 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Two-way data binding
   - Gestión de estado de formularios
 
-### 🔄 Programación Reactiva
+### Programación Reactiva
 - **RxJS:** v7.8.0
   - Observables y operadores
-  - Gestión de flujos asíncrónos
+  - Gestión de flujos asíncronos
   - Unsubscribe automático
   - Operadores: map, filter, switchMap, tap, etc.
 
@@ -115,8 +115,7 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
   - Manejo de eventos asíncronos
   - Change detection optimization
 
-
-### 🔋 Arquitectura Técnica
+### Arquitectura Técnica
 ```
 ┌─────────────────────────────────────────┐
 │         PRESENTACIÓN (Angular v20)      │
@@ -144,9 +143,9 @@ Este proyecto es la **capa de presentación** de un ecosistema distribuido de ge
 
 ---
 
-## 🎯 Funcionalidades Principales
+## Funcionalidades Principales
 
-### 🔐 1. Autenticación y Autorización
+### 1. Autenticación y Autorización
 Gestión de usuarios integrada con **Keycloak**, soporte para múltiples roles y permisos granulares.
 
 - Login/Logout seguro con SSO
@@ -162,7 +161,7 @@ Gestión de usuarios integrada con **Keycloak**, soporte para múltiples roles y
 
 ---
 
-### 📅 2. Dashboard y Visualización
+### 2. Dashboard y Visualización
 Paneles informativos con datos en tiempo real sobre operaciones y métricas hospitalarias.
 
 - **Calendario de Cirugías**: Visualiza procedimientos programados
@@ -181,7 +180,7 @@ Paneles informativos con datos en tiempo real sobre operaciones y métricas hosp
 
 ---
 
-### 🏥 3. Gestión de Cirugías
+### 3. Gestión de Cirugías
 Control completo del ciclo de vida de procedimientos quirúrgicos.
 
 #### Funcionalidades:
@@ -222,7 +221,7 @@ Control completo del ciclo de vida de procedimientos quirúrgicos.
 
 ---
 
-### 👥 4. Gestión de Pacientes
+### 4. Gestión de Pacientes
 Administración integral de datos de pacientes.
 
 - **Listado de Pacientes**: Búsqueda avanzada y filtrado
@@ -242,7 +241,7 @@ Administración integral de datos de pacientes.
 
 ---
 
-### 👨‍⚕️ 5. Gestión de Personal
+### 5. Gestión de Personal
 Control del equipo médico y administrativo.
 
 - **Listado de Personal**: Búsqueda y filtrado
@@ -255,7 +254,7 @@ Control del equipo médico y administrativo.
 
 ---
 
-### 👤 6. Gestión de Usuarios y Roles
+### 6. Gestión de Usuarios y Roles
 Administración de acceso a través de Keycloak.
 
 - **Listado de Usuarios**: Visualizar todos los usuarios del sistema
@@ -271,7 +270,7 @@ Administración de acceso a través de Keycloak.
 
 ---
 
-### 📊 7. Gestión de Recursos Hospitalarios
+### 7. Gestión de Recursos Hospitalarios
 Administración de quirófanos y disponibilidad.
 
 - **Quirófanos**: Disponibilidad y turnos
@@ -283,7 +282,7 @@ Administración de quirófanos y disponibilidad.
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 ```
 src/
@@ -324,7 +323,7 @@ src/
 
 ---
 
-## 🔄 Flujo de Datos: Redux + GraphQL
+## Flujo de Datos: Redux + GraphQL
 
 ### 1. Sistema de Redux (NgRx)
 ```
@@ -372,24 +371,24 @@ subscription OnCirugiaUpdated {
 
 ---
 
-## 📚 Aprendizajes y Mejores Prácticas
+## Aprendizajes y Mejores Prácticas
 
-- ✅ **Arquitectura Modular**: Separación clara de responsabilidades
-- ✅ **State Management**: Redux con NgRx para estado predecible
-- ✅ **GraphQL**: Consultas optimizadas y tipado estricto
-- ✅ **Componentes Reutilizables**: DRY principles
-- ✅ **Diseño Responsivo**: Mobile-first approach
-- ✅ **Seguridad**: Integración RBAC con Keycloak
-- ✅ **Performance**: Lazy loading, OnPush detection strategy
-- ✅ **BFF Pattern**: Normalización de datos desde el inicio
+- **Arquitectura Modular**: Separación clara de responsabilidades
+- **State Management**: Redux con NgRx para estado predecible
+- **GraphQL**: Consultas optimizadas y tipado estricto
+- **Componentes Reutilizables**: DRY principles
+- **Diseño Responsivo**: Mobile-first approach
+- **Seguridad**: Integración RBAC con Keycloak
+- **Performance**: Lazy loading, OnPush detection strategy
+- **BFF Pattern**: Normalización de datos desde el inicio
 
 ---
 
-## 🔗 Ecosistema Completo
+## Ecosistema Completo
 
 Este frontend es parte de un ecosistema distribuido. Explora todos los componentes:
 
-👉 **[Surgical Management System - GitHub Organization](https://github.com/orgs/surgical-management-system/repositories)**
+**[Surgical Management System - GitHub Organization](https://github.com/orgs/surgical-management-system/repositories)**
 
 ### Componentes del Sistema:
 - **Frontend**: Interfaz Angular (este proyecto)
